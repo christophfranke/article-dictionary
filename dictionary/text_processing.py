@@ -15,6 +15,7 @@ def process_text(text, language='greek'):
     # Remove common stopwords for the specified language
     stop_words = set(stopwords.words(language))
     filtered_words = [word.lower() for word in words if word.isalnum() and word.lower() not in stop_words]
+    filtered_words = [word for word in filtered_words if len(word) >= 2]
     # print('filtered_words:', filtered_words)
 
     # Use the Greek SnowballStemmer from snowballstemmer library
