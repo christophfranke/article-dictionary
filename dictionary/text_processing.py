@@ -1,33 +1,26 @@
-#modules
-import locale
-import sys
 import os
 import pandas as pd
 from nltk.tokenize import wordpunct_tokenize
 from nltk.corpus import stopwords
 from greek_stemmer_plus import GreekStemmer
 from googletrans import Translator
-import nltk
-
-#local modules
 from translation import translate_words
 from sort_greek import sort_greek_alphabetically
-
 
 def process_text(text, language='greek'):
     # Tokenize the text using wordpunct_tokenize for Greek text
     words = wordpunct_tokenize(text)
-    #print('words:', words)
+    # print('words:', words)
 
     # Remove common stopwords for the specified language
     stop_words = set(stopwords.words(language))
     filtered_words = [word.lower() for word in words if word.isalnum() and word.lower() not in stop_words]
-    #print('filtered_words:', filtered_words)
+    # print('filtered_words:', filtered_words)
 
     # Use the Greek SnowballStemmer from snowballstemmer library
     stemmer = GreekStemmer()
     stemmed_words = [stemmer.stem(word) for word in filtered_words]
-    #print('stemmed_words:', stemmed_words)
+    # print('stemmed_words:', stemmed_words)
 
     unique_sorted_words = sort_greek_alphabetically(set(stemmed_words))
 
@@ -38,11 +31,7 @@ def filter_common_words(words, common_words):
     filtered_words = [word for word in words if word not in common_words]
     return filtered_words
 
-def process_file(input_file):
-    # Read the content of the input file
-    with open(input_file, 'r', encoding='utf-8') as file:
-        input_text = file.read()
-
+def process_input(input_text):
     # Process the text
     processed_words = process_text(input_text, language='greek')
 
@@ -55,18 +44,4 @@ def process_file(input_file):
     # Translate and create a DataFrame
     translation_df = translate_words(filtered_words)
 
-    # Print the DataFrame
-    print(translation_df)
-
-    # Save the output to a new file
-    output_file = os.path.splitext(input_file)[0] + '.dict.csv'
-    translation_df.to_csv(output_file, index=False)
-
-if __name__ == "__main__":
-    # Check if the input file is provided as a command-line argument
-    if len(sys.argv) != 2:
-        print("Usage: python script.py input_file.txt")
-        sys.exit(1)
-
-    input_file = sys.argv[1]
-    process_file(input_file)
+    return translation_df
