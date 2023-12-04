@@ -2,7 +2,6 @@
   <div>
     <h1>{{ article.title }}</h1>
     <div v-if="article.content && article.content.length">
-      <h2>Content</h2>
       <p>
         <template v-for="({ word, separator }, index) in processedContent" :key="index">
           <span>{{ separator }}</span>

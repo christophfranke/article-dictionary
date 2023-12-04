@@ -1,8 +1,9 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import wordpunct_tokenize
-import nltk
+from nltk import download as nltk_download
 
-nltk.download('stopwords')
+nltk_download('stopwords')
+
 
 def filter_words(words, language="greek"):
     stop_words = set(stopwords.words(language))
@@ -14,3 +15,7 @@ def filter_words(words, language="greek"):
 def extract_words(text, language="greek"):
     words = wordpunct_tokenize(text)
     return filter_words(words, language)
+
+def extract_unique_words(text, language="greek"):
+    words = extract_words(text, language)
+    return list(set(words))

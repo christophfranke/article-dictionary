@@ -6,6 +6,6 @@ hello_bp = Blueprint('hello', __name__)
 def hello_world():
     return 'Hello, World!'
 
-@hello_bp.route('/api/hello')
+@hello_bp.route('/hello')
 def hello_api():
     return 'okay'

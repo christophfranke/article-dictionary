@@ -1,16 +1,10 @@
 # routes/articles.py
 from flask import Blueprint, request, jsonify
-from pymongo import MongoClient
-from text_processing.filter_words import extract_words
+from text_processing.extract import extract_words
+from text_processing.dictionary import add_text
+from utils.mongo import get_db
 
 articles = Blueprint('articles', __name__)
-
-# Assuming you have a MongoDB client already set up
-username = 'root'
-password = 'example'
-client = MongoClient(f'mongodb://{username}:{password}@mongodb:27017/')
-db = client['dictionary_app_data']
-articles_collection = db['articles']
 
 @articles.route('/')
 def list_articles():
@@ -29,6 +23,8 @@ def list_articles():
             for article in all_articles
         ]
 
+        add_text(article['content'], get_db()['dictionary'])
+
         # Return formatted articles as JSON
         return jsonify(formatted_articles)
 
@@ -46,6 +42,8 @@ def create_article():
 
         if not name or not content:
             return jsonify({'error': 'Name and content are required fields'}), 400
+
+        articles_collection = get_db()['articles']
 
         # Check if the name is already taken
         if articles_collection.find_one({'name': name}):
@@ -66,7 +64,7 @@ def create_article():
 def get_article(name):
     try:
         # Retrieve article from the collection
-        article = articles_collection.find_one({'name': name})
+        article = get_db()['articles'].find_one({'name': name})
 
         # Return article as JSON
         return jsonify({
