@@ -5,10 +5,10 @@
       <h2>Content</h2>
       <p>
         <template v-for="({ word, separator }, index) in processedContent" :key="index">
+          <span>{{ separator }}</span>
           <span @click="toggleWord(word)" :class="{ selected: selectedWords.includes(word) }">
             {{ word }}
           </span>
-          <span>{{ separator }}</span>
         </template>
       </p>
     </div>
@@ -65,8 +65,7 @@ const processedContent = computed(() => {
   let currentIndex = 0;
 
   article.value.words.forEach((word, index) => {
-    const nextWord = article.value.words[index + 1] || '';
-    const separator = getSeparator(currentIndex + word.length, nextWord);
+    const separator = getSeparator(currentIndex, word);
     result.push({ word, separator });
     currentIndex += separator.length + word.length;
   });
