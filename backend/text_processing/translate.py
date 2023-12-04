@@ -21,11 +21,17 @@ def translate_words(words, src_language='el', dest_language='en', chunk_size=500
             translation_result = translate(chunk_text, source_lang='el', target_lang='en').results[0]
 
             # Use regex to split the translations back into a list
-            chunk_translations = re.split(r'\s*\#\#\s*', translation_result['paraphrase'])
+            primary_chunk = re.split(r'.?\s*\#\#\s*', translation_result['paraphrase'])
 
-            # Populate the translations dictionary
-            for original, translation in zip(chunk, chunk_translations):
-                # Trim the result words
-                translations[original] = translation.strip()
+            # Populate the translations dictionary with primary translations
+            for original, translation in zip(chunk, primary_chunk):
+                translations[original] = [translation.strip()]
+
+            # Split alternative translations with the regex
+            alternative_translations = [re.split(r'.?\s*\#\#\s*', alt) for alt in translation_result.get('alternative', []) if alt]
+
+            # Update the translations dictionary with alternative translations
+            for original, alternative_translations_list in zip(chunk, alternative_translations):
+                translations[original] = translations[original] + [alt.strip() for alt in alternative_translations_list]
 
     return translations

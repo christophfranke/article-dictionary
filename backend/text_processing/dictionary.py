@@ -24,15 +24,15 @@ async def add_words(words, dictionary_collection):
     except Exception as e:
         raise Exception(f'Error translating words: {e}')
 
-    # if not set(new_words).issubset(translations.keys()):
-    #     raise Exception('Translations do not cover all new words.')
+    if not set(new_words).issubset(translations.keys()):
+        raise Exception(f'Translations do not cover all new words: {translations}')
 
     # Iterate over the translations dictionary and add each word to the dictionary
-    for original_word, translated_word in translations.items():
+    for original_word, translation_possibilities in translations.items():
         new_word = {
             'original': original_word,
-            'translated': translated_word,
-            'status': 'new',
+            'translations': translation_possibilities,
+            'status': 'new' if original_word not in translation_possibilities else 'ignore',
             'language': 'greek'
         }
 

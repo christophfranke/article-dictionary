@@ -6,14 +6,14 @@
       <thead>
         <tr>
           <th @click="sortTable('original')">Original</th>
-          <th @click="sortTable('translated')">Translated</th>
+          <th @click="sortTable('translations')">Translations</th>
           <th @click="sortTable('status')">Status</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(word, index) in sortedWords" :key="index">
           <td>{{ word.original }}</td>
-          <td>{{ word.translated }}</td>
+          <td>{{ word.translations.join(', ') }}</td>
           <td>{{ word.status }}</td>
         </tr>
       </tbody>

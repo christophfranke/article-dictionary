@@ -12,7 +12,7 @@ def list_words():
         dictionary_collection = get_collection('dictionary')
 
         # Retrieve all words from the dictionary_collection
-        words_cursor = dictionary_collection.find({}, {'_id': 0, 'original': 1, 'translated': 1, 'status': 1})
+        words_cursor = dictionary_collection.find({}, {'_id': 0, 'original': 1, 'translations': 1, 'status': 1})
 
         # Convert the cursor to a list of words
         words_list = list(words_cursor)
