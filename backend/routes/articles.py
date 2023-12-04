@@ -21,7 +21,7 @@ def list_articles():
         formatted_articles = [
             {
                 'id': str(article['_id']),
-                'name': article['name'],
+                'title': article['name'],
                 'excerpt': article['content'][:150],  # Truncate content to 150 characters for excerpt
                 'url': f'/articles/{article["name"]}',
             }
@@ -61,3 +61,18 @@ def create_article():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@articles.route('/<name>')
+def get_article(name):
+    try:
+        # Retrieve article from the collection
+        article = articles_collection.find_one({'name': name})
+
+        # Return article as JSON
+        return jsonify({
+            'name': article['name'],
+            'content': article['content'],
+        })
+
+    except Exception as e:
+        # Handle any exceptions (e.g., database connection error)
+        return jsonify({'error': str(e)}), 500

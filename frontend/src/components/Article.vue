@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!-- Your article display logic goes here -->
-    <p>{{ data.title }}</p>
-    <p>{{ data.excerpt }}...</p>
-    <!-- Add more details as needed -->
+    <router-link :to="data.url">
+      <h2>{{ data.title }}</h2>
+      <p>{{ data.excerpt }}...</p>
+    </router-link>
   </div>
 </template>
 

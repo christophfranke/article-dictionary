@@ -16,6 +16,11 @@ const router = createRouter({
       name: 'create',
       component: CreateArticleView,
     },
+    {
+      path: '/articles/:name',
+      name: 'article-detail',
+      component: () => import('../views/ArticleDetailView.vue'),
+    },
     // Add the catch-all route at the end
     {
       path: '/:catchAll(.*)',
