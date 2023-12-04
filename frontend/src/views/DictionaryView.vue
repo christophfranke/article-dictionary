@@ -5,6 +5,27 @@
       <label for="filter">Filter:</label>
       <input v-model="filter" id="filter" />
     </div>
+      <div>
+        <label for="newCheckbox">
+          <input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
+          New
+        </label>
+
+        <label for="seenCheckbox">
+          <input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
+          Seen
+        </label>
+
+        <label for="knownCheckbox">
+          <input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
+          Known
+        </label>
+
+        <label for="ignoreCheckbox">
+          <input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
+          Ignore
+        </label>
+      </div>
     <div>
       <label for="newWord">New Entry:</label>
       <input v-model="newWord" id="newWord" />
@@ -22,7 +43,12 @@
         <tr v-for="(word) in filteredWords" :key="word.index">
           <td>{{ word.original }}</td>
           <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">{{ word.translations.join(', ') }}</td>
-          <td v-else><form @submit="updateTranslation"><input ref="editTranslationsInput" v-model="editTranslationsValue" @blur="editTranslations(-1)" /><input type="submit" value="y" /></form></td>
+          <td v-else>
+            <form @submit="updateTranslation">
+              <input ref="editTranslationsInput" v-model="editTranslationsValue" @blur="editTranslations(-1)" />
+              <input type="submit" value="y" />
+            </form>
+          </td>
           <td @click="changeStatus(word)">{{ word.status }}</td>
         </tr>
       </tbody>
@@ -37,11 +63,17 @@ import { ref, onMounted, computed } from 'vue';
 const words = ref([]);
 const filter = ref('');
 const sortOrder = ref('asc');
-const sortedBy = ref('');
+const sortedBy = ref('original');
 const newWord = ref('');
 const editingTranslationIndex = ref(-1);
 const editTranslationsValue = ref('');
 const editTranslationsInput = ref(null);
+const statusFilters = ref({
+  new: true,
+  seen: true,
+  known: true,
+  ignore: false,
+});
 
 const resetDictionary = async () => {
   await fetch('/api/dictionary/reset', { method: 'POST' });
@@ -77,14 +109,25 @@ const loadDictionary = async () => {
 };
 
 const filteredWords = computed(() => {
-  if (!filter.value) return sortedWords.value;
-  return sortedWords.value.filter((word) => {
-    return (
-      word.original.toLowerCase().includes(filter.value.toLowerCase()) ||
-      word.translations.some((t) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
-      word.status.toLowerCase().includes(filter.value.toLowerCase())
-    );
+  let filtered = sortedWords.value;
+
+  filtered = filtered.filter((word) => {
+    if (!statusFilters.value[word.status]) {
+      return false;
+    }
+
+    if (filter.value) {
+      return (
+        word.original.toLowerCase().includes(filter.value.toLowerCase()) ||
+        word.translations.some((t) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
+        word.status.toLowerCase().includes(filter.value.toLowerCase())
+      );
+    } else {
+      return true;
+    }
   });
+
+  return filtered;
 });
 
 const editTranslations = async (index) => {
@@ -97,8 +140,8 @@ const editTranslations = async (index) => {
 
     // Focus the input field for editing translations
     if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
-      editTranslationsInput.value[0].focus()
-      editTranslationsInput.value[0].select()
+      editTranslationsInput.value[0].focus();
+      editTranslationsInput.value[0].select();
     }
   }
 };
@@ -109,7 +152,7 @@ const updateTranslation = async (e) => {
   const translations = editTranslationsValue.value.split(',').map((t) => t.trim());
   await updateWord(word.original, { translations });
   editingTranslationIndex.value = -1;
-}
+};
 
 const changeStatus = async (word) => {
   const statusOptions = ['new', 'seen', 'known', 'ignore'];
