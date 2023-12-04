@@ -77,8 +77,9 @@ def get_article(name):
 
         # Return article as JSON
         return jsonify({
-            'name': article['name'],
-            'content': words,
+            'title': article['name'],
+            'content': article['content'],
+            'words': words,
         })
 
     except Exception as e:

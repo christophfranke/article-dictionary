@@ -4,11 +4,11 @@
     <div v-if="article.content && article.content.length">
       <h2>Content</h2>
       <p>
-        <template v-for="(word, index) in article.content" :key="index">
-          <span v-if="index > 0 && !punctuation.includes(word)">{{ ' ' }}</span>
+        <template v-for="({ word, separator }, index) in processedContent" :key="index">
           <span @click="toggleWord(word)" :class="{ selected: selectedWords.includes(word) }">
             {{ word }}
           </span>
+          <span>{{ separator }}</span>
         </template>
       </p>
     </div>
@@ -16,15 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const article = ref({
   title: '',
-  content: [], // Changed to an array of strings,
+  content: '',
+  words: [],
 });
 
-const punctuation = ['.', ',', '!', '?', ':', ';', '"', "'"];
 const selectedWords = ref([]);
 
 const route = useRoute();
@@ -52,6 +52,29 @@ const toggleWord = (word: string) => {
     selectedWords.value.push(word);
   }
 };
+
+function getSeparator(index: number, nextWord): string {
+  const nextIndex = article.value.content.substring(index).indexOf(nextWord)
+  return nextIndex === -1 || nextIndex === 0
+    ? ''
+    : article.value.content.substring(index, index + nextIndex)
+}
+
+const processedContent = computed(() => {
+  const result = [];
+  let currentIndex = 0;
+
+  article.value.words.forEach((word, index) => {
+    const nextWord = article.value.words[index + 1] || '';
+    const separator = getSeparator(currentIndex + word.length, nextWord);
+    result.push({ word, separator });
+    currentIndex += separator.length + word.length;
+  });
+
+  return result;
+});
+
+
 
 onMounted(() => {
   fetchArticleDetails();
