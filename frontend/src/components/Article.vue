@@ -2,7 +2,7 @@
   <div>
     <!-- Your article display logic goes here -->
     <p>{{ data.title }}</p>
-    <p>{{ data.content }}</p>
+    <p>{{ data.excerpt }}...</p>
     <!-- Add more details as needed -->
   </div>
 </template>

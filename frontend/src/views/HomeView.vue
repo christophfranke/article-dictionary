@@ -21,7 +21,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Article from '../components/Article.vue'
 
-const articles = ref([]);
+const articles = ref<any[]>([]);
 
 const router = useRouter();
 
