@@ -1,4 +1,3 @@
-import re
 from translate_shell.translate import translate
 
 def chunk_list(input_list, chunk_size):
@@ -15,17 +14,21 @@ def translate_words(words, src_language='el', dest_language='en', chunk_size=500
         # Translate each chunk of words
         for chunk in word_chunks:
             # Join the words in the chunk into a single string
-            chunk_text = '.\n##\n'.join(chunk)
+            chunk_text = '.\n'.join(chunk)
 
-            # Translate the chunk
-            translation_result = translate(chunk_text, source_lang='el', target_lang='en').results[0]
-
-            # Use regex to split the translations back into a list
-            chunk_translations = re.split(r'\s*\#\#\s*', translation_result['paraphrase'])
+            # Translate the chunk and split the translations back into a list
+            chunk_translations = translate(chunk_text, source_lang='el', target_lang='en').results[0].paraphrase.split('.\n')
 
             # Populate the translations dictionary
             for original, translation in zip(chunk, chunk_translations):
-                # Trim the result words
-                translations[original] = translation.strip()
+                translations[original] = translation
 
     return translations
+
+words_to_translate = ['συμμετοχή', 'ένα']
+try:
+    translations = translate_words(words_to_translate)
+    for word, translation in translations.items():
+        print(f"Translated Word: {word} -> {translation}")
+except ValueError as ve:
+    print(f"Error: {ve}")

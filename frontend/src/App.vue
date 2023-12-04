@@ -4,6 +4,7 @@
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/dictionary">Dictionary</RouterLink>
       </nav>
     </div>
   </header>

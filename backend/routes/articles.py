@@ -10,7 +10,7 @@ articles = Blueprint('articles', __name__)
 def list_articles():
     try:
         # Retrieve all articles from the collection
-        all_articles = articles_collection.find()
+        all_articles = get_db()['articles'].find()
 
         # Format articles for response
         formatted_articles = [
@@ -22,8 +22,6 @@ def list_articles():
             }
             for article in all_articles
         ]
-
-        add_text(article['content'], get_db()['dictionary'])
 
         # Return formatted articles as JSON
         return jsonify(formatted_articles)
@@ -52,6 +50,8 @@ def create_article():
         # Insert new article into MongoDB
         new_article = {'name': name, 'content': content}
         result = articles_collection.insert_one(new_article)
+
+        add_text(new_article['content'], get_db()['dictionary'])
 
         # Respond with the name of the newly created article and its URL
         response_data = {'name': name, 'url': f'/articles/{name}'}

@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9
+FROM python:3.12
 
 # Set the working directory to /app/backend
 WORKDIR /app/backend
@@ -8,7 +8,7 @@ WORKDIR /app/backend
 COPY . /app/backend
 
 # Install any needed packages specified in requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000

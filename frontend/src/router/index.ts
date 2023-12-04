@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import CreateArticleView from '../views/CreateArticleView.vue';
+import DictionaryView from '../views/DictionaryView.vue';
 import NotFoundView from '../views/NotFoundView.vue'; // Add a NotFoundView component
 
 const router = createRouter({
@@ -15,6 +16,11 @@ const router = createRouter({
       path: '/create',
       name: 'create',
       component: CreateArticleView,
+    },
+    {
+      path: '/dictionary',
+      name: 'dictionary',
+      component: DictionaryView,
     },
     {
       path: '/articles/:name',
