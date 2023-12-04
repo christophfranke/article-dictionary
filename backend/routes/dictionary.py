@@ -1,10 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from utils.mongo import get_collection, drop_collection
-from text_processing.dictionary import add_text
-import sys
+from text_processing.dictionary import add_text, add_words
 
 dictionary = Blueprint('dictionary', __name__)
-
 
 @dictionary.route('/')
 def list_words():
@@ -21,7 +19,6 @@ def list_words():
         return jsonify(words_list)
     except Exception as e:
         return jsonify({'error': str(e)}), 500  # Internal Server Error
-
 
 @dictionary.route('/reset', methods=['POST'])
 async def reset_dictionary():
@@ -42,5 +39,65 @@ async def reset_dictionary():
             await add_text(content, dictionary_collection)
 
         return jsonify({'message': 'Reset successful'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500  # Internal Server Error
+
+@dictionary.route('/update/<original>', methods=['PUT'])
+def update_word(original):
+    try:
+        # Retrieve the dictionary collection
+        dictionary_collection = get_collection('dictionary')
+
+        # Find the word in the dictionary
+        word = dictionary_collection.find_one({'original': original})
+
+        if word is None:
+            return jsonify({'error': f'Word not found: {original}'}), 404
+
+        # Update the word with the provided JSON data
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided for update'}), 400
+
+        # Update fields based on the data
+        for key, value in data.items():
+            word[key] = value
+
+        # Save the updated word back to the dictionary collection
+        dictionary_collection.replace_one({'original': original}, word)
+
+        # Retrieve the updated word from the dictionary
+        updated_word = dictionary_collection.find_one({'original': original}, {'_id': 0})
+        return jsonify(updated_word)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500  # Internal Server Error
+
+@dictionary.route('/add', methods=['POST'])
+async def add_word():
+    try:
+        # Retrieve the dictionary collection
+        dictionary_collection = get_collection('dictionary')
+
+        # Get the original word from the JSON data
+        data = request.get_json()
+        original_word = data.get('original')
+
+        if not original_word:
+            return jsonify({'error': 'No original word provided for addition'}), 400
+
+        # Check if the word already exists in the dictionary
+        existing_word = dictionary_collection.find_one({'original': original_word})
+
+        if existing_word:
+            return jsonify({'error': f'Word already exists in the dictionary: {original_word}'}), 400
+
+        # Call add_words function to add the word to the dictionary
+        await add_words([original_word], dictionary_collection)
+
+        # Retrieve the added word from the dictionary
+        added_word = dictionary_collection.find_one({'original': original_word}, {'_id': 0})
+        return jsonify(added_word)
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500  # Internal Server Error
