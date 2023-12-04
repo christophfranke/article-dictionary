@@ -2,11 +2,12 @@ version: '3'
 
 services:
   frontend:
-    image: node:20
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     working_dir: /app/frontend
     volumes:
       - ./frontend:/app/frontend
-    command: npm run build
     ports:
       - "8080:8080"
 
