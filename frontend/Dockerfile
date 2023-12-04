@@ -1,8 +1,8 @@
 # Use an official Node.js runtime as a parent image
 FROM node:20
 
-# Set the working directory to /app/dictionary
-WORKDIR /app/dictionary
+# Set the working directory to /app/frontend
+WORKDIR /app/frontend
 
 # Copy the package.json and package-lock.json files into the container
 COPY ./package*.json .
@@ -14,4 +14,4 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
+CMD ["npm", "run", "build"]
