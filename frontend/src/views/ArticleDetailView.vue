@@ -18,16 +18,27 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const article = ref({
+interface Article {
+  title: string;
+  content: string;
+  words: string[];
+}
+
+interface ProcessedContentItem {
+  word: string;
+  separator: string;
+}
+
+const article = ref<Article>({
   title: '',
   content: '',
   words: [],
 });
 
-const selectedWords = ref([]);
+const selectedWords = ref<string[]>([]);
 
 const route = useRoute();
-const articleName = ref(route.params.name);
+const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
 
 const fetchArticleDetails = async () => {
   try {
@@ -44,7 +55,7 @@ const fetchArticleDetails = async () => {
   }
 };
 
-const toggleWord = (word: string) => {
+const toggleWord = (word: string): void => {
   if (selectedWords.value.includes(word)) {
     selectedWords.value = selectedWords.value.filter((w) => w !== word);
   } else {
@@ -52,15 +63,15 @@ const toggleWord = (word: string) => {
   }
 };
 
-function getSeparator(index: number, nextWord): string {
-  const nextIndex = article.value.content.substring(index).indexOf(nextWord)
+const getSeparator = (index: number, nextWord: string): string => {
+  const nextIndex = article.value.content.substring(index).indexOf(nextWord);
   return nextIndex === -1 || nextIndex === 0
     ? ''
-    : article.value.content.substring(index, index + nextIndex)
-}
+    : article.value.content.substring(index, index + nextIndex);
+};
 
-const processedContent = computed(() => {
-  const result = [];
+const processedContent = computed<ProcessedContentItem[]>(() => {
+  const result: ProcessedContentItem[] = [];
   let currentIndex = 0;
 
   article.value.words.forEach((word, index) => {
@@ -71,8 +82,6 @@ const processedContent = computed(() => {
 
   return result;
 });
-
-
 
 onMounted(() => {
   fetchArticleDetails();

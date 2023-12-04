@@ -8,5 +8,16 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps(['data']);
+import { defineProps } from 'vue';
+
+interface ArticleProps {
+  data: {
+    url: string;
+    title: string;
+    excerpt: string;
+    // Add other properties as needed
+  };
+}
+
+const props = defineProps<ArticleProps>();
 </script>

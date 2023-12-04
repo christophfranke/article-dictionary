@@ -19,13 +19,19 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import Article from '../components/Article.vue'
+import Article from '../components/Article.vue';
 
-const articles = ref<any[]>([]);
+interface ArticleData {
+  id: number;
+  url: string;
+  title: string;
+  excerpt: string;
+}
 
+const articles = ref<ArticleData[]>([]);
 const router = useRouter();
 
-const fetchArticles = async () => {
+const fetchArticles = async (): Promise<void> => {
   try {
     const response = await fetch('/api/articles/');
     if (response.ok) {
@@ -42,7 +48,7 @@ onMounted(() => {
   fetchArticles();
 });
 
-const navigateToCreateArticle = () => {
+const navigateToCreateArticle = (): void => {
   router.push('/create');
 };
 </script>

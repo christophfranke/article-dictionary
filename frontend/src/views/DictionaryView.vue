@@ -5,27 +5,27 @@
       <label for="filter">Filter:</label>
       <input v-model="filter" id="filter" />
     </div>
-      <div>
-        <label for="newCheckbox">
-          <input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
-          New
-        </label>
+    <div>
+      <label for="newCheckbox">
+        <input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
+        New
+      </label>
 
-        <label for="seenCheckbox">
-          <input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
-          Seen
-        </label>
+      <label for="seenCheckbox">
+        <input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
+        Seen
+      </label>
 
-        <label for="knownCheckbox">
-          <input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
-          Known
-        </label>
+      <label for="knownCheckbox">
+        <input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
+        Known
+      </label>
 
-        <label for="ignoreCheckbox">
-          <input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
-          Ignore
-        </label>
-      </div>
+      <label for="ignoreCheckbox">
+        <input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
+        Ignore
+      </label>
+    </div>
     <div>
       <label for="newWord">New Entry:</label>
       <input v-model="newWord" id="newWord" />
@@ -42,11 +42,13 @@
       <tbody>
         <tr v-for="(word) in filteredWords" :key="word.index">
           <td>{{ word.original }}</td>
-          <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">{{ word.translations.join(', ') }}</td>
+          <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">
+            {{ word.translations.join(', ') }}
+          </td>
           <td v-else>
             <form @submit="updateTranslation">
               <input ref="editTranslationsInput" v-model="editTranslationsValue" @blur="editTranslations(-1)" />
-              <input type="submit" value="y" />
+              <input type="submit" value="ok" />
             </form>
           </td>
           <td @click="changeStatus(word)">{{ word.status }}</td>
@@ -60,27 +62,42 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 
-const words = ref([]);
-const filter = ref('');
-const sortOrder = ref('asc');
-const sortedBy = ref('original');
-const newWord = ref('');
-const editingTranslationIndex = ref(-1);
-const editTranslationsValue = ref('');
-const editTranslationsInput = ref(null);
+interface Word {
+  index: number;
+  original: string;
+  translations: string[];
+  status: string;
+}
+
+interface StatusFilters {
+  new: boolean;
+  seen: boolean;
+  known: boolean;
+  ignore: boolean;
+}
+
+const words = ref<Array<Word>>([]);
+const filter = ref<string>('');
+const sortOrder = ref<string>('asc');
+const sortedBy = ref<string>('');
+const newWord = ref<string>('');
+const editingTranslationIndex = ref<number>(-1);
+const editTranslationsValue = ref<string>('');
+const editTranslationsInput = ref<HTMLInputElement[] | null>(null);
 const statusFilters = ref({
   new: true,
   seen: true,
   known: true,
   ignore: false,
-});
+} as { [key: string]: boolean });
 
-const resetDictionary = async () => {
+
+const resetDictionary = async (): Promise<void> => {
   await fetch('/api/dictionary/reset', { method: 'POST' });
   loadDictionary();
 };
 
-const sortTable = (column) => {
+const sortTable = (column: string): void => {
   if (column === sortedBy.value) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
   } else {
@@ -89,27 +106,32 @@ const sortTable = (column) => {
   }
 };
 
-const sortedWords = computed(() => {
+const sortedWords = computed<Array<Word>>(() => {
   const sorted = [...words.value];
   if (sortedBy.value) {
     sorted.sort((a, b) => {
       const order = sortOrder.value === 'asc' ? 1 : -1;
-      return a[sortedBy.value] > b[sortedBy.value] ? order : -order;
+
+      // Type assertion to let TypeScript know that the properties exist
+      const propertyA = (a as any)[sortedBy.value];
+      const propertyB = (b as any)[sortedBy.value];
+
+      return propertyA > propertyB ? order : -order;
     });
   }
   return sorted;
 });
 
-const loadDictionary = async () => {
+const loadDictionary = async (): Promise<void> => {
   const response = await fetch('/api/dictionary/');
-  const wordsData = await response.json();
+  const wordsData: Word[] = await response.json();
 
   // Add index to each word in the array
   words.value = wordsData.map((word, index) => ({ ...word, index }));
 };
 
-const filteredWords = computed(() => {
-  let filtered = sortedWords.value;
+const filteredWords = computed<Word[]>(() => {
+  let filtered: Word[] = sortedWords.value;
 
   filtered = filtered.filter((word) => {
     if (!statusFilters.value[word.status]) {
@@ -122,18 +144,18 @@ const filteredWords = computed(() => {
         word.translations.some((t) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
         word.status.toLowerCase().includes(filter.value.toLowerCase())
       );
-    } else {
-      return true;
     }
+
+    return true;
   });
 
   return filtered;
 });
 
-const editTranslations = async (index) => {
+const editTranslations = async (index: number): Promise<void> => {
   editingTranslationIndex.value = index;
   if (index !== -1) {
-    const word = words.value[index];
+    const word: Word = words.value[index];
     editTranslationsValue.value = word.translations.join(', ');
 
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -146,24 +168,24 @@ const editTranslations = async (index) => {
   }
 };
 
-const updateTranslation = async (e) => {
+const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
-  const word = words.value[editingTranslationIndex.value];
-  const translations = editTranslationsValue.value.split(',').map((t) => t.trim());
+  const word: Word = words.value[editingTranslationIndex.value];
+  const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
   await updateWord(word.original, { translations });
   editingTranslationIndex.value = -1;
 };
 
-const changeStatus = async (word) => {
-  const statusOptions = ['new', 'seen', 'known', 'ignore'];
-  const currentIndex = statusOptions.indexOf(word.status);
-  const newIndex = (currentIndex + 1) % statusOptions.length;
-  const newStatus = statusOptions[newIndex];
+const changeStatus = async (word: Word): Promise<void> => {
+  const statusOptions: string[] = ['new', 'seen', 'known', 'ignore'];
+  const currentIndex: number = statusOptions.indexOf(word.status);
+  const newIndex: number = (currentIndex + 1) % statusOptions.length;
+  const newStatus: string = statusOptions[newIndex];
 
   await updateWord(word.original, { status: newStatus });
 };
 
-const addWord = async () => {
+const addWord = async (): Promise<void> => {
   if (newWord.value) {
     const result = await fetch('/api/dictionary/add', {
       method: 'POST',
@@ -174,7 +196,7 @@ const addWord = async () => {
     });
 
     if (result.ok) {
-      const addedWord = await result.json();
+      const addedWord: Word = await result.json();
       words.value.push(addedWord);
     } else {
       console.log('Error adding word');
@@ -184,7 +206,7 @@ const addWord = async () => {
   }
 };
 
-const updateWord = async (original, data) => {
+const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
   const result = await fetch(`/api/dictionary/update/${original}`, {
     method: 'PUT',
     headers: {
@@ -194,8 +216,8 @@ const updateWord = async (original, data) => {
   });
 
   if (result.ok) {
-    const updatedWord = await result.json();
-    const index = words.value.findIndex((word) => word.original === original);
+    const updatedWord: Word = await result.json();
+    const index: number = words.value.findIndex((word) => word.original === original);
     if (index !== -1) {
       words.value[index] = updatedWord;
     }

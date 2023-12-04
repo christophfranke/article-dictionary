@@ -19,15 +19,20 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const article = ref({
+interface Article {
+  name: string;
+  content: string;
+}
+
+const article = ref<Article>({
   name: '',
   content: '',
 });
 
-const error = ref('');
+const error = ref<string>('');
 const router = useRouter();
 
-const submitForm = async () => {
+const submitForm = async (): Promise<void> => {
   try {
     const response = await fetch('/api/articles/create', {
       method: 'POST',
