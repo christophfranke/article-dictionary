@@ -1,19 +1,16 @@
 <template>
   <div>
     <h1>{{ article.title }}</h1>
-    <p>{{ article.content }}</p>
-
-    <!-- Display the dictionary button -->
-    <button @click="showDictionary">Show Dictionary</button>
-
-    <!-- Display the dictionary content when the button is clicked -->
-    <div v-if="showDictionaryContent">
-      <h2>Dictionary</h2>
-      <ul>
-        <li v-for="(value, key) in article.dictionary" :key="key">
-          {{ key }}: {{ value }}
-        </li>
-      </ul>
+    <div v-if="article.content && article.content.length">
+      <h2>Content</h2>
+      <p>
+        <template v-for="(word, index) in article.content" :key="index">
+          <span v-if="index > 0 && !punctuation.includes(word)">{{ ' ' }}</span>
+          <span @click="toggleWord(word)" :class="{ selected: selectedWords.includes(word) }">
+            {{ word }}
+          </span>
+        </template>
+      </p>
     </div>
   </div>
 </template>
@@ -24,17 +21,15 @@ import { useRoute } from 'vue-router';
 
 const article = ref({
   title: '',
-  content: '',
-  dictionary: {}, // Placeholder for the dictionary data
+  content: [], // Changed to an array of strings,
 });
 
-const showDictionaryContent = ref(false);
+const punctuation = ['.', ',', '!', '?', ':', ';', '"', "'"];
+const selectedWords = ref([]);
 
-// Access the dynamic route parameter (article name)
 const route = useRoute();
 const articleName = ref(route.params.name);
 
-// Fetch article details from the server
 const fetchArticleDetails = async () => {
   try {
     const response = await fetch(`/api/articles/${articleName.value}`);
@@ -50,13 +45,22 @@ const fetchArticleDetails = async () => {
   }
 };
 
-// Function to toggle the visibility of the dictionary content
-const showDictionary = () => {
-  showDictionaryContent.value = !showDictionaryContent.value;
+const toggleWord = (word: string) => {
+  if (selectedWords.value.includes(word)) {
+    selectedWords.value = selectedWords.value.filter((w) => w !== word);
+  } else {
+    selectedWords.value.push(word);
+  }
 };
 
-// Fetch article details when the component is mounted
 onMounted(() => {
   fetchArticleDetails();
 });
 </script>
+
+<style scoped>
+.selected {
+  background-color: yellow;
+  cursor: pointer;
+}
+</style>

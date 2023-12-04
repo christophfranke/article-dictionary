@@ -1,6 +1,12 @@
 # routes/articles.py
 from flask import Blueprint, request, jsonify
 from pymongo import MongoClient
+from nltk.tokenize import wordpunct_tokenize
+from nltk.corpus import stopwords
+import nltk
+
+nltk.download('stopwords')
+language = 'greek'
 
 articles = Blueprint('articles', __name__)
 
@@ -67,10 +73,12 @@ def get_article(name):
         # Retrieve article from the collection
         article = articles_collection.find_one({'name': name})
 
+        words = wordpunct_tokenize(article['content'])
+
         # Return article as JSON
         return jsonify({
             'name': article['name'],
-            'content': article['content'],
+            'content': words,
         })
 
     except Exception as e:
