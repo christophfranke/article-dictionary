@@ -6,6 +6,9 @@
       <p>
         <template v-for="({ word, separator }, index) in processedContent" :key="index">
           <span>{{ separator }}</span>
+          <br v-if="separator === '\n'" />
+          <br v-if="separator === '\n\n'" />
+          <br v-if="separator === '\n\n'" />
           <span @click="toggleStatusSeen(word)" :class="{ selected: displayedWords.some(entry => entry.original === word.toLowerCase()) }">
             {{ word }}
           </span>

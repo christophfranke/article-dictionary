@@ -1,11 +1,11 @@
 from text_processing.translate import translate_words
 from text_processing.extract import extract_unique_words
 
-async def add_text(text, dictionary_collection, language='greek'):
+def add_text(text, dictionary_collection, language='greek'):
     words = extract_unique_words(text, language)
-    await add_words(words, dictionary_collection)
+    add_words(words, dictionary_collection)
 
-async def add_words(words, dictionary_collection):
+def add_words(words, dictionary_collection):
     new_words = []  # Array to collect yet-to-be-translated words
 
     for word in words:

@@ -26,7 +26,7 @@ def list_words():
         return jsonify({'error': str(e)}), 500  # Internal Server Error
 
 @dictionary.route('/reset', methods=['POST'])
-async def reset_dictionary():
+def reset_dictionary():
     try:
         # Drop the dictionary collection
         drop_collection('dictionary')
@@ -41,7 +41,7 @@ async def reset_dictionary():
 
         for article in articles_cursor:
             content = article.get('content', '')
-            await add_text(content, dictionary_collection)
+            add_text(content, dictionary_collection)
 
         return jsonify({'message': 'Reset successful'})
     except Exception as e:
@@ -80,7 +80,7 @@ def update_word(original):
         return jsonify({'error': str(e)}), 500  # Internal Server Error
 
 @dictionary.route('/add', methods=['POST'])
-async def add_word():
+def add_word():
     try:
         # Retrieve the dictionary collection
         dictionary_collection = get_collection('dictionary')
@@ -99,7 +99,7 @@ async def add_word():
             return jsonify({'error': f'Word already exists in the dictionary: {original_word}'}), 400
 
         # Call add_words function to add the word to the dictionary
-        await add_words([original_word], dictionary_collection)
+        add_words([original_word], dictionary_collection)
 
         # Retrieve the added word from the dictionary
         added_word = dictionary_collection.find_one({'original': original_word})

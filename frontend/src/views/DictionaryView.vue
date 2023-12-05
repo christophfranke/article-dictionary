@@ -27,7 +27,7 @@
       </label>
     </div>
     <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
-    <button @click="resetDictionary">Reset and Rebuild Dictionary</button>
+    <button @click="rebuildDictionary">Drop and Rebuild Dictionary</button>
   </div>
 </template>
 
@@ -35,6 +35,8 @@
 import { ref, computed, onMounted } from 'vue';
 import DictionaryTable from '../components/DictionaryTable.vue';
 import createDictionaryCollection from '../services/dictionary-collection';
+import * as DictionaryRequest from '../services/dictionary-request';
+
 
 interface Word {
   index: number;
@@ -95,9 +97,9 @@ const statusFilters = ref({
 } as { [key: string]: boolean });
 
 
-const resetDictionary = async (): Promise<void> => {
-  await DictionaryRequest.reset();
-  await dictionary.load()
+const rebuildDictionary = async (): Promise<void> => {
+  await DictionaryRequest.rebuild();
+  await dictionary.load();
 };
 
 onMounted(async () => {

@@ -21,7 +21,7 @@ export const loadAll = async (): Promise<Word[]> => {
   }
 };
 
-export const reset = async (): Promise<Word[]> => {
+export const rebuild = async (): Promise<Word[]> => {
   try {
     const response = await fetch('/api/dictionary/reset', { method: 'POST' });
     if (response.ok) {
