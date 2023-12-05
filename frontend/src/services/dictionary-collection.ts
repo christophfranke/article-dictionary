@@ -16,7 +16,7 @@ type FilterFunction = (x: PartialWord) => boolean;
 
 export interface DictionaryCollection {
   find: (original: string) => Word | undefined;
-  get: (additionalFilter?: () => boolean) => Word[];
+  get: () => Word[];
   set: (newWords: PartialWord[]) => void;
   retranslate: (original: string) => Promise<void>;
   load: () => Promise<void>;
@@ -49,14 +49,25 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
     const updatedWord = await DictionaryRequest.updateWord(original, data);
     if (updatedWord) {
-      words.value = [...words.value.map(word => word.original === updatedWord.original
-        ? {
-          ...word,
-          ...updatedWord
-        } : word
-      )];
+      updateLocalCollection([updatedWord]);
     }
   };
+
+  const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
+    const updatedWords = await DictionaryRequest.updateMany(originals, data);
+    if (updatedWords) {
+      updateLocalCollection(updatedWords);
+    }
+  };
+
+  const updateLocalCollection = (updatedWords: Word[]): void => {
+    words.value = [...words.value.map(word => updatedWords.find(updatedWord => updatedWord.original === word.original)
+      ? {
+        ...word,
+        ...updatedWords.find(updatedWord => updatedWord.original === word.original)
+      } : word
+    )];
+  }
 
   const retranslateWord = async (original: string): Promise<void> => {
     const retranslatedWord = await DictionaryRequest.retranslate(original);
@@ -72,9 +83,10 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
 
   return {
     find: (original: string): Word | undefined => words.value.find(word => word.original === original),
-    get: (additionalFilter = () => true) => words.value.filter(filter.value).filter(additionalFilter),
+    get: () => words.value.filter(filter.value),
     set,
     load,
+    updateMany,
     retranslateWord,
     updateWord,
     addWord,

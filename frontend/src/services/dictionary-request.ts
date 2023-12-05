@@ -95,3 +95,25 @@ export const updateWord = async (original: string, data: Record<string, unknown>
     return null;
   }
 };
+
+export const updateMany = async (originals: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {
+  try {
+    const result = await fetch('/api/dictionary/update/', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ originals, update }),
+    });
+
+    if (result.ok) {
+      return await result.json();
+    } else {
+      console.error('Error updating words in dictionary:', result.status);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error updating words in dictionary:', error);
+    return null;
+  }
+}

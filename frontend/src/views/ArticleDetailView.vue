@@ -67,6 +67,7 @@ const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
 
 const displayedWords = computed<Word[]>(() => dictionary.get());
+const newWordsCount = computed<number>(() => dictionary.get().filter((word) => word.status === 'new').length);
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = createDictionaryCollection([], displayFilter);
@@ -139,7 +140,11 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
 const toggleStatusSeen = (word: string) => {
   const original = word.toLowerCase()
   dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status || '') ? 'known' : 'seen' });
+};
 
+const markAllAsSeen = () => {
+  const words = dictionary.get().filter((word) => word.status === 'new');
+  dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
 };
 
 
@@ -148,13 +153,6 @@ onMounted(() => {
   fetchArticleDetails();
 });
 </script>
-
-<style scoped>
-.selected {
-  background-color: yellow;
-  cursor: pointer;
-}
-</style>
 
 <template>
   <div class="article-page">
@@ -178,6 +176,7 @@ onMounted(() => {
           </template>
         </p>
       </div>
+      <button :disabled="newWordsCount === 0" class="mark-all-seen-button" @click="markAllAsSeen">Mark All as Seen</button>
     </div>
     <div class="dictionary-container">
       <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
@@ -230,5 +229,25 @@ span.seen {
 
 .dictionary-container {
   flex: 1; /* Decrease the size of the dictionary */
+}
+
+.mark-all-seen-button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #4caf50; /* Green background */
+  color: white; /* White text */
+  border: none; /* Remove borders */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Add a pointer cursor on hover */
+}
+
+/* Add a hover effect */
+.mark-all-seen-button:hover {
+  background-color: #45a049;
+}
+.mark-all-seen-button:disabled {
+  background-color: #b0b0b0; /* Light gray background for disabled state */
+  cursor: default; /* Default cursor on disabled state */
+  color: #666; /* Dim text color for disabled state */
 }
 </style>

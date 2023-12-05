@@ -80,6 +80,44 @@ def update_word(original):
     except Exception as e:
         return jsonify({'error': str(e)}), 500  # Internal Server Error
 
+@dictionary.route('/update/', methods=['PUT'])
+def update_many():
+    try:
+        # Retrieve the dictionary collection
+        dictionary_collection = get_collection('dictionary')
+
+        # Update the word with the provided JSON data
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided for update'}), 400
+
+        originals = data.get('originals', [])
+        update = data.get('update', {})
+
+        if not originals:
+            return jsonify({'error': 'No originals provided for update'}), 400
+
+        if not update:
+            return jsonify({'error': 'No update provided for update'}), 400
+
+        # Find the words in the dictionary
+        words = list(dictionary_collection.find({'original': {'$in': originals}}))
+
+        # Update fields based on the data
+        for word in words:
+            for key, value in update.items():
+                word[key] = value
+                dictionary_collection.replace_one({'original': word['original']}, word)
+
+        # Return the json words to the user
+        for word in words:
+            word['id'] = str(word.pop('_id'))
+        return jsonify(words)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @dictionary.route('/retranslate/<original>', methods=['POST'])
 def retranslate(original):
     try:
