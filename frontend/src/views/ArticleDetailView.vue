@@ -120,7 +120,7 @@ onMounted(() => {
       <div v-if="article.content && article.content.length">
         <p>
           <template v-for="({ word, separator }, index) in processedContent" :key="index">
-            <span>{{ separator }}</span>
+            <span class="separator">{{ separator }}</span>
             <br v-if="separator === '\n'" />
             <br v-if="separator === '\n\n'" />
             <br v-if="separator === '\n\n'" />
@@ -159,16 +159,22 @@ h1 {
 }
 
 p {
+  font-size: 18px;
   line-height: 1.5;
 }
 
 span {
   cursor: pointer;
-  padding: 2px 2px;
+  padding: 2px 3px;
+}
+
+span.separator {
+  padding: 2px 0;
+  margin: 0 -2px;
 }
 
 span.selected {
-  background-color: #d9edf7; /* Adjusted the shade of light blue */
+  background-color: rgba(51, 153, 255, 0.15); /* Adjusted the shade of light blue */
 }
 
 .dictionary-container {

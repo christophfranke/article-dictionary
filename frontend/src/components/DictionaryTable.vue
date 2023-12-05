@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import createDictionaryCollection from '../services/dictionary-collection';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps({
   dictionary: {
@@ -172,8 +173,8 @@ const updateWord = dict.updateWord;
           </template>
           <td v-if="display.col.status" @click="changeStatus(word)" class="status-column">{{ word.status }}</td>
           <td v-if="display.col.actions" class="actions-column">
-            <button v-if="display.action.known" @click="setStatus(word, 'known')">Known</button>
-            <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')">Ignore</button>
+            <button v-if="display.action.known" @click="setStatus(word, 'known')"><FontAwesomeIcon icon="check-circle" /></button>
+            <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')"><FontAwesomeIcon icon="times-circle" /></button>
           </td>
         </tr>
       </tbody>
@@ -216,6 +217,10 @@ th:hover {
 
 .status-column:hover {
   background-color: #f9f9f9;
+}
+
+.actions-column {
+  white-space: nowrap;
 }
 
 .actions-column button {
