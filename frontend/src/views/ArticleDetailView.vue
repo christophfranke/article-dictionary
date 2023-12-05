@@ -186,16 +186,14 @@ onMounted(() => {
 
 <style scoped>
 .article-page {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
 .content {
-  flex: 2; /* Increase the size of the article content */
+  max-width: 800px;
+  width: calc(100vw - 600px);
   margin-right: 20px;
 }
 
@@ -223,12 +221,20 @@ span.separator {
 span.new {
   background-color: rgba(51, 153, 255, 0.15);
 }
+
 span.seen {
   background-color: rgba(0, 153, 51, 0.15);
 }
 
 .dictionary-container {
-  flex: 1; /* Decrease the size of the dictionary */
+  background-color: white;
+  position: fixed;
+  top: 20px; /* Adjust the top position as needed */
+  right: 20px; /* Adjust the right position as needed */
+  max-height: calc(100vh - 40px); /* Set a minimum height for the dictionary container */
+  max-width: 500px;
+  padding-bottom: 20px;
+  overflow-y: auto; /* Enable vertical scroll for the dictionary */
 }
 
 .mark-all-seen-button {
@@ -245,6 +251,7 @@ span.seen {
 .mark-all-seen-button:hover {
   background-color: #45a049;
 }
+
 .mark-all-seen-button:disabled {
   background-color: #b0b0b0; /* Light gray background for disabled state */
   cursor: default; /* Default cursor on disabled state */

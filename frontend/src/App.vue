@@ -40,7 +40,7 @@ header {
 
 nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 a, a:visited {

@@ -208,10 +208,6 @@ const retranslateWord = dict.retranslateWord;
 </template>
 
 <style scoped>
-.dictionary-table {
-  margin-top: 20px;
-}
-
 .add-word-section {
   margin-bottom: 20px;
 }
