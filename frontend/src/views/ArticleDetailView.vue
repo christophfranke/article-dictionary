@@ -6,7 +6,7 @@
       <p>
         <template v-for="({ word, separator }, index) in processedContent" :key="index">
           <span>{{ separator }}</span>
-          <span @click="toggleWord(word)" :class="{ selected: selectedWords.includes(word.toLowerCase()) }">
+          <span @click="toggleWord(word)" :class="{ selected: displayedWords.some(entry => entry.original === word.toLowerCase()) }">
             {{ word }}
           </span>
         </template>
@@ -31,7 +31,7 @@ interface Article {
   title: string;
   content: string;
   words: string[];
-  dictionary: Word[]
+  dictionary: Word[];
 }
 
 interface ProcessedContentItem {
@@ -53,9 +53,8 @@ const tableDisplayConfig = {
     add: false,
     sort: true,
     edit: true,
-  }
+  },
 };
-
 
 const article = ref<Article>({
   title: '',
@@ -64,17 +63,15 @@ const article = ref<Article>({
   dictionary: [],
 });
 
-const selectedWords = ref<string[]>([]);
 const displayedWords = computed<Word[]>(() => {
   return article.value.dictionary
-    .filter((word) => selectedWords.value.includes(word.original.toLowerCase()))
+    .filter(word => word.status === 'new' || word.status === 'seen')
     .map((word, index) => ({ ...word, index }));
 });
 
 const updateWords = (newWords: Word[]): void => {
   article.value.dictionary = newWords;
 };
-
 
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
@@ -84,10 +81,6 @@ const fetchArticleDetails = async () => {
     const response = await fetch(`/api/articles/${articleName.value}`);
     if (response.ok) {
       article.value = await response.json();
-      // Initialize selectedWords with words from the dictionary with status new or seen
-      selectedWords.value = article.value.dictionary
-        .filter(word => word.status === 'new' || word.status === 'seen')
-        .map(word => word.original.toLowerCase());
     } else {
       console.error('Failed to fetch article details:', response.status);
       // Handle error as needed
@@ -95,14 +88,6 @@ const fetchArticleDetails = async () => {
   } catch (error) {
     console.error('Error fetching article details:', error);
     // Handle error as needed
-  }
-};
-
-const toggleWord = (word: string): void => {
-  if (selectedWords.value.includes(word)) {
-    selectedWords.value = selectedWords.value.filter((w) => w !== word);
-  } else {
-    selectedWords.value.push(word);
   }
 };
 
