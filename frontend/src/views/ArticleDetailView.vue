@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import DictionaryTable from '../components/DictionaryTable.vue';
 import createDictionaryCollection from '../services/dictionary-collection';
+import useTooltip from '../article/useTooltip';
 
 interface Word {
   id: string;
@@ -60,9 +61,34 @@ const unsetHighlight = (word: string) => {
     highlightedWord.value = '';
   }
 };
+const showTooltip = computed<boolean>(() => {
+  if (!highlightedWord.value) {
+    return false
+  }
+
+  const original = highlightedWord.value.toLowerCase()
+
+  if (!displayedWords.value.find((word) => word.original === original)) {
+    return false
+  }
+
+  return true
+})
+const tooltipContent = computed<string>(() => {
+  if (!showTooltip.value) {
+    return '';
+  }
+
+  const original = highlightedWord.value.toLowerCase()
+  const word = dictionary.find(original);
+  return word ? word.translations.join(', ') : '';
+});
 
 
 
+
+
+const { tooltipPosition } = useTooltip();
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
 
@@ -148,7 +174,6 @@ const markAllAsSeen = () => {
 };
 
 
-
 onMounted(() => {
   fetchArticleDetails();
 });
@@ -181,6 +206,9 @@ onMounted(() => {
     </div>
     <div class="dictionary-container">
       <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
+    </div>
+    <div v-if="showTooltip" class="tooltip" :style="{ top: `${tooltipPosition.y}px`, left: `${tooltipPosition.x}px` }">
+      {{ tooltipContent }}
     </div>
   </div>
 </template>
@@ -258,4 +286,25 @@ span.seen {
   cursor: default; /* Default cursor on disabled state */
   color: #666; /* Dim text color for disabled state */
 }
+
+.tooltip {
+  position: fixed;
+  z-index: 9999;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  pointer-events: none; /* Ensures tooltip doesn't interfere with mouse events */
+}
+
+/* Optional: Add some animation for the tooltip */
+.tooltip-enter-active, .tooltip-leave-active {
+  transition: opacity 0.5s;
+}
+
+.tooltip-enter, .tooltip-leave-to {
+  opacity: 0;
+}
+
 </style>
