@@ -84,6 +84,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   return {
     find: (original: string): Word | undefined => words.value.find(word => word.original === original),
     get: () => words.value.filter(filter.value),
+    all: () => words.value,
     set,
     load,
     updateMany,
