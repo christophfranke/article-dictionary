@@ -11,6 +11,7 @@
           <th @click="sortTable('original')">Original</th>
           <th @click="sortTable('translations')">Translations</th>
           <th @click="sortTable('status')">Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -26,6 +27,10 @@
             </form>
           </td>
           <td @click="changeStatus(word)">{{ word.status }}</td>
+          <td>
+            <button @click="setStatus(word, 'known')">Known</button>
+            <button @click="setStatus(word, 'ignore')">Ignore</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -118,6 +123,10 @@ const updateTranslation = async (e: Event): Promise<void> => {
       editingTranslationIndex.value = -1;
     }
   }
+};
+
+const setStatus = async (word: Word, status: string): Promise<void> => {
+  await updateWord(word.original, { status });
 };
 
 const changeStatus = async (word: Word): Promise<void> => {
