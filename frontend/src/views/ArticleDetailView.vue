@@ -18,10 +18,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
+interface Word {
+  index: number;
+  original: string;
+  translations: string[];
+  status: string;
+}
+
 interface Article {
   title: string;
   content: string;
   words: string[];
+  dictionary: Word[]
 }
 
 interface ProcessedContentItem {
@@ -33,6 +41,7 @@ const article = ref<Article>({
   title: '',
   content: '',
   words: [],
+  dictionary: [],
 });
 
 const selectedWords = ref<string[]>([]);

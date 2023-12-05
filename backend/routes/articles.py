@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 from text_processing.extract import extract_words
 from text_processing.dictionary import add_text
-from utils.mongo import get_db
+from utils.mongo import get_collection
 
 articles = Blueprint('articles', __name__)
 
@@ -10,7 +10,7 @@ articles = Blueprint('articles', __name__)
 def list_articles():
     try:
         # Retrieve all articles from the collection
-        all_articles = get_db()['articles'].find()
+        all_articles = get_collection('articles').find()
 
         # Format articles for response
         formatted_articles = [
@@ -41,7 +41,7 @@ def create_article():
         if not name or not content:
             return jsonify({'error': 'Name and content are required fields'}), 400
 
-        articles_collection = get_db()['articles']
+        articles_collection = get_collection('articles')
 
         # Check if the name is already taken
         if articles_collection.find_one({'name': name}):
@@ -51,7 +51,7 @@ def create_article():
         new_article = {'name': name, 'content': content}
         result = articles_collection.insert_one(new_article)
 
-        add_text(new_article['content'], get_db()['dictionary'])
+        add_text(new_article['content'], get_collection('dictionary'))
 
         # Respond with the name of the newly created article and its URL
         response_data = {'name': name, 'url': f'/articles/{name}'}
@@ -64,13 +64,26 @@ def create_article():
 def get_article(name):
     try:
         # Retrieve article from the collection
-        article = get_db()['articles'].find_one({'name': name})
+        article = get_collection('articles').find_one({'name': name})
 
-        # Return article as JSON
+        # Extract words from the article content
+        article_words = extract_words(article['content'])
+
+        # Retrieve dictionary entries for each word
+        dictionary_entries = []
+        dictionary_collection = get_collection('dictionary')
+
+        for word in article_words:
+            dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 0, 'language': 0 })
+            if dictionary_entry:
+                dictionary_entries.append(dictionary_entry)
+
+        # Return article with additional 'dictionary' field as JSON
         return jsonify({
             'title': article['name'],
             'content': article['content'],
-            'words': extract_words(article['content']),
+            'words': article_words,
+            'dictionary': dictionary_entries,
         })
 
     except Exception as e:
