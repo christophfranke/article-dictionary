@@ -18,6 +18,7 @@ export interface DictionaryCollection {
   find: (original: string) => Word | undefined;
   get: (additionalFilter?: () => boolean) => Word[];
   set: (newWords: PartialWord[]) => void;
+  retranslate: (original: string) => Promise<void>;
   load: () => Promise<void>;
   updateWord: (original: string, data: Record<string, unknown>) => Promise<void>;
   addWord: (original: string) => Promise<void>;
@@ -57,11 +58,24 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
     }
   };
 
+  const retranslateWord = async (original: string): Promise<void> => {
+    const retranslatedWord = await DictionaryRequest.retranslate(original);
+    if (retranslatedWord) {
+      words.value = [...words.value.map(word => word.original === retranslatedWord.original
+        ? {
+          ...word,
+          ...retranslatedWord
+        } : word
+      )];
+    }
+  };
+
   return {
     find: (original: string): Word | undefined => words.value.find(word => word.original === original),
     get: (additionalFilter = () => true) => words.value.filter(filter.value).filter(additionalFilter),
     set,
     load,
+    retranslateWord,
     updateWord,
     addWord,
     filter: filterFn => {

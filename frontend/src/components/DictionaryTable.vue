@@ -33,6 +33,7 @@ const props = defineProps({
         add: true,
         sort: true,
         edit: true,
+        retranslate: true,
         status: true,
       }
     }
@@ -143,6 +144,7 @@ const addWord = async (): Promise<void> => {
 };
 
 const updateWord = dict.updateWord;
+const retranslateWord = dict.retranslateWord;
 </script>
 
 <template>
@@ -184,8 +186,11 @@ const updateWord = dict.updateWord;
           </template>
           <td v-if="display.col.status" @click="changeStatus(word)" class="status-column">{{ word.status }}</td>
           <td v-if="display.col.actions" class="actions-column">
-            <button v-if="display.action.known" @click="setStatus(word, 'known')"><FontAwesomeIcon icon="check-circle" /></button>
-            <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')"><FontAwesomeIcon icon="times-circle" /></button>
+            <div>
+              <button v-if="display.action.known" @click="setStatus(word, 'known')"><FontAwesomeIcon icon="check-circle" /></button>
+              <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')"><FontAwesomeIcon icon="times-circle" /></button>
+              <button v-if="display.action.retranslate" @click="retranslateWord(word.original)"><FontAwesomeIcon icon="rotate-left" /></button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -235,8 +240,10 @@ th:hover {
   background-color: #f9f9f9;
 }
 
-.actions-column {
-  white-space: nowrap;
+.actions-column div {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
 }
 
 .actions-column button {

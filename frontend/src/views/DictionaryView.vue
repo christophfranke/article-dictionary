@@ -35,6 +35,7 @@ const tableDisplayConfig = {
     sort: true,
     edit: true,
     status: true,
+    retranslate: true,
   }
 };
 

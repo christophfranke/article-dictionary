@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from utils.mongo import get_collection, drop_collection
 from text_processing.dictionary import add_text, add_words
+from text_processing.translate import translate_single_word
 
 dictionary = Blueprint('dictionary', __name__)
 
@@ -78,6 +79,33 @@ def update_word(original):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500  # Internal Server Error
+
+@dictionary.route('/retranslate/<original>', methods=['POST'])
+def retranslate(original):
+    try:
+        # Retrieve the dictionary collection
+        dictionary_collection = get_collection('dictionary')
+
+        # Find the word in the dictionary
+        word = dictionary_collection.find_one({'original': original})
+
+        if word is None:
+            return jsonify({'error': f'Word not found: {original}'}), 404
+
+        # Retranslate the word
+        word['translations'] = translate_single_word(original)
+
+        # Save the updated word back to the dictionary collection
+        dictionary_collection.replace_one({'original': original}, word)
+
+        # Retrieve the updated word from the dictionary
+        updated_word = dictionary_collection.find_one({'original': original})
+        updated_word['id'] = str(updated_word.pop('_id'))
+        return jsonify(updated_word)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @dictionary.route('/add', methods=['POST'])
 def add_word():

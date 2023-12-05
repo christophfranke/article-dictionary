@@ -36,6 +36,21 @@ export const rebuild = async (): Promise<{ message: string } | null> => {
   }
 };
 
+export const retranslate = async (original: string): Promise<{ message: string } | null> => {
+  try {
+    const response = await fetch(`/api/dictionary/retranslate/${original}`, { method: 'POST' });
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error('Failed to retranslate:', response.status);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error retranslating:', error);
+    return null;
+  }
+};
+
 
 export const addWord = async (original: string): Promise<PartialWord | null> => {
   try {

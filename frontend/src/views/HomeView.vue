@@ -90,6 +90,7 @@ const navigateToCreateArticle = (): void => {
   color: #fff;
   text-align: center;
   padding: 10px;
+  margin-top: 20px;
   text-decoration: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;

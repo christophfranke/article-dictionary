@@ -43,4 +43,7 @@ p {
   color: #666; /* Slightly darker text color */
   margin: 0;
 }
+a:hover {
+  background-color: transparent;
+}
 </style>
