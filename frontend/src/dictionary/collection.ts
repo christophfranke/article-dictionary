@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import * as DictionaryRequest from './dictionary-request';
+import * as DictionaryRequest from './request';
 
 export interface PartialWord {
   id: string;

@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import DictionaryTable from '../components/DictionaryTable.vue';
-import createDictionaryCollection from '../services/dictionary-collection';
+import createDictionaryCollection from '../dictionary/collection';
 import useTooltip from '../article/useTooltip';
 
 interface Word {
@@ -61,34 +61,12 @@ const unsetHighlight = (word: string) => {
     highlightedWord.value = '';
   }
 };
-const showTooltip = computed<boolean>(() => {
-  if (!highlightedWord.value) {
-    return false
-  }
 
-  const original = highlightedWord.value.toLowerCase()
 
-  if (!displayedWords.value.find((word) => word.original === original)) {
-    return false
-  }
-
-  return true
-})
-const tooltipContent = computed<string>(() => {
-  if (!showTooltip.value) {
-    return '';
-  }
-
-  const original = highlightedWord.value.toLowerCase()
-  const word = dictionary.find(original);
-  return word ? word.translations.join(', ') : '';
 });
 
 
 
-
-
-const { tooltipPosition } = useTooltip();
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
 
@@ -97,6 +75,7 @@ const newWordsCount = computed<number>(() => dictionary.get().filter((word) => w
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = createDictionaryCollection([], displayFilter);
+const tooltip = useTooltip({ dictionary, highlightedWord });
 
 const fetchArticleDetails = async () => {
   try {
@@ -207,8 +186,8 @@ onMounted(() => {
     <div class="dictionary-container">
       <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
     </div>
-    <div v-if="showTooltip" class="tooltip" :style="{ top: `${tooltipPosition.y}px`, left: `${tooltipPosition.x}px` }">
-      {{ tooltipContent }}
+    <div v-if="tooltip.isVisible.value" class="tooltip" :style="{ top: `${tooltip.position.y}px`, left: `${tooltip.position.x}px` }">
+      {{ tooltip.content.value }}
     </div>
   </div>
 </template>

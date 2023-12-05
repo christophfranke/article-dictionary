@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import DictionaryTable from '../components/DictionaryTable.vue';
-import createDictionaryCollection from '../services/dictionary-collection';
-import * as DictionaryRequest from '../services/dictionary-request';
+import createDictionaryCollection from '../dictionary/collection';
+import * as DictionaryRequest from '../dictionary/request';
 
 
 interface Word {

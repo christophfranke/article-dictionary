@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import createDictionaryCollection from '../services/dictionary-collection';
+import createDictionaryCollection from '../dictionary/collection';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps({
