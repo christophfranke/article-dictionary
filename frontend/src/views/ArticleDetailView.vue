@@ -5,7 +5,7 @@ import DictionaryTable from '../components/DictionaryTable.vue';
 import createDictionaryCollection from '../services/dictionary-collection';
 
 interface Word {
-  index: number;
+  id: string;
   original: string;
   translations: string[];
   status: string;
@@ -54,7 +54,7 @@ const articleName = ref<string>(route.params.name ? String(route.params.name) : 
 
 const displayedWords = computed<Word[]>(() => dictionary.get());
 
-const displayFilter = word => word.status === 'new' || word.status === 'seen'
+const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = createDictionaryCollection([], displayFilter);
 
 const fetchArticleDetails = async () => {
@@ -95,7 +95,8 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
 
 const toggleStatusSeen = (word: string) => {
   const original = word.toLowerCase()
-  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status) ? 'known' : 'seen' });
+  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status || '') ? 'known' : 'seen' });
+
 };
 
 

@@ -6,7 +6,7 @@ import * as DictionaryRequest from '../services/dictionary-request';
 
 
 interface Word {
-  index: number;
+  id: string;
   original: string;
   translations: string[];
   status: string;
@@ -37,7 +37,7 @@ const tableDisplayConfig = {
   }
 };
 
-const filterFn = (word) => {
+const filterFn = (word: Word) => {
   if (!statusFilters.value[word.status]) {
     return false;
   }
@@ -45,7 +45,7 @@ const filterFn = (word) => {
   if (filter.value) {
     return (
       word.original.toLowerCase().includes(filter.value.toLowerCase()) ||
-      word.translations.some((t) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
+      word.translations.some((t: string) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
       word.status.toLowerCase().includes(filter.value.toLowerCase())
     );
   }

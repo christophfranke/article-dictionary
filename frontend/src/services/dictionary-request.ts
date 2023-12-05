@@ -1,6 +1,6 @@
 // dictionary.ts
 interface Word {
-  index: number;
+  id: string;
   original: string;
   translations: string[];
   status: string;
@@ -21,18 +21,18 @@ export const loadAll = async (): Promise<Word[]> => {
   }
 };
 
-export const rebuild = async (): Promise<Word[]> => {
+export const rebuild = async (): Promise<{ message: string } | null> => {
   try {
     const response = await fetch('/api/dictionary/reset', { method: 'POST' });
     if (response.ok) {
       return await response.json();
     } else {
       console.error('Failed to fetch dictionary:', response.status);
-      return {};
+      return null;
     }
   } catch (error) {
     console.error('Error fetching dictionary:', error);
-    return {};
+    return null;
   }
 };
 

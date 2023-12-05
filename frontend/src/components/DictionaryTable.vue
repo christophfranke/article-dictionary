@@ -164,7 +164,7 @@ const updateWord = dict.updateWord;
                 <input
                   ref="editTranslationsInput"
                   v-model="editTranslationsValue"
-                  @blur="editTranslations(-1)"
+                  @blur="editTranslations('')"
                 />
                 <input type="submit" value="ok" />
               </form>
