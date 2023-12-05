@@ -8,6 +8,10 @@ const props = defineProps({
     type: Object as unknown as () => ReturnType<typeof createDictionaryCollection>,
     required: true,
   },
+  highlight: {
+    type: String,
+    default: '',
+  },
   display: {
     type: Object,
     default: {
@@ -154,7 +158,7 @@ const updateWord = dict.updateWord;
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(word) in sortedWords" :key="word.id">
+        <tr v-for="(word) in sortedWords" :key="word.id" :class="{ highlighted: word.original === highlight.toLowerCase() }">
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
             <td @click="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
@@ -210,6 +214,11 @@ th {
 th:hover {
   background-color: #ddd;
 }
+
+.highlighted {
+  background-color: #ffffcc;
+}
+
 
 .status-column {
   cursor: pointer;

@@ -48,6 +48,17 @@ const article = ref<Article>({
   dictionary: [],
 });
 
+const highlightedWord = ref<string>('');
+const setHighlight = (word: string) => {
+  highlightedWord.value = word;
+};
+const unsetHighlight = (word: string) => {
+  if (highlightedWord.value === word) {
+    highlightedWord.value = '';
+  }
+};
+
+
 
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
@@ -124,7 +135,12 @@ onMounted(() => {
             <br v-if="separator === '\n'" />
             <br v-if="separator === '\n\n'" />
             <br v-if="separator === '\n\n'" />
-            <span @click="toggleStatusSeen(word)" :class="{ new: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'new', seen: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'seen' }">
+            <span
+              @mouseover="setHighlight(word)"
+              @mouseout="unsetHighlight(word)"
+              @click="toggleStatusSeen(word)"
+              :class="{ new: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'new', seen: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'seen' }"
+            >
               {{ word }}
             </span>
           </template>
@@ -132,7 +148,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="dictionary-container">
-      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
+      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" :highlight="highlightedWord" />
     </div>
   </div>
 </template>
@@ -160,7 +176,7 @@ h1 {
 
 p {
   font-size: 18px;
-  line-height: 1.5;
+  line-height: 2;
 }
 
 span {
