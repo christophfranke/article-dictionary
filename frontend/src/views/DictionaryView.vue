@@ -22,6 +22,7 @@ interface StatusFilters {
 const tableDisplayConfig = {
   header: true,
   col: {
+    number: false,
     original: true,
     translations: true,
     status: true,

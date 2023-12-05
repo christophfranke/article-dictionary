@@ -1,12 +1,12 @@
 // dictionary.ts
-interface Word {
+interface PartialWord {
   id: string;
   original: string;
   translations: string[];
   status: string;
 }
 
-export const loadAll = async (): Promise<Word[]> => {
+export const loadAll = async (): Promise<PartialWord[]> => {
   try {
     const response = await fetch('/api/dictionary/');
     if (response.ok) {
@@ -37,7 +37,7 @@ export const rebuild = async (): Promise<{ message: string } | null> => {
 };
 
 
-export const addWord = async (original: string): Promise<Word | null> => {
+export const addWord = async (original: string): Promise<PartialWord | null> => {
   try {
     const result = await fetch('/api/dictionary/add', {
       method: 'POST',
@@ -59,7 +59,7 @@ export const addWord = async (original: string): Promise<Word | null> => {
   }
 };
 
-export const updateWord = async (original: string, data: Record<string, unknown>): Promise<Word | null> => {
+export const updateWord = async (original: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
   try {
     const result = await fetch(`/api/dictionary/update/${original}`, {
       method: 'PUT',

@@ -6,6 +6,7 @@ import createDictionaryCollection from '../services/dictionary-collection';
 
 interface Word {
   id: string;
+  index: number;
   original: string;
   translations: string[];
   status: string;
@@ -26,6 +27,7 @@ interface ProcessedContentItem {
 const tableDisplayConfig = {
   header: true,
   col: {
+    number: true,
     original: true,
     translations: true,
     status: false,
@@ -73,6 +75,36 @@ const fetchArticleDetails = async () => {
     const response = await fetch(`/api/articles/${articleName.value}`);
     if (response.ok) {
       article.value = await response.json();
+
+      // Sort dictionary based on occurrences in article content
+      article.value.dictionary.sort((a, b) => {
+        const indexA = getWordIndex(a.original);
+        const indexB = getWordIndex(b.original);
+
+        if (indexA < indexB) {
+          return -1;
+        }
+        if (indexA > indexB) {
+          return 1;
+        }
+        // If indices are equal, sort by original order
+        if (a.index < b.index) {
+          return -1;
+        }
+        if (a.index > b.index) {
+          return 1;
+        }
+        return 0;
+      });
+
+      // Function to get the index of the word in content, considering word boundaries
+      function getWordIndex(word) {
+        const regex = new RegExp(`${word}`, 'i');
+        const index = article.value.content.search(regex);
+        console.log(word, index, regex)
+        return index >= 0 ? index : Math.Infinity;
+      }
+      
       dictionary.set(article.value.dictionary)
     } else {
       console.error('Failed to fetch article details:', response.status);
@@ -148,7 +180,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="dictionary-container">
-      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" :highlight="highlightedWord" />
+      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
     </div>
   </div>
 </template>

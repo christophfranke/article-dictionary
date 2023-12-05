@@ -12,11 +12,16 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  sort: {
+    type: String,
+    default: 'original',
+  },
   display: {
     type: Object,
     default: {
       header: true,
-      col: {        
+      col: {
+        number: false,
         original: true,
         translations: true,
         status: true,
@@ -50,7 +55,7 @@ const editTranslationsValue = ref<string>('');
 const editTranslationsInput = ref<HTMLInputElement[] | null>(null);
 
 const sortOrder = ref<string>('asc');
-const sortedBy = ref<string>('original');
+const sortedBy = ref<string>(props.sort);
 
 const sortTable = (column: string): void => {
   if (!props.display.action.sort) {
@@ -151,6 +156,7 @@ const updateWord = dict.updateWord;
     <table class="word-table">
       <thead>
         <tr v-if="display.header">
+          <th @click="sortTable('number')" v-if="display.col.number">#</th>
           <th @click="sortTable('original')" v-if="display.col.original">Original</th>
           <th @click="sortTable('translations')" v-if="display.col.translations">Translations</th>
           <th @click="sortTable('status')" v-if="display.col.status">Status</th>
@@ -159,6 +165,7 @@ const updateWord = dict.updateWord;
       </thead>
       <tbody>
         <tr v-for="(word) in sortedWords" :key="word.id" :class="{ highlighted: word.original === highlight.toLowerCase() }">
+          <td v-if="display.col.number">{{ word.index }}</td>
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
             <td @click="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
