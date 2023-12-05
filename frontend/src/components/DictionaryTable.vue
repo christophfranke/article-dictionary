@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(word) in words" :key="word.index">
+        <tr v-for="(word) in sortedWords" :key="word.index">
           <td>{{ word.original }}</td>
           <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">
             {{ word.translations.join(', ') }}
@@ -33,9 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, defineProps } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
-defineProps({
+const props = defineProps({
   words: {
     type: Array as unknown as () => Word[],
     required: true,
@@ -69,7 +69,7 @@ const sortTable = (column: string): void => {
 };
 
 const sortedWords = computed<Array<Word>>(() => {
-  const sorted = [...words.value];
+  const sorted = [...props.words];
   if (sortedBy.value) {
     sorted.sort((a, b) => {
       const order = sortOrder.value === 'asc' ? 1 : -1;
@@ -87,22 +87,25 @@ const sortedWords = computed<Array<Word>>(() => {
 const editTranslations = async (index: number): Promise<void> => {
   editingTranslationIndex.value = index;
   if (index !== -1) {
-    const word: Word = words.value[index];
-    editTranslationsValue.value = word.translations.join(', ');
+    const word: Word | undefined = props.words.find((word) => word.index === index);
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    if (word) {
+      editTranslationsValue.value = word.translations.join(', ');
 
-    // Focus the input field for editing translations
-    if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
-      editTranslationsInput.value[0].focus();
-      editTranslationsInput.value[0].select();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Focus the input field for editing translations
+      if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
+        editTranslationsInput.value[0].focus();
+        editTranslationsInput.value[0].select();
+      }
     }
   }
 };
 
 const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
-  const word: Word = words.value[editingTranslationIndex.value];
+  const word: Word = props.words[editingTranslationIndex.value];
   const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
   await updateWord(word.original, { translations });
   editingTranslationIndex.value = -1;

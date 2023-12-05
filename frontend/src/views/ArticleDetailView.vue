@@ -1,11 +1,12 @@
 <template>
   <div>
+    <DictionaryTable :words="displayedWords" />
     <h1>{{ article.title }}</h1>
     <div v-if="article.content && article.content.length">
       <p>
         <template v-for="({ word, separator }, index) in processedContent" :key="index">
           <span>{{ separator }}</span>
-          <span @click="toggleWord(word)" :class="{ selected: selectedWords.includes(word) }">
+          <span @click="toggleWord(word)" :class="{ selected: selectedWords.includes(word.toLowerCase()) }">
             {{ word }}
           </span>
         </template>
@@ -17,6 +18,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import DictionaryTable from '../components/DictionaryTable.vue';
 
 interface Word {
   index: number;
@@ -45,6 +47,11 @@ const article = ref<Article>({
 });
 
 const selectedWords = ref<string[]>([]);
+const displayedWords = computed<Word[]>(() => {
+  return article.value.dictionary
+    .filter((word) => selectedWords.value.includes(word.original.toLowerCase()))
+});
+
 
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
@@ -54,6 +61,10 @@ const fetchArticleDetails = async () => {
     const response = await fetch(`/api/articles/${articleName.value}`);
     if (response.ok) {
       article.value = await response.json();
+      // Initialize selectedWords with words from the dictionary with status new or seen
+      selectedWords.value = article.value.dictionary
+        .filter(word => word.status === 'new' || word.status === 'seen')
+        .map(word => word.original.toLowerCase());
     } else {
       console.error('Failed to fetch article details:', response.status);
       // Handle error as needed

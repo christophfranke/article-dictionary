@@ -101,7 +101,7 @@ const updateWord = (updatedWord: Word): void => {
 };
 
 const addWord = (newWord: Word): void => {
-  words.value.push(addedWord);  
+  words.value.push(newWord);  
 }
 
 
