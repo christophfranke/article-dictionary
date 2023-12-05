@@ -1,44 +1,3 @@
-<template>
-  <div>
-    <div v-if="display.action.add">
-      <label for="newWord">New Entry:</label>
-      <input v-model="newWord" id="newWord" />
-      <button @click="addWord">Add</button>
-    </div>
-    <table>
-      <thead>
-        <tr v-if="display.header">
-          <th @click="sortTable('original')" v-if="display.col.original">Original</th>
-          <th @click="sortTable('translations')" v-if="display.col.translations">Translations</th>
-          <th @click="sortTable('status')" v-if="display.col.status">Status</th>
-          <th v-if="display.col.actions">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(word) in sortedWords" :key="word.id">
-          <td v-if="display.col.original">{{ word.original }}</td>
-          <template v-if="display.col.translations">
-            <td @click="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
-              {{ word.translations.join(', ') }}
-            </td>
-            <td v-else>
-              <form @submit="updateTranslation">
-                <input ref="editTranslationsInput" v-model="editTranslationsValue" @blur="editTranslations(-1)" />
-                <input type="submit" value="ok" />
-              </form>
-            </td>
-          </template>
-          <td v-if="display.col.status" @click="changeStatus(word)">{{ word.status }}</td>
-          <td v-if="display.col.actions">
-            <button v-if="display.action.known" @click="setStatus(word, 'known')">Known</button>
-            <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')">Ignore</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import createDictionaryCollection from '../services/dictionary-collection';
@@ -175,3 +134,111 @@ const addWord = async (): Promise<void> => {
 
 const updateWord = dict.updateWord;
 </script>
+
+<template>
+  <div class="dictionary-table">
+    <div v-if="display.action.add" class="add-word-section">
+      <label for="newWord">New Entry:</label>
+      <input v-model="newWord" id="newWord" />
+      <button @click="addWord">Add</button>
+    </div>
+
+    <table class="word-table">
+      <thead>
+        <tr v-if="display.header">
+          <th @click="sortTable('original')" v-if="display.col.original">Original</th>
+          <th @click="sortTable('translations')" v-if="display.col.translations">Translations</th>
+          <th @click="sortTable('status')" v-if="display.col.status">Status</th>
+          <th v-if="display.col.actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(word) in sortedWords" :key="word.id">
+          <td v-if="display.col.original">{{ word.original }}</td>
+          <template v-if="display.col.translations">
+            <td @click="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
+              {{ word.translations.join(', ') }}
+            </td>
+            <td v-else>
+              <form @submit="updateTranslation" class="edit-form">
+                <input
+                  ref="editTranslationsInput"
+                  v-model="editTranslationsValue"
+                  @blur="editTranslations(-1)"
+                />
+                <input type="submit" value="ok" />
+              </form>
+            </td>
+          </template>
+          <td v-if="display.col.status" @click="changeStatus(word)" class="status-column">{{ word.status }}</td>
+          <td v-if="display.col.actions" class="actions-column">
+            <button v-if="display.action.known" @click="setStatus(word, 'known')">Known</button>
+            <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')">Ignore</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<style scoped>
+.dictionary-table {
+  margin-top: 20px;
+}
+
+.add-word-section {
+  margin-bottom: 20px;
+}
+
+.word-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  cursor: pointer;
+  background-color: #f2f2f2;
+}
+
+th:hover {
+  background-color: #ddd;
+}
+
+.status-column {
+  cursor: pointer;
+}
+
+.status-column:hover {
+  background-color: #f9f9f9;
+}
+
+.actions-column button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.actions-column button:hover {
+  background-color: #0056b3;
+}
+
+.edit-form {
+  display: flex;
+  align-items: center;
+}
+
+.edit-form input {
+  margin-right: 5px;
+}
+</style>

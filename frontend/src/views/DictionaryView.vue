@@ -1,36 +1,3 @@
-<template>
-  <div>
-    <h1>Dictionary View</h1>
-    <div>
-      <label for="filter">Filter:</label>
-      <input v-model="filter" id="filter" />
-    </div>
-    <div>
-      <label for="newCheckbox">
-        <input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
-        New
-      </label>
-
-      <label for="seenCheckbox">
-        <input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
-        Seen
-      </label>
-
-      <label for="knownCheckbox">
-        <input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
-        Known
-      </label>
-
-      <label for="ignoreCheckbox">
-        <input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
-        Ignore
-      </label>
-    </div>
-    <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
-    <button @click="rebuildDictionary">Drop and Rebuild Dictionary</button>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import DictionaryTable from '../components/DictionaryTable.vue';
@@ -108,3 +75,98 @@ onMounted(async () => {
 });
 
 </script>
+
+<template>
+  <div class="dictionary-view">
+    <h1>Dictionary View</h1>
+
+    <div class="filter-section">
+      <label for="filter">Filter:</label>
+      <input v-model="filter" id="filter" />
+    </div>
+
+    <div class="status-filters">
+      <label for="newCheckbox">
+        <input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
+        New
+      </label>
+
+      <label for="seenCheckbox">
+        <input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
+        Seen
+      </label>
+
+      <label for="knownCheckbox">
+        <input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
+        Known
+      </label>
+
+      <label for="ignoreCheckbox">
+        <input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
+        Ignore
+      </label>
+    </div>
+
+    <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
+
+    <button class="rebuild-button" @click="rebuildDictionary">Drop and Rebuild Dictionary</button>
+  </div>
+</template>
+
+<style scoped>
+.dictionary-view {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+label {
+  margin-right: 10px;
+}
+
+.input-field {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.status-filters {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.status-filters label {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.status-filters input {
+  margin-right: 5px;
+}
+
+.rebuild-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.rebuild-button:hover {
+  background-color: #0056b3;
+}
+</style>
