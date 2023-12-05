@@ -130,7 +130,7 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
 
   article.value.words.forEach((word, index) => {
     const separator = getSeparator(currentIndex, word);
-    result.push({ word, separator });
+    result.push({ word, separator: separator.split('\n') });
     currentIndex += separator.length + word.length;
   });
 
@@ -161,10 +161,11 @@ onMounted(() => {
       <div v-if="article.content && article.content.length">
         <p>
           <template v-for="({ word, separator }, index) in processedContent" :key="index">
-            <span class="separator">{{ separator }}</span>
-            <br v-if="separator === '\n'" />
-            <br v-if="separator === '\n\n'" />
-            <br v-if="separator === '\n\n'" />
+            <span class="separator">
+              <template v-for="(sep, index) in separator">
+                {{ sep }}<br v-if="index < separator.length - 1" />
+              </template>
+            </span>
             <span
               @mouseover="setHighlight(word)"
               @mouseout="unsetHighlight(word)"
