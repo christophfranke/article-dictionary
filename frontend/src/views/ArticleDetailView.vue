@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DictionaryTable :words="displayedWords" :updateWords="updateWords" />
+    <DictionaryTable :words="displayedWords" :updateWords="updateWords" :display="tableDisplayConfig" />
     <h1>{{ article.title }}</h1>
     <div v-if="article.content && article.content.length">
       <p>
@@ -38,6 +38,24 @@ interface ProcessedContentItem {
   word: string;
   separator: string;
 }
+
+const tableDisplayConfig = {
+  header: true,
+  col: {
+    original: true,
+    translations: true,
+    status: false,
+    actions: true,
+  },
+  action: {
+    known: true,
+    ignore: true,
+    add: false,
+    sort: true,
+    edit: true,
+  }
+};
+
 
 const article = ref<Article>({
   title: '',

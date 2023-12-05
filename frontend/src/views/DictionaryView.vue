@@ -26,7 +26,7 @@
         Ignore
       </label>
     </div>
-    <DictionaryTable :words="filteredWords" :updateWords="updateWords" />
+    <DictionaryTable :words="filteredWords" :updateWords="updateWords" :display="tableDisplayConfig" />
     <button @click="resetDictionary">Reset and Rebuild Dictionary</button>
   </div>
 </template>
@@ -48,6 +48,23 @@ interface StatusFilters {
   known: boolean;
   ignore: boolean;
 }
+
+const tableDisplayConfig = {
+  header: true,
+  col: {
+    original: true,
+    translations: true,
+    status: true,
+    actions: false,
+  },
+  action: {
+    known: true,
+    ignore: true,
+    add: true,
+    sort: true,
+    edit: true,
+  }
+};
 
 const words = ref<Word[]>([]);
 const filter = ref<string>('');

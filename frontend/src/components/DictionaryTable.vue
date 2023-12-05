@@ -1,35 +1,37 @@
 <template>
   <div>
-    <div v-if="props.updateWords">
+    <div v-if="updateWords && display.action.add">
       <label for="newWord">New Entry:</label>
       <input v-model="newWord" id="newWord" />
       <button @click="addWord">Add</button>
     </div>
     <table>
       <thead>
-        <tr>
-          <th @click="sortTable('original')">Original</th>
-          <th @click="sortTable('translations')">Translations</th>
-          <th @click="sortTable('status')">Status</th>
-          <th>Actions</th>
+        <tr v-if="display.header">
+          <th @click="sortTable('original')" v-if="display.col.original">Original</th>
+          <th @click="sortTable('translations')" v-if="display.col.translations">Translations</th>
+          <th @click="sortTable('status')" v-if="display.col.status">Status</th>
+          <th v-if="display.col.actions">Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(word) in sortedWords" :key="word.index">
-          <td>{{ word.original }}</td>
-          <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">
-            {{ word.translations.join(', ') }}
-          </td>
-          <td v-else>
-            <form @submit="updateTranslation">
-              <input ref="editTranslationsInput" v-model="editTranslationsValue" @blur="editTranslations(-1)" />
-              <input type="submit" value="ok" />
-            </form>
-          </td>
-          <td @click="changeStatus(word)">{{ word.status }}</td>
-          <td>
-            <button @click="setStatus(word, 'known')">Known</button>
-            <button @click="setStatus(word, 'ignore')">Ignore</button>
+          <td v-if="display.col.original">{{ word.original }}</td>
+          <template v-if="display.col.translations">
+            <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">
+              {{ word.translations.join(', ') }}
+            </td>
+            <td v-else>
+              <form @submit="updateTranslation">
+                <input ref="editTranslationsInput" v-model="editTranslationsValue" @blur="editTranslations(-1)" />
+                <input type="submit" value="ok" />
+              </form>
+            </td>
+          </template>
+          <td v-if="display.col.status" @click="changeStatus(word)">{{ word.status }}</td>
+          <td v-if="display.col.actions">
+            <button v-if="display.action.known" @click="setStatus(word, 'known')">Known</button>
+            <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')">Ignore</button>
           </td>
         </tr>
       </tbody>
@@ -38,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   words: {
@@ -49,7 +51,27 @@ const props = defineProps({
     type: Function as unknown as () => (words: Word[]) => void,
     required: false,
   },
+  display: {
+    type: Object,
+    default: {
+      header: true,
+      col: {        
+        original: true,
+        translations: true,
+        status: true,
+        actions: true,
+      },
+      action: {
+        known: true,
+        ignore: true,
+        add: true,
+        sort: true,
+        edit: true,
+      }
+    }
+  }
 });
+
 
 interface Word {
   index: number;
@@ -67,6 +89,10 @@ const sortOrder = ref<string>('asc');
 const sortedBy = ref<string>('original');
 
 const sortTable = (column: string): void => {
+  if (!props.display.actions.sort) {
+    return
+  }
+
   if (column === sortedBy.value) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
   } else {
@@ -92,7 +118,7 @@ const sortedWords = computed<Array<Word>>(() => {
 });
 
 const editTranslations = async (index: number): Promise<void> => {
-  if (props.updateWords) {    
+  if (props.updateWords && props.display.action.edit) {
     editingTranslationIndex.value = index;
     if (index !== -1) {
       const word: Word | undefined = props.words.find((word) => word.index === index);
