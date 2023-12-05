@@ -48,7 +48,7 @@ const tableDisplayConfig = {
   col: {
     original: true,
     translations: true,
-    status: false,
+    status: true,
     actions: true,
   },
   action: {
@@ -57,6 +57,7 @@ const tableDisplayConfig = {
     add: false,
     sort: true,
     edit: true,
+    status: false,
   },
 };
 

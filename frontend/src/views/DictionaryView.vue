@@ -58,14 +58,15 @@ const tableDisplayConfig = {
     original: true,
     translations: true,
     status: true,
-    actions: false,
+    actions: true,
   },
   action: {
-    known: true,
+    known: false,
     ignore: true,
     add: true,
     sort: true,
     edit: true,
+    status: true,
   }
 };
 

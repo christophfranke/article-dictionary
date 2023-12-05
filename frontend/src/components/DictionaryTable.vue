@@ -64,6 +64,7 @@ const props = defineProps({
         add: true,
         sort: true,
         edit: true,
+        status: true,
       }
     }
   }
@@ -88,7 +89,7 @@ const sortOrder = ref<string>('asc');
 const sortedBy = ref<string>('original');
 
 const sortTable = (column: string): void => {
-  if (!props.display.actions.sort) {
+  if (!props.display.action.sort) {
     return
   }
 
@@ -153,6 +154,10 @@ const setStatus = async (word: Word, status: string): Promise<void> => {
 };
 
 const changeStatus = async (word: Word): Promise<void> => {
+  if (!props.display.action.status) {
+    return
+  }
+
   const statusOptions: string[] = ['new', 'seen', 'known', 'ignore'];
   const currentIndex: number = statusOptions.indexOf(word.status);
   const newIndex: number = (currentIndex + 1) % statusOptions.length;
