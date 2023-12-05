@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div v-if="props.updateWords">
       <label for="newWord">New Entry:</label>
       <input v-model="newWord" id="newWord" />
       <button @click="addWord">Add</button>
@@ -40,9 +40,11 @@ const props = defineProps({
     type: Array as unknown as () => Word[],
     required: true,
   },
+  updateWords: {
+    type: Function as unknown as () => (words: Word[]) => void,
+    required: false,
+  },
 });
-
-const emit = defineEmits();
 
 interface Word {
   index: number;
@@ -85,19 +87,21 @@ const sortedWords = computed<Array<Word>>(() => {
 });
 
 const editTranslations = async (index: number): Promise<void> => {
-  editingTranslationIndex.value = index;
-  if (index !== -1) {
-    const word: Word | undefined = props.words.find((word) => word.index === index);
+  if (props.updateWords) {    
+    editingTranslationIndex.value = index;
+    if (index !== -1) {
+      const word: Word | undefined = props.words.find((word) => word.index === index);
 
-    if (word) {
-      editTranslationsValue.value = word.translations.join(', ');
+      if (word) {
+        editTranslationsValue.value = word.translations.join(', ');
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
-      // Focus the input field for editing translations
-      if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
-        editTranslationsInput.value[0].focus();
-        editTranslationsInput.value[0].select();
+        // Focus the input field for editing translations
+        if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
+          editTranslationsInput.value[0].focus();
+          editTranslationsInput.value[0].select();
+        }
       }
     }
   }
@@ -105,10 +109,15 @@ const editTranslations = async (index: number): Promise<void> => {
 
 const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
-  const word: Word = props.words[editingTranslationIndex.value];
-  const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
-  await updateWord(word.original, { translations });
-  editingTranslationIndex.value = -1;
+  if (props.updateWords) {
+    const word: Word | undefined = props.words.find((word) => word.index === editingTranslationIndex.value);
+
+    if (word) {
+      const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
+      await updateWord(word.original, { translations });
+      editingTranslationIndex.value = -1;
+    }
+  }
 };
 
 const changeStatus = async (word: Word): Promise<void> => {
@@ -121,7 +130,7 @@ const changeStatus = async (word: Word): Promise<void> => {
 };
 
 const addWord = async (): Promise<void> => {
-  if (newWord.value) {
+  if (props.updateWords && newWord.value) {
     const result = await fetch('/api/dictionary/add', {
       method: 'POST',
       headers: {
@@ -132,7 +141,10 @@ const addWord = async (): Promise<void> => {
 
     if (result.ok) {
       const addedWord: Word = await result.json();
-      emit('add', addedWord);
+      props.updateWords([...props.words, {
+        ...addedWord,
+        index: props.words.length,
+      }]);
     } else {
       console.log('Error adding word');
     }
@@ -142,19 +154,27 @@ const addWord = async (): Promise<void> => {
 };
 
 const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-  const result = await fetch(`/api/dictionary/update/${original}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  if (props.updateWords) {
+    const result = await fetch(`/api/dictionary/update/${original}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
 
-  if (result.ok) {
-    const updatedWord: Word = await result.json();
-    emit('update', updatedWord);
-  } else {
-    console.log('Error updating word');
+    if (result.ok) {
+      const updatedWord: Word = await result.json();
+      const newWords: Word[] = [...props.words.map(word => word.original === updatedWord.original
+        ? ({
+          ...word,
+          ...updatedWord
+        }) : word
+      )];
+      props.updateWords(newWords);
+    } else {
+      console.log('Error updating word');
+    }
   }
 };
 </script>

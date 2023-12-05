@@ -73,8 +73,8 @@ def get_article(name):
         dictionary_entries = []
         dictionary_collection = get_collection('dictionary')
 
-        for word in list(set(article_words)):
-            dictionary_entry = dictionary_collection.find_one({'original': word.lower()}, { '_id': 0, 'language': 0 })
+        for word in list(set([word.lower() for word in article_words])):
+            dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 0, 'language': 0 })
             if dictionary_entry:
                 dictionary_entries.append(dictionary_entry)
 

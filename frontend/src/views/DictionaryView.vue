@@ -26,7 +26,7 @@
         Ignore
       </label>
     </div>
-    <DictionaryTable :words="filteredWords" @update="updateWord" @add="addWord" />
+    <DictionaryTable :words="filteredWords" :updateWords="updateWords" />
     <button @click="resetDictionary">Reset and Rebuild Dictionary</button>
   </div>
 </template>
@@ -59,9 +59,7 @@ const statusFilters = ref({
 } as { [key: string]: boolean });
 
 const filteredWords = computed<Word[]>(() => {
-  let filtered: Word[] = words.value;
-
-  filtered = filtered.filter((word) => {
+  const filtered = words.value.filter((word) => {
     if (!statusFilters.value[word.status]) {
       return false;
     }
@@ -93,16 +91,9 @@ const resetDictionary = async (): Promise<void> => {
   loadDictionary();
 };
 
-const updateWord = (updatedWord: Word): void => {
-  const index: number = words.value.findIndex((word) => word.original === updatedWord.original);
-  if (index !== -1) {
-    words.value[index] = updatedWord;
-  }
+const updateWords = (newWords: Word[]): void => {
+  words.value = newWords;
 };
-
-const addWord = (newWord: Word): void => {
-  words.value.push(newWord);  
-}
 
 
 onMounted(() => {

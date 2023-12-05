@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DictionaryTable :words="displayedWords" />
+    <DictionaryTable :words="displayedWords" :updateWords="updateWords" />
     <h1>{{ article.title }}</h1>
     <div v-if="article.content && article.content.length">
       <p>
@@ -50,7 +50,12 @@ const selectedWords = ref<string[]>([]);
 const displayedWords = computed<Word[]>(() => {
   return article.value.dictionary
     .filter((word) => selectedWords.value.includes(word.original.toLowerCase()))
+    .map((word, index) => ({ ...word, index }));
 });
+
+const updateWords = (newWords: Word[]): void => {
+  article.value.dictionary = newWords;
+};
 
 
 const route = useRoute();
