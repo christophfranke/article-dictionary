@@ -124,7 +124,7 @@ onMounted(() => {
             <br v-if="separator === '\n'" />
             <br v-if="separator === '\n\n'" />
             <br v-if="separator === '\n\n'" />
-            <span @click="toggleStatusSeen(word)" :class="{ selected: displayedWords.some(entry => entry.original === word.toLowerCase()) }">
+            <span @click="toggleStatusSeen(word)" :class="{ new: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'new', seen: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'seen' }">
               {{ word }}
             </span>
           </template>
@@ -173,8 +173,11 @@ span.separator {
   margin: 0 -2px;
 }
 
-span.selected {
-  background-color: rgba(51, 153, 255, 0.15); /* Adjusted the shade of light blue */
+span.new {
+  background-color: rgba(51, 153, 255, 0.15);
+}
+span.seen {
+  background-color: rgba(0, 153, 51, 0.15);
 }
 
 .dictionary-container {

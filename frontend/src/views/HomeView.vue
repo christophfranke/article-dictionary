@@ -37,7 +37,7 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
-    <h1 class="main-heading">Hello</h1>
+    <h1 class="main-heading">Articles</h1>
 
     <div v-if="articles.length > 0" class="article-list">
       <article v-for="article in articles" :key="article.id" class="article-preview">
