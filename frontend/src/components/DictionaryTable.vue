@@ -108,6 +108,14 @@ const editTranslations = async (id: string): Promise<void> => {
   }
 };
 
+const stopEditTranslations = (id: string): void => {
+  if (editingTranslationId.value === id) {
+    editingTranslationId.value = '';
+  }
+};
+
+
+
 const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
   const word: Word | undefined = words.value.find((word) => word.id === editingTranslationId.value);
@@ -170,15 +178,16 @@ const retranslateWord = dict.retranslateWord;
           <td v-if="display.col.number">{{ word.index }}</td>
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
-            <td @click="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
+            <td @mousedown="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
               {{ word.translations.join(', ') }}
             </td>
             <td v-else>
               <form @submit="updateTranslation" class="edit-form">
+                <button @click="stopEditTranslations(word.id)">x</button>
                 <input
                   ref="editTranslationsInput"
                   v-model="editTranslationsValue"
-                  @blur="editTranslations('')"
+                  @blur="stopEditTranslations(word.id)"
                 />
                 <input type="submit" value="ok" />
               </form>

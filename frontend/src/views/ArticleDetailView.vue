@@ -102,7 +102,6 @@ const fetchArticleDetails = async () => {
       function getWordIndex(word) {
         const regex = new RegExp(`${word}`, 'i');
         const index = article.value.content.search(regex);
-        console.log(word, index, regex)
         return index >= 0 ? index : Math.Infinity;
       }
       

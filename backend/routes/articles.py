@@ -74,8 +74,9 @@ def get_article(name):
         dictionary_collection = get_collection('dictionary')
 
         for word in list(set([word.lower() for word in article_words])):
-            dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 0, 'language': 0 })
+            dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 1, 'language': 0 })
             if dictionary_entry:
+                dictionary_entry['id'] = str(dictionary_entry.pop('_id'))
                 dictionary_entries.append(dictionary_entry)
 
         # Return article with additional 'dictionary' field as JSON
