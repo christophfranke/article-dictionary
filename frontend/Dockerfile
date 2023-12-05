@@ -10,6 +10,9 @@ COPY ./package*.json .
 # Install app dependencies
 RUN npm install
 
+# cache buster
+RUN date > /app/frontend/timestamp.txt
+
 # Copy the rest of the application code into the container
 COPY . .
 

@@ -79,7 +79,7 @@ interface StatusFilters {
 const words = ref<Array<Word>>([]);
 const filter = ref<string>('');
 const sortOrder = ref<string>('asc');
-const sortedBy = ref<string>('');
+const sortedBy = ref<string>('original');
 const newWord = ref<string>('');
 const editingTranslationIndex = ref<number>(-1);
 const editTranslationsValue = ref<string>('');
