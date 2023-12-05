@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="updateWords && display.action.add">
+    <div v-if="display.action.add">
       <label for="newWord">New Entry:</label>
       <input v-model="newWord" id="newWord" />
       <button @click="addWord">Add</button>
@@ -15,10 +15,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(word) in sortedWords" :key="word.index">
+        <tr v-for="(word) in sortedWords" :key="word.id">
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
-            <td @click="editTranslations(word.index)" v-if="word.index !== editingTranslationIndex">
+            <td @click="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
               {{ word.translations.join(', ') }}
             </td>
             <td v-else>
@@ -41,15 +41,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import createDictionaryCollection from '../services/dictionary-collection';
 
 const props = defineProps({
-  words: {
-    type: Array as unknown as () => Word[],
+  dictionary: {
+    type: Object as unknown as () => ReturnType<typeof createDictionaryCollection>,
     required: true,
-  },
-  updateWords: {
-    type: Function as unknown as () => (words: Word[]) => void,
-    required: false,
   },
   display: {
     type: Object,
@@ -72,16 +69,18 @@ const props = defineProps({
   }
 });
 
-
 interface Word {
-  index: number;
+  id: string;
   original: string;
   translations: string[];
   status: string;
 }
 
+const dict = props.dictionary;
+const words = computed<Word[]>(() => dict.get());
+
 const newWord = ref<string>('');
-const editingTranslationIndex = ref<number>(-1);
+const editingTranslationId = ref<string>('');
 const editTranslationsValue = ref<string>('');
 const editTranslationsInput = ref<HTMLInputElement[] | null>(null);
 
@@ -102,7 +101,7 @@ const sortTable = (column: string): void => {
 };
 
 const sortedWords = computed<Array<Word>>(() => {
-  const sorted = [...props.words];
+  const sorted = [...words.value];
   if (sortedBy.value) {
     sorted.sort((a, b) => {
       const order = sortOrder.value === 'asc' ? 1 : -1;
@@ -117,11 +116,11 @@ const sortedWords = computed<Array<Word>>(() => {
   return sorted;
 });
 
-const editTranslations = async (index: number): Promise<void> => {
-  if (props.updateWords && props.display.action.edit) {
-    editingTranslationIndex.value = index;
-    if (index !== -1) {
-      const word: Word | undefined = props.words.find((word) => word.index === index);
+const editTranslations = async (id: string): Promise<void> => {
+  if (props.display.action.edit) {
+    editingTranslationId.value = id;
+    if (id) {
+      const word: Word | undefined = words.value.find((word) => word.id === id);
 
       if (word) {
         editTranslationsValue.value = word.translations.join(', ');
@@ -140,14 +139,12 @@ const editTranslations = async (index: number): Promise<void> => {
 
 const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
-  if (props.updateWords) {
-    const word: Word | undefined = props.words.find((word) => word.index === editingTranslationIndex.value);
+  const word: Word | undefined = words.value.find((word) => word.id === editingTranslationId.value);
 
-    if (word) {
-      const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
-      await updateWord(word.original, { translations });
-      editingTranslationIndex.value = -1;
-    }
+  if (word) {
+    const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
+    await updateWord(word.original, { translations });
+    editingTranslationId.value = '';
   }
 };
 
@@ -165,51 +162,11 @@ const changeStatus = async (word: Word): Promise<void> => {
 };
 
 const addWord = async (): Promise<void> => {
-  if (props.updateWords && newWord.value) {
-    const result = await fetch('/api/dictionary/add', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ original: newWord.value }),
-    });
-
-    if (result.ok) {
-      const addedWord: Word = await result.json();
-      props.updateWords([...props.words, {
-        ...addedWord,
-        index: props.words.length,
-      }]);
-    } else {
-      console.log('Error adding word');
-    }
-
+  if (newWord.value) {
+    await dict.addWord(newWord.value);
     newWord.value = '';
   }
 };
 
-const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-  if (props.updateWords) {
-    const result = await fetch(`/api/dictionary/update/${original}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (result.ok) {
-      const updatedWord: Word = await result.json();
-      const newWords: Word[] = [...props.words.map(word => word.original === updatedWord.original
-        ? ({
-          ...word,
-          ...updatedWord
-        }) : word
-      )];
-      props.updateWords(newWords);
-    } else {
-      console.log('Error updating word');
-    }
-  }
-};
+const updateWord = dict.updateWord;
 </script>

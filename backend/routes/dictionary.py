@@ -10,10 +10,15 @@ def list_words():
         dictionary_collection = get_collection('dictionary')
 
         # Retrieve all words from the dictionary_collection
-        words_cursor = dictionary_collection.find({}, {'_id': 0, 'original': 1, 'translations': 1, 'status': 1})
+        words_cursor = dictionary_collection.find({}, {'_id': 1, 'original': 1, 'translations': 1, 'status': 1})
 
         # Convert the cursor to a list of words
         words_list = list(words_cursor)
+
+
+        # Modify the _id field to id in each dictionary
+        for word in words_list:
+            word['id'] = str(word.pop('_id'))
 
         # Return the list of words as JSON
         return jsonify(words_list)
@@ -67,7 +72,8 @@ def update_word(original):
         dictionary_collection.replace_one({'original': original}, word)
 
         # Retrieve the updated word from the dictionary
-        updated_word = dictionary_collection.find_one({'original': original}, {'_id': 0})
+        updated_word = dictionary_collection.find_one({'original': original})
+        updated_word['id'] = str(updated_word.pop('_id'))
         return jsonify(updated_word)
 
     except Exception as e:
@@ -96,7 +102,8 @@ async def add_word():
         await add_words([original_word], dictionary_collection)
 
         # Retrieve the added word from the dictionary
-        added_word = dictionary_collection.find_one({'original': original_word}, {'_id': 0})
+        added_word = dictionary_collection.find_one({'original': original_word})
+        added_word['id'] = str(added_word.pop('_id'))
         return jsonify(added_word)
 
     except Exception as e:

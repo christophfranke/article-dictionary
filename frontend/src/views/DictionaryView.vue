@@ -26,14 +26,15 @@
         Ignore
       </label>
     </div>
-    <DictionaryTable :words="filteredWords" :updateWords="updateWords" :display="tableDisplayConfig" />
+    <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
     <button @click="resetDictionary">Reset and Rebuild Dictionary</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import DictionaryTable from '../components/DictionaryTable.vue';
 import { ref, computed, onMounted } from 'vue';
+import DictionaryTable from '../components/DictionaryTable.vue';
+import createDictionaryCollection from '../services/dictionary-collection';
 
 interface Word {
   index: number;
@@ -66,7 +67,25 @@ const tableDisplayConfig = {
   }
 };
 
-const words = ref<Word[]>([]);
+const filterFn = (word) => {
+  if (!statusFilters.value[word.status]) {
+    return false;
+  }
+
+  if (filter.value) {
+    return (
+      word.original.toLowerCase().includes(filter.value.toLowerCase()) ||
+      word.translations.some((t) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
+      word.status.toLowerCase().includes(filter.value.toLowerCase())
+    );
+  }
+
+  return true;
+};
+
+
+const dictionary = createDictionaryCollection([], filterFn);
+const words = computed<Word[]>(() => dictionary.get());
 const filter = ref<string>('');
 const statusFilters = ref({
   new: true,
@@ -75,46 +94,14 @@ const statusFilters = ref({
   ignore: false,
 } as { [key: string]: boolean });
 
-const filteredWords = computed<Word[]>(() => {
-  const filtered = words.value.filter((word) => {
-    if (!statusFilters.value[word.status]) {
-      return false;
-    }
-
-    if (filter.value) {
-      return (
-        word.original.toLowerCase().includes(filter.value.toLowerCase()) ||
-        word.translations.some((t) => t.toLowerCase().includes(filter.value.toLowerCase())) ||
-        word.status.toLowerCase().includes(filter.value.toLowerCase())
-      );
-    }
-
-    return true;
-  });
-
-  return filtered;
-});
-
-const loadDictionary = async (): Promise<void> => {
-  const response = await fetch('/api/dictionary/');
-  const wordsData: Word[] = await response.json();
-
-  // Add index to each word in the array
-  words.value = wordsData.map((word, index) => ({ ...word, index }));
-};
 
 const resetDictionary = async (): Promise<void> => {
-  await fetch('/api/dictionary/reset', { method: 'POST' });
-  loadDictionary();
+  await DictionaryRequest.reset();
+  await dictionary.load()
 };
 
-const updateWords = (newWords: Word[]): void => {
-  words.value = newWords;
-};
-
-
-onMounted(() => {
-  loadDictionary();
+onMounted(async () => {
+  await dictionary.load();
 });
 
 </script>

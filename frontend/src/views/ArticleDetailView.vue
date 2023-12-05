@@ -1,12 +1,12 @@
 <template>
   <div>
-    <DictionaryTable :words="displayedWords" :updateWords="updateWords" :display="tableDisplayConfig" />
+    <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
     <h1>{{ article.title }}</h1>
     <div v-if="article.content && article.content.length">
       <p>
         <template v-for="({ word, separator }, index) in processedContent" :key="index">
           <span>{{ separator }}</span>
-          <span @click="toggleWord(word)" :class="{ selected: displayedWords.some(entry => entry.original === word.toLowerCase()) }">
+          <span @click="toggleStatusSeen(word)" :class="{ selected: displayedWords.some(entry => entry.original === word.toLowerCase()) }">
             {{ word }}
           </span>
         </template>
@@ -19,6 +19,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import DictionaryTable from '../components/DictionaryTable.vue';
+import createDictionaryCollection from '../services/dictionary-collection';
 
 interface Word {
   index: number;
@@ -63,24 +64,21 @@ const article = ref<Article>({
   dictionary: [],
 });
 
-const displayedWords = computed<Word[]>(() => {
-  return article.value.dictionary
-    .filter(word => word.status === 'new' || word.status === 'seen')
-    .map((word, index) => ({ ...word, index }));
-});
-
-const updateWords = (newWords: Word[]): void => {
-  article.value.dictionary = newWords;
-};
 
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
+
+const displayedWords = computed<Word[]>(() => dictionary.get());
+
+const displayFilter = word => word.status === 'new' || word.status === 'seen'
+const dictionary = createDictionaryCollection([], displayFilter);
 
 const fetchArticleDetails = async () => {
   try {
     const response = await fetch(`/api/articles/${articleName.value}`);
     if (response.ok) {
       article.value = await response.json();
+      dictionary.set(article.value.dictionary)
     } else {
       console.error('Failed to fetch article details:', response.status);
       // Handle error as needed
@@ -110,6 +108,13 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
 
   return result;
 });
+
+const toggleStatusSeen = (word: string) => {
+  const original = word.toLowerCase()
+  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status) ? 'known' : 'seen' });
+};
+
+
 
 onMounted(() => {
   fetchArticleDetails();
