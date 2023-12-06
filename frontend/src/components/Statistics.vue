@@ -6,7 +6,7 @@ import type { DictionaryCollection } from '../dictionary/collection';
 
 import useStatistics from '../use/statistics';
 
-const { dictionary, article, showAbsolute } = defineProps({
+const { dictionary, article, showPercentage } = defineProps({
   dictionary: {
     type: Object as () => DictionaryCollection,
     required: true,
@@ -15,7 +15,7 @@ const { dictionary, article, showAbsolute } = defineProps({
     type: Object as () => Article,
     default: undefined,
   },
-  showAbsolute: {
+  showPercentage: {
     type: Boolean,
     default: false,
   },
@@ -30,17 +30,17 @@ const statistics = useStatistics({ dictionary, article: article && ref(article) 
     <h3 v-else>Word in dictionary</h3>
     <div class="word-statistics">
       <div class="word-statistic">
-        <strong v-if="showAbsolute">{{ statistics.newWordsPercentage }}%</strong>
+        <strong v-if="showPercentage">{{ statistics.newWordsPercentage }}%</strong>
         <strong v-else>{{ statistics.newWords }}</strong>
         <span>New</span>
       </div>
       <div class="word-statistic">
-        <strong v-if="showAbsolute">{{ statistics.seenWordsPercentage }}%</strong>
+        <strong v-if="showPercentage">{{ statistics.seenWordsPercentage }}%</strong>
         <strong v-else>{{ statistics.seenWords }}</strong>
         <span>Seen</span>
       </div>
       <div class="word-statistic">
-        <strong v-if="showAbsolute">{{ statistics.knownWordsPercentage }}%</strong>
+        <strong v-if="showPercentage">{{ statistics.knownWordsPercentage }}%</strong>
         <strong v-else>{{ statistics.knownWords }}</strong>
         <span>Known</span>
       </div>

@@ -1,0 +1,28 @@
+from pymongo import MongoClient
+
+g = {}
+
+username = 'root'
+password = 'example'
+database = 'dictionary_app_data'
+
+def get_db():
+    if 'db' not in g:
+        # Create a MongoClient when it's not already available
+        g['db'] = MongoClient(f'mongodb://{username}:{password}@mongodb:27017/')[database]
+
+    return g['db']
+
+def get_collection(collection_name):
+    db = get_db()
+    return db[collection_name]
+
+def drop_collection(collection_name):
+    db = get_db()
+    db.drop_collection(collection_name)
+
+def close_db(e=None):
+    # Close the MongoClient connection if it exists
+    db = g.pop('db', None)
+    if db is not None:
+        db.client.close()

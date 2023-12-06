@@ -32,8 +32,15 @@ services:
       - ./data:/data/db
     command: mongod --quiet --logpath /dev/null
 
+  scheduler:
+    build:
+      context: ./scheduler
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+
   mongo-express:
-    image: mongo-express
+    image: mongo-express:latest
     ports:
       - "9902:8081"
     environment:

@@ -148,7 +148,7 @@ onMounted(() => {
 <template>
   <div class="article-page" v-if="article.title">
     <div class="content">
-      <Statistics :article="article" :dictionary="dictionary" />
+      <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <h1>{{ article.title }}</h1>
       <div v-if="article.content && article.content.length">
         <p>
