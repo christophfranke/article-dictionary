@@ -250,7 +250,7 @@ span.new {
 }
 
 span.seen {
-  background-color: rgba(0, 153, 51, 0.15);
+  background-color: rgba(255, 191, 128, 0.25);
 }
 
 .dictionary-container {

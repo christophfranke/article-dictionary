@@ -233,7 +233,7 @@ th:hover {
 }
 
 .highlighted {
-  background-color: #ffeb99;
+  background-color: rgba(255, 191, 128, 0.25);
 }
 
 
