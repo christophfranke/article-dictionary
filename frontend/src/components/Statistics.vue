@@ -1,23 +1,27 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
+import type { Article } from '../types'
+import type { DictionaryCollection } from '../dictionary/collection';
+
 import useStatistics from '../use/statistics';
 
-const { dictionary, article } = defineProps({
+const { dictionary, article, showAbsolute } = defineProps({
   dictionary: {
-    type: Object,
-    required: true
+    type: Object as () => DictionaryCollection,
+    required: true,
   },
   article: {
-    type: Object,
-    default: undefined
+    type: Object as () => Article,
+    default: undefined,
   },
   showAbsolute: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-const statistics = useStatistics({ dictionary: dictionary, article: ref(article) });
+const statistics = useStatistics({ dictionary, article: article && ref(article) });
 </script>
 
 <template>

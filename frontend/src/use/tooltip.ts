@@ -1,4 +1,8 @@
 import { ref, onMounted, onBeforeUnmount, reactive, computed } from 'vue';
+import type { Ref, ComputedRef } from 'vue';
+
+import type { Word } from '../types';
+import type { DictionaryCollection } from '../dictionary/collection';
 
 interface TooltipPosition {
   x: number;
@@ -7,7 +11,7 @@ interface TooltipPosition {
 
 interface TooltipOptions {
   highlightedWord: Ref<string | undefined>;
-  dictionary: Dictionary;
+  dictionary: DictionaryCollection;
 }
 
 interface TooltipResult {
@@ -16,26 +20,17 @@ interface TooltipResult {
   isVisible: ComputedRef<boolean>;
 }
 
-interface Word {
-  original: string;
-  translations: string[];
-}
-
-interface Dictionary {
-  find(original: string): Word | undefined;
-}
-
 const useTooltip = (options: TooltipOptions): TooltipResult => {
   const { highlightedWord, dictionary } = options;
 
   const position = reactive({ x: 0, y: 0 });
 
   const isVisible = computed(() => !!highlightedWord
-      && ['new', 'seen'].includes(dictionary.find(highlightedWord.value.toLowerCase())?.status || '')
+      && ['new', 'seen'].includes(dictionary.find(highlightedWord.value?.toLowerCase() || '')?.status || '')
   );
 
   const content = computed(() =>
-    isVisible.value ? (dictionary.find(highlightedWord.value.toLowerCase())?.translations.join(', ') || '') : ''
+    isVisible.value ? (dictionary.find(highlightedWord.value?.toLowerCase() || '')?.translations.join(', ') || '') : ''
   );
 
   const setTooltipPosition = (event: MouseEvent): void => {

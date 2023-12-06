@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue';
 import createDictionaryCollection from '../dictionary/collection';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import type { Word } from '../types/index.ts';
+
 
 const props = defineProps({
   dictionary: {
@@ -39,13 +41,6 @@ const props = defineProps({
     }
   }
 });
-
-interface Word {
-  id: string;
-  original: string;
-  translations: string[];
-  status: string;
-}
 
 const dict = props.dictionary;
 const words = computed<Word[]>(() => dict.get());
@@ -108,7 +103,7 @@ const editTranslations = async (id: string): Promise<void> => {
   }
 };
 
-const stopEditTranslations = async (id: string): void => {
+const stopEditTranslations = async (id: string): Promise<void> => {
   await new Promise(resolve => setTimeout(resolve, 0));
 
   if (editingTranslationId.value === id) {

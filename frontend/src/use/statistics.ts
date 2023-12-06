@@ -1,12 +1,8 @@
 import { computed, ref } from 'vue';
+import type { Ref } from 'vue';
 
-interface Word {
-  status: string;
-}
-
-interface Dictionary {
-  find(original: string): Word | undefined;
-}
+import type { Word, Article } from '../types';
+import type { DictionaryCollection } from '../dictionary/collection';
 
 interface StatisticsResult {
   newWordsPercentage: number;
@@ -15,19 +11,16 @@ interface StatisticsResult {
   newWords: number;
   seenWords: number;
   knownWords: number;
+  uniqueWords: number;
   totalWords: number;
 }
 
-interface Article {
-  words: string[]
-}
-
 interface UseStatisticsParams {
-  dictionary: Dictionary;
-  article: Ref<Article>;
+  dictionary: DictionaryCollection;
+  article?: Ref<Article>;
 }
 
-const statisticsForArticle = (dictionary: Dictionary, article: Article): StatisticsResult => {
+const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<Article>): StatisticsResult => {
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;
@@ -63,7 +56,7 @@ const statisticsForArticle = (dictionary: Dictionary, article: Article): Statist
   };
 }
 
-const statisticsForDictionary = (dictionary: Dictionary): StatisticsResult => {
+const statisticsForDictionary = (dictionary: DictionaryCollection): StatisticsResult => {
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;

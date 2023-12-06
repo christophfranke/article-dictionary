@@ -1,24 +1,16 @@
 import { ref } from 'vue';
 import * as DictionaryRequest from './request';
+import type { Word, PartialWord } from '../types';
 
-export interface PartialWord {
-  id: string;
-  index: number;
-  original: string;
-  translations: string[];
-  status: string;
-}
-
-export interface Word extends PartialWord {
-  index: number;
-}
 type FilterFunction = (x: PartialWord) => boolean;
 
 export interface DictionaryCollection {
   find: (original: string) => Word | undefined;
   get: () => Word[];
   set: (newWords: PartialWord[]) => void;
-  retranslate: (original: string) => Promise<void>;
+  all: () => Word[];
+  updateMany: (originals: string[], data: Record<string, unknown>) => Promise<void>;
+  retranslateWord: (original: string) => Promise<void>;
   load: () => Promise<void>;
   updateWord: (original: string, data: Record<string, unknown>) => Promise<void>;
   addWord: (original: string) => Promise<void>;
@@ -31,7 +23,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   const words = ref(collection)
   const filter = ref(filterFn)
 
-  const set = newWords => {
+  const set = (newWords: PartialWord[]): void => {
     words.value = newWords.map((word, index) => ({ ...word, index }));
   };
 

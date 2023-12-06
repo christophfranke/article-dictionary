@@ -4,7 +4,6 @@ interface ArticleProps {
     url: string;
     title: string;
     excerpt: string;
-    // Add other properties as needed
   };
 }
 

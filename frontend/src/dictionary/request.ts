@@ -1,10 +1,4 @@
-// dictionary.ts
-interface PartialWord {
-  id: string;
-  original: string;
-  translations: string[];
-  status: string;
-}
+import type { PartialWord } from '../types';
 
 export const loadAll = async (): Promise<PartialWord[]> => {
   try {
@@ -36,7 +30,7 @@ export const rebuild = async (): Promise<{ message: string } | null> => {
   }
 };
 
-export const retranslate = async (original: string): Promise<{ message: string } | null> => {
+export const retranslate = async (original: string): Promise<PartialWord | null> => {
   try {
     const response = await fetch(`/api/dictionary/retranslate/${original}`, { method: 'POST' });
     if (response.ok) {

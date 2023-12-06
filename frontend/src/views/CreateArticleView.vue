@@ -2,13 +2,10 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-interface Article {
-  name: string;
-  content: string;
-}
+import type { PartialArticle } from '../types';
 
-const article = ref<Article>({
-  name: '',
+const article = ref<PartialArticle>({
+  title: '',
   content: '',
 });
 
@@ -56,7 +53,7 @@ const submitForm = async (): Promise<void> => {
     <h1>Create Article</h1>
     <form @submit.prevent="submitForm" class="article-form">
       <label for="articleName">Article Name:</label>
-      <input id="articleName" v-model="article.name" type="text" required />
+      <input id="articleName" v-model="article.title" type="text" required />
 
       <label for="articleContent">Article Content:</label>
       <textarea id="articleContent" v-model="article.content" required></textarea>

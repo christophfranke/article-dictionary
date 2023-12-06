@@ -3,14 +3,14 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import ArticlePreview from '../components/ArticlePreview.vue';
 
-interface ArticleData {
+interface ArticlePreviewData {
   id: number;
   url: string;
   title: string;
   excerpt: string;
 }
 
-const articles = ref<ArticleData[]>([]);
+const articles = ref<ArticlePreviewData[]>([]);
 const router = useRouter();
 
 const fetchArticles = async (): Promise<void> => {

@@ -2,30 +2,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-import DictionaryTable from '../components/DictionaryTable.vue';
-import Statistics from '../components/Statistics.vue';
+import type { Word, Article } from '../types';
 
 import createDictionaryCollection from '../dictionary/collection';
 import useTooltip from '../use/tooltip';
 
-interface Word {
-  id: string;
-  index: number;
-  original: string;
-  translations: string[];
-  status: string;
-}
+import DictionaryTable from '../components/DictionaryTable.vue';
+import Statistics from '../components/Statistics.vue';
 
-interface Article {
-  title: string;
-  content: string;
-  words: string[];
-  dictionary: Word[];
-}
 
 interface ProcessedContentItem {
   word: string;
-  separator: string;
+  separator: string[];
 }
 
 const tableDisplayConfig = {
@@ -104,10 +92,10 @@ const fetchArticleDetails = async () => {
       });
 
       // Function to get the index of the word in content, considering word boundaries
-      function getWordIndex(word) {
+      function getWordIndex(word: string) {
         const regex = new RegExp(`${word}`, 'i');
         const index = article.value.content.search(regex);
-        return index >= 0 ? index : Math.Infinity;
+        return index >= 0 ? index : Infinity;
       }
       
       dictionary.set(article.value.dictionary)

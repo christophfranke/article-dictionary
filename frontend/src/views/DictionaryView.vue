@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 
+import type { Word } from '../types';
+
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
 
 import createDictionaryCollection from '../dictionary/collection';
 import * as DictionaryRequest from '../dictionary/request';
 
-
-interface Word {
-  id: string;
-  original: string;
-  translations: string[];
-  status: string;
-}
 
 interface StatusFilters {
   new: boolean;
