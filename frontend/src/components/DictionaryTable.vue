@@ -108,7 +108,9 @@ const editTranslations = async (id: string): Promise<void> => {
   }
 };
 
-const stopEditTranslations = (id: string): void => {
+const stopEditTranslations = async (id: string): void => {
+  await new Promise(resolve => setTimeout(resolve, 0));
+
   if (editingTranslationId.value === id) {
     editingTranslationId.value = '';
   }
@@ -116,8 +118,14 @@ const stopEditTranslations = (id: string): void => {
 
 
 
+const isUpdating = ref(false)
 const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
+  if (isUpdating.value) {
+    return
+  }
+
+  isUpdating.value = true;
   const word: Word | undefined = words.value.find((word) => word.id === editingTranslationId.value);
 
   if (word) {
@@ -125,6 +133,8 @@ const updateTranslation = async (e: Event): Promise<void> => {
     await updateWord(word.original, { translations });
     editingTranslationId.value = '';
   }
+
+  isUpdating.value = false;
 };
 
 const setStatus = async (word: Word, status: string): Promise<void> => {
@@ -189,7 +199,7 @@ const retranslateWord = dict.retranslateWord;
                   v-model="editTranslationsValue"
                   @blur="stopEditTranslations(word.id)"
                 />
-                <input type="submit" value="ok" />
+                <button @mousedown="updateTranslation">ok</button>
               </form>
             </td>
           </template>
