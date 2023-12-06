@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-import type { Word, Article } from '../types';
+import type { Word, ArticleDetail } from '../types';
 
 import createDictionaryCollection from '../dictionary/collection';
 import useTooltip from '../use/tooltip';
@@ -36,9 +36,11 @@ const tableDisplayConfig = {
   },
 };
 
-const article = ref<Article>({
+const article = ref<ArticleDetail>({
+  id: '',
   title: '',
   content: '',
+  slug: '',
   words: [],
   dictionary: [],
 });

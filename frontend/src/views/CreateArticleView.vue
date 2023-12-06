@@ -2,9 +2,9 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import type { PartialArticle } from '../types';
+import type { ArticleData } from '@/types';
 
-const article = ref<PartialArticle>({
+const article = ref<ArticleData>({
   title: '',
   content: '',
 });
@@ -26,10 +26,10 @@ const submitForm = async (): Promise<void> => {
 
     if (response.ok) {
       // If there's a 'url' field in the response, redirect to that URL
-      if (responseData.url) {
-        router.push(responseData.url);
+      if (responseData.slug) {
+        router.push(`/articles/${responseData.slug}`);
       } else {
-        console.error('Invalid response format: missing "url" field.');
+        console.error('Invalid response format: missing "slug" field.');
         // Handle error as needed
       }
     } else {
@@ -52,10 +52,10 @@ const submitForm = async (): Promise<void> => {
   <div class="create-article">
     <h1>Create Article</h1>
     <form @submit.prevent="submitForm" class="article-form">
-      <label for="articleName">Article Name:</label>
+      <label for="articleName">Title:</label>
       <input id="articleName" v-model="article.title" type="text" required />
 
-      <label for="articleContent">Article Content:</label>
+      <label for="articleContent">Content:</label>
       <textarea id="articleContent" v-model="article.content" required></textarea>
 
       <button type="submit" class="submit-button">Submit</button>

@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import ArticlePreview from '../components/ArticlePreview.vue';
 
-interface ArticlePreviewData {
-  id: number;
-  url: string;
-  title: string;
-  excerpt: string;
-}
+import type { ArticlePreview } from '@/types';
+import ArticlePreviewComponent from '../components/ArticlePreview.vue';
 
-const articles = ref<ArticlePreviewData[]>([]);
+
+const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
 const fetchArticles = async (): Promise<void> => {
@@ -41,7 +37,7 @@ const navigateToCreateArticle = (): void => {
 
     <div v-if="articles.length > 0" class="article-list">
       <article v-for="article in articles" :key="article.id" class="article-preview">
-        <ArticlePreview :data="article" />
+        <ArticlePreviewComponent :article="article" />
       </article>
     </div>
 

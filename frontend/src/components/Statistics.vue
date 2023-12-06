@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import type { Article } from '../types'
+import type { ArticleDetail } from '../types'
 import type { DictionaryCollection } from '../dictionary/collection';
 
 import useStatistics from '../use/statistics';
@@ -12,7 +12,7 @@ const { dictionary, article, showPercentage } = defineProps({
     required: true,
   },
   article: {
-    type: Object as () => Article,
+    type: Object as () => ArticleDetail,
     default: undefined,
   },
   showPercentage: {

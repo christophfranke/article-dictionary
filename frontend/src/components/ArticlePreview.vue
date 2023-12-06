@@ -1,20 +1,22 @@
 <script setup lang="ts">
-interface ArticleProps {
-  data: {
-    url: string;
-    title: string;
-    excerpt: string;
-  };
+import type { ArticlePreview } from '@/types';
+interface Props {
+  article: ArticlePreview
 }
 
-const props = defineProps<ArticleProps>();
+const props = defineProps({
+  article: {
+    type: Object,
+    required: true,
+  }
+});
 </script>
 
 <template>
   <div class="article-preview">
-    <router-link :to="data.url">
-      <h2>{{ data.title }}</h2>
-      <p>{{ data.excerpt }}...</p>
+    <router-link :to="`/articles/${props.article.slug}`">
+      <h2>{{ props.article.title }}</h2>
+      <p>{{ props.article.excerpt }}...</p>
     </router-link>
   </div>
 </template>

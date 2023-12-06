@@ -12,7 +12,7 @@ def translate_single_word(word, src_language='el', dest_language='en'):
 
     return [primary] + alternatives
 
-def translate_words(words, src_language='el', dest_language='en', chunk_size=500):
+def translate_words(words, src_language='el', dest_language='en', chunk_size=100):
     translations = {}
     
     if words:
@@ -35,10 +35,16 @@ def translate_words(words, src_language='el', dest_language='en', chunk_size=500
                 translations[original] = [translation.strip()]
 
             # Split alternative translations with the regex
-            alternative_translations = [re.split(r'.?\s*\#\#\s*', alt) for alt in translation_result.get('alternatives', []) if alt]
+            alternative_translations = [re.split(r'.?\s*\#\#\s*', alt) for alt in translation_result.get('alternatives', [])]
 
-            # Update the translations dictionary with alternative translations
+            # Update the translations dictionary with cleaned alternative translations
             for original, alternative_translations_list in zip(chunk, alternative_translations):
-                translations[original] = translations[original] + [alt.strip() for alt in alternative_translations_list]
+                cleaned_alternatives = [
+                    alt.strip().replace('#', '').replace('\n', '').replace(' ', '')
+                    for alt in alternative_translations_list
+                    if alt.strip().replace('#', '').replace('\n', '').replace(' ', '')
+                ]
+
+                translations[original] = translations[original] + cleaned_alternatives
 
     return translations

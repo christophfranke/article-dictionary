@@ -1,14 +1,9 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import wordpunct_tokenize
-from nltk import download as nltk_download
-
-nltk_download('stopwords')
 
 
 def filter_words(words, language="greek"):
-    stop_words = set(stopwords.words(language))
     filtered_words = [word for word in words if word.isalnum() and word.lower()]
-
     return filtered_words
 
 def extract_words(text, language="greek"):

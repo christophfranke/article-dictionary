@@ -10,12 +10,21 @@ export interface Word extends PartialWord {
   index: number;
 }
 
-export interface PartialArticle {
+export interface ArticleData {  
   title: string;
   content: string;
 }
 
-export interface Article extends PartialArticle {
+export interface ArticleBase extends ArticleData {
+  id: string;
+  slug: string;
+}
+
+export interface ArticlePreview extends ArticleBase {
+  excerpt: string;
+}
+
+export interface ArticleDetail extends ArticleBase {
   words: string[];
   dictionary: Word[];
 }

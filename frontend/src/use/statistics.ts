@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
 
-import type { Word, Article } from '../types';
+import type { Word, ArticleDetail } from '../types';
 import type { DictionaryCollection } from '../dictionary/collection';
 
 interface StatisticsResult {
@@ -17,10 +17,10 @@ interface StatisticsResult {
 
 interface UseStatisticsParams {
   dictionary: DictionaryCollection;
-  article?: Ref<Article>;
+  article?: Ref<ArticleDetail>;
 }
 
-const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<Article>): StatisticsResult => {
+const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<ArticleDetail>): StatisticsResult => {
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;

@@ -12,10 +12,11 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: ./python
+      dockerfile: backend.Dockerfile
     volumes:
-      - ./backend:/app/backend
+      - ./python/backend:/app/backend
+      - ./python/shared:/shared
     ports:
       - "9901:5000"
     depends_on:
@@ -34,8 +35,11 @@ services:
 
   scheduler:
     build:
-      context: ./scheduler
-      dockerfile: Dockerfile
+      context: ./python
+      dockerfile: scheduler.Dockerfile
+    volumes:
+      - ./python/scheduler:/app/scheduler
+      - ./python/shared:/shared
     depends_on:
       - mongodb
 

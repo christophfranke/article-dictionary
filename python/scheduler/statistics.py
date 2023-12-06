@@ -1,4 +1,4 @@
-from mongo import get_collection
+from utils.mongo_external import get_collection
 from datetime import datetime
 
 def create_statistics():
@@ -20,3 +20,4 @@ def create_statistics():
     })
 
     print('Added statistics')
+    return True
