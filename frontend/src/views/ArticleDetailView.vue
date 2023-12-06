@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+
 import DictionaryTable from '../components/DictionaryTable.vue';
+import Statistics from '../components/Statistics.vue';
+
 import createDictionaryCollection from '../dictionary/collection';
-import useTooltip from '../article/useTooltip';
-import useStatistics from '../article/useStatistics';
+import useTooltip from '../use/tooltip';
 
 interface Word {
   id: string;
@@ -73,7 +75,6 @@ const newWordsCount = computed<number>(() => dictionary.get().filter((word) => w
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = createDictionaryCollection([], displayFilter);
 const tooltip = useTooltip({ dictionary, highlightedWord });
-const statistics = useStatistics({ article, dictionary });
 
 const fetchArticleDetails = async () => {
   try {
@@ -159,27 +160,7 @@ onMounted(() => {
 <template>
   <div class="article-page" v-if="article.title">
     <div class="content">
-      <div class="wordbox">
-        <h3>Words in this article</h3>
-        <div class="word-statistics">
-          <div class="word-statistic">
-            <strong>{{ statistics.newWordsPercentage }}%</strong>
-            <span>New</span>
-          </div>
-          <div class="word-statistic">
-            <strong>{{ statistics.seenWordsPercentage }}%</strong>
-            <span>Seen</span>
-          </div>
-          <div class="word-statistic">
-            <strong>{{ statistics.knownWordsPercentage }}%</strong>
-            <span>Known</span>
-          </div>
-          <div class="word-statistic total">
-            <strong>{{ statistics.totalWords }}</strong>
-            <span>Total</span>
-          </div>
-        </div>
-      </div>
+      <Statistics :article="article" :dictionary="dictionary" />
       <h1>{{ article.title }}</h1>
       <div v-if="article.content && article.content.length">
         <p>
@@ -305,41 +286,7 @@ span.seen {
   opacity: 0;
 }
 
-.wordbox {
+.statistics {
   float: right;
-}
-.wordbox h3 {
-  text-align: right;
-  margin: 0;
-  font-size: 16px;
-  font-weight: normal;
-}
-
-.word-statistics {
-  margin-top: 5px;
-  margin-bottom: 30px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.word-statistic {
-  margin-left: 10px;
-  text-align: center;
-}
-
-.word-statistic.total {
-  margin-left: 25px;
-}
-
-.word-statistic strong {
-  font-size: 16px;
-  color: #333;
-}
-
-.word-statistic span {
-  font-size: 12px;
-  display: block;
-  white-space: nowrap;
-  color: #666;
 }
 </style>

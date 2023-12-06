@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+
 import DictionaryTable from '../components/DictionaryTable.vue';
+import Statistics from '../components/Statistics.vue';
+
 import createDictionaryCollection from '../dictionary/collection';
 import * as DictionaryRequest from '../dictionary/request';
 
@@ -81,6 +84,7 @@ onMounted(async () => {
 <template>
   <div class="dictionary-view">
     <h1>Dictionary View</h1>
+    <Statistics :dictionary="dictionary" />
 
     <div class="filter-section">
       <label for="filter">Filter:</label>
@@ -170,5 +174,8 @@ label {
 
 .rebuild-button:hover {
   background-color: #0056b3;
+}
+.statistics {
+  float: right;
 }
 </style>
