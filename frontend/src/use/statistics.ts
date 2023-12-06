@@ -24,7 +24,6 @@ const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<Art
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;
-  let totalWords = 0;
 
   article.value.words.forEach((original: string) => {
     const word = dictionary.find(original.toLowerCase());
@@ -36,10 +35,10 @@ const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<Art
       } else if (word.status === 'known') {
         knownWords++;
       }
-      totalWords++;
     }
   });
 
+  const totalWords = newWords + seenWords + knownWords;
   const newWordsPercentage = Math.round((newWords / totalWords) * 100);
   const seenWordsPercentage = Math.round((seenWords / totalWords) * 100);
   const knownWordsPercentage = Math.round((knownWords / totalWords) * 100);
@@ -60,9 +59,8 @@ const statisticsForDictionary = (dictionary: DictionaryCollection): StatisticsRe
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;
-  let totalWords = 0;
 
-  dictionary.get().forEach((word: Word) => {
+  dictionary.all().forEach((word: Word) => {
     if (word.status === 'new') {
       newWords++;
     } else if (word.status === 'seen') {
@@ -70,9 +68,9 @@ const statisticsForDictionary = (dictionary: DictionaryCollection): StatisticsRe
     } else if (word.status === 'known') {
       knownWords++;
     }
-    totalWords++;
   });
 
+  const totalWords = newWords + seenWords + knownWords;
   const newWordsPercentage = Math.round((newWords / totalWords) * 100);
   const seenWordsPercentage = Math.round((seenWords / totalWords) * 100);
   const knownWordsPercentage = Math.round((knownWords / totalWords) * 100);
@@ -84,8 +82,8 @@ const statisticsForDictionary = (dictionary: DictionaryCollection): StatisticsRe
     newWords,
     seenWords,
     knownWords,
-    uniqueWords: dictionary.get().length,
-    totalWords: dictionary.get().length
+    uniqueWords: totalWords,
+    totalWords
   };
 }
 
