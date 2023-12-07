@@ -158,7 +158,8 @@ label {
 }
 
 .rebuild-button {
-  background-color: #007bff;
+  margin-top: 20px;
+  background-color: #dc3545; /* Red background for danger */
   color: #fff;
   padding: 10px;
   border: none;
@@ -168,8 +169,9 @@ label {
 }
 
 .rebuild-button:hover {
-  background-color: #0056b3;
+  background-color: #c82333; /* Darker red for hover effect */
 }
+
 .statistics {
   float: right;
 }

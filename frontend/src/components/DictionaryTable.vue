@@ -72,10 +72,16 @@ const sortedWords = computed<Array<Word>>(() => {
     sorted.sort((a, b) => {
       const order = sortOrder.value === 'asc' ? 1 : -1;
 
-      // Type assertion to let TypeScript know that the properties exist
+      // Access property values
       const propertyA = (a as any)[sortedBy.value];
       const propertyB = (b as any)[sortedBy.value];
 
+      // Use localeCompare for string comparison with locale awareness
+      if (typeof propertyA === 'string' && typeof propertyB === 'string') {
+        return propertyA.localeCompare(propertyB) * order;
+      }
+
+      // For non-string properties, use regular comparison
       return propertyA > propertyB ? order : -order;
     });
   }
