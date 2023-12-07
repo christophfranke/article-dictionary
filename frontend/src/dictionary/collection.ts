@@ -20,22 +20,25 @@ export interface DictionaryCollection {
 
 
 export default (collection: PartialWord[] = [], filterFn: FilterFunction): DictionaryCollection => {
-  const words = ref(collection)
+  const words = ref([])
+  const wordsByOriginal = ref({})
   const filter = ref(filterFn)
 
   const set = (newWords: PartialWord[]): void => {
     words.value = newWords.map((word, index) => ({ ...word, index }));
+    wordsByOriginal.value = words.value.reduce((acc, word) => ({ ...acc, [word.original]: word }), {});
   };
 
   const addWord = async (original: string): Promise<void> => {
     const addedWord = await DictionaryRequest.addWord(original);
     if (addedWord) {
       words.value = [...words.value, addedWord];
+      wordsByOriginal.value[addedWord.original] = addedWord;
     }
   };
 
   const load = async () => {
-    words.value = await DictionaryRequest.loadAll();
+    set(await DictionaryRequest.loadAll());
   }
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
@@ -59,6 +62,10 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
         ...updatedWords.find(updatedWord => updatedWord.original === word.original)
       } : word
     )];
+    updatedWords.forEach(word => wordsByOriginal.value[word.original] = {
+      ...wordsByOriginal.value[word.original],
+      ...word
+    });
   }
 
   const retranslateWord = async (original: string): Promise<void> => {
@@ -70,11 +77,17 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
           ...retranslatedWord
         } : word
       )];
+      wordsByOriginal.value[retranslatedWord.original] = {
+        ...wordsByOriginal.value[retranslatedWord.original],
+        ...retranslatedWord
+      };
     }
   };
 
+  set(collection);
+
   return {
-    find: (original: string): Word | undefined => words.value.find(word => word.original === original),
+    find: (original: string): Word | undefined => wordsByOriginal.value[original],
     get: () => words.value.filter(filter.value),
     all: () => words.value,
     set,
