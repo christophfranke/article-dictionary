@@ -1,6 +1,10 @@
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 
+def repair():
+    repair_word()
+    remove_malformat()
+
 def repair_word():
     try:
         dictionary = get_collection('dictionary')
@@ -30,3 +34,16 @@ def repair_word():
             print('No word to repair')
     except Exception as e:
         print('Error repairing word: ' + str(e))
+
+def remove_malformat():
+    dictionary = get_collection('dictionary')
+
+    # Find word that meets the specified criteria
+    query = {
+        'original': {'$exists': False},  # Document must have the 'original' field
+    }
+    word = dictionary.find_one(query)
+
+    if word:
+        dictionary.delete_one({'_id': word['_id']})
+        print('Removed word: ' + word)

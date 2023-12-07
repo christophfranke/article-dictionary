@@ -29,7 +29,7 @@ def add_words(words, dictionary_collection):
 
     # Iterate over the translations dictionary and add each word to the dictionary
     for original_word, translation_possibilities in translations.items():
-        if length(translation_possibilities) > 0:
+        if len(translation_possibilities) > 0:
             new_word = {
                 'original': original_word,
                 'translations': translation_possibilities,
