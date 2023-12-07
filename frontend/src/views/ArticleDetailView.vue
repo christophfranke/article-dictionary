@@ -16,6 +16,7 @@ import ArticleContent from '../components/ArticleContent.vue';
 
 const tableDisplayConfig = {
   header: true,
+  limit: 0,
   col: {
     number: true,
     original: true,

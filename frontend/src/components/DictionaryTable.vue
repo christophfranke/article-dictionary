@@ -22,6 +22,7 @@ const props = defineProps({
     type: Object,
     default: {
       header: true,
+      limit: 0,
       col: {
         number: false,
         original: true,
@@ -85,6 +86,11 @@ const sortedWords = computed<Array<Word>>(() => {
       return propertyA > propertyB ? order : -order;
     });
   }
+
+  if (props.display.limit > 0) {
+    return sorted.slice(0, props.display.limit);
+  }
+
   return sorted;
 });
 

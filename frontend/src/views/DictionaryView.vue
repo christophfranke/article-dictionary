@@ -19,6 +19,7 @@ interface StatusFilters {
 
 const tableDisplayConfig = {
   header: true,
+  limit: 500,
   col: {
     number: false,
     original: true,
