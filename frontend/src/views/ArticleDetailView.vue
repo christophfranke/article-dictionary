@@ -102,6 +102,11 @@ const markAllAsSeen = () => {
   dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
 };
 
+const showDictionary = ref(true);
+const toggleShowDictionary = () => {
+  showDictionary.value = !showDictionary.value;
+};
+
 
 onMounted(() => {
   fetchArticleDetails();
@@ -110,14 +115,19 @@ onMounted(() => {
 
 <template>
   <div class="article-page" v-if="article.title">
-    <div class="content" v-if="article.content && article.content.length">
+    <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <h1>{{ article.title }}</h1>
       <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
       <button :disabled="newWordsCount === 0" class="mark-all-seen-button" @click="markAllAsSeen">Mark All as Seen</button>
     </div>
-    <div class="dictionary-container">
-      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
+    <div class="dictionary-container" :class="{ hidden: !showDictionary}">
+      <button class="toggle-dictionary-button" @click="toggleShowDictionary">
+        {{ showDictionary ? 'Hide Dictionary' : 'Show Dictionary' }}
+      </button>
+      <div class="dictionary-scoller">
+        <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
+      </div>
     </div>
     <Tooltip :dictionary="dictionary" :highlightedWord="highlightedWord" v-model="highlightedWord" />
   </div>
@@ -136,6 +146,12 @@ onMounted(() => {
   margin-right: 20px;
 }
 
+.content.no-dictionary {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100vw;
+}
+
 h1 {
   color: #333;
   font-size: 2em;
@@ -145,12 +161,41 @@ h1 {
 .dictionary-container {
   background-color: white;
   position: fixed;
-  top: 20px; /* Adjust the top position as needed */
-  right: 20px; /* Adjust the right position as needed */
-  max-height: calc(100vh - 40px); /* Set a minimum height for the dictionary container */
+  top: 20px;
+  right: 20px;
+  max-height: calc(100vh - 40px);
   max-width: 550px;
   padding-bottom: 20px;
+  /* do not clip horizontal overflow */
+  overflow-x: visible;
+
+  transition: transform 0.3s ease;
+}
+
+.dictionary-container.hidden {
+  transform: translateX(100%); /* Slide out to the right when hidden */
+}
+
+.dictionary-scoller {
+  max-height: calc(100vh - 40px);
   overflow-y: auto; /* Enable vertical scroll for the dictionary */
+}
+
+.toggle-dictionary-button {
+  position: absolute;
+  top: 0;
+  left: -10px;
+  transform: translateX(-100%);
+  padding: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggle-dictionary-button:hover {
+  background-color: #2980b9;
 }
 
 .mark-all-seen-button {
