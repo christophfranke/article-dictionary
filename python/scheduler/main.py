@@ -6,12 +6,12 @@ from statistics import create_statistics
 from repair import repair_word
 
 # wait a minute
-# time.sleep(60)
+time.sleep(60)
 print("Scheduler Running")
 
-# create_statistics()
-schedule.every(12).hours.do(create_statistics)
-schedule.every(2).seconds.do(repair_word)
+create_statistics()
+schedule.every(2).hours.do(create_statistics)
+schedule.every(60).seconds.do(repair_word)
 
 while True:
     schedule.run_pending()

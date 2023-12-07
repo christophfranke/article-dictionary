@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted, onBeforeUnmount } from 'vue';
 import type { DictionaryCollection } from '../dictionary/collection';
-import useTooltip from '../use/tooltip';
 
 const props = defineProps({
 	dictionary: {

@@ -21,9 +21,7 @@ const { content, words, dictionary } = defineProps({
 	},
 });
 
-const emit = defineEmits<{
-	'update:modelValue': (word: string) => void;
-}>();
+const emit = defineEmits(['update:modelValue']);
 
 
 interface ProcessedContentItem {

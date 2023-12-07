@@ -20,8 +20,10 @@ export interface DictionaryCollection {
 
 
 export default (collection: PartialWord[] = [], filterFn: FilterFunction): DictionaryCollection => {
-  const words = ref([])
-  const wordsByOriginal = ref({})
+  const words = ref<Word[]>([])
+  const wordsByOriginal = ref<{
+    [key: string]: Word;
+  }>({})
   const filter = ref(filterFn)
 
   const set = (newWords: PartialWord[]): void => {
