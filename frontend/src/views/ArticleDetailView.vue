@@ -110,10 +110,8 @@ onMounted(() => {
 
 <template>
   <div class="article-page" v-if="article.title">
-    <div class="content">
-      <div v-if="article.content && article.content.length">
-        <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
-      </div>
+    <div class="content" v-if="article.content && article.content.length">
+      <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
     </div>
     <div class="dictionary-container">
       <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
@@ -131,7 +129,7 @@ onMounted(() => {
 
 .content {
   max-width: 800px;
-  width: calc(100vw - 600px);
+  width: calc(100vw - 750px);
   margin-right: 20px;
 }
 
@@ -147,7 +145,7 @@ h1 {
   top: 20px; /* Adjust the top position as needed */
   right: 20px; /* Adjust the right position as needed */
   max-height: calc(100vh - 40px); /* Set a minimum height for the dictionary container */
-  max-width: 500px;
+  max-width: 550px;
   padding-bottom: 20px;
   overflow-y: auto; /* Enable vertical scroll for the dictionary */
 }
