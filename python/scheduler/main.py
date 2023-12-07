@@ -11,7 +11,7 @@ print("Scheduler Running")
 
 create_statistics()
 schedule.every(2).hours.do(create_statistics)
-schedule.every(60).seconds.do(repair)
+schedule.every(5).seconds.do(repair)
 
 while True:
     schedule.run_pending()

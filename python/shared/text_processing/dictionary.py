@@ -29,15 +29,16 @@ def add_words(words, dictionary_collection):
 
     # Iterate over the translations dictionary and add each word to the dictionary
     for original_word, translation_possibilities in translations.items():
-        if len(translation_possibilities) > 0:
-            new_word = {
-                'original': original_word,
-                'translations': translation_possibilities,
-                'status': 'new' if original_word != translation_possibilities[0] else 'ignore',
-                'language': 'greek'
-            }
+        trans = translation_possibilities
+        primary = trans[0] if len(trans) > 0 else original_word
+        status = 'new' if (len(trans) > 0 and original_word != primary) or len(trans) == 0 else 'ignore'
+        new_word = {
+            'original': original_word,
+            'translations': [primary],
+            'status': status,
+            'language': 'greek',
+            'needs_review': True,
+        }
 
-            dictionary_collection.insert_one(new_word)
-            print(f"Word '{new_word['original']}' added to the dictionary.")
-        else:
-            print(f"Word '{original_word}' has no translations.")
+        dictionary_collection.insert_one(new_word)
+        print(f"Word '{new_word['original']}' added to the dictionary.")

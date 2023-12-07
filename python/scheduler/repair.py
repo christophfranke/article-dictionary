@@ -17,6 +17,8 @@ def repair_word():
                 {'translations': {'$elemMatch': {'$eq': ''}}},  # Empty translation entry in the array
                 {'translations': {'$elemMatch': {'$regex': '\\.$'}}},  # Contains a dot in any translation
                 {'translations': {'$elemMatch': {'$regex': '#'}}},   # Contains a hash in any translation
+                {'needs_review': True}  # Needs Review is set to True
+#                {'needs_review': {'$exists': False}}  # 'needs_review' does not exist
             ]
         }
         word = dictionary.find_one(query)
@@ -27,6 +29,7 @@ def repair_word():
 
             # Update entry with translations
             word['translations'] = translations
+            word['needs_review'] = False
             dictionary.replace_one({'_id': word['_id']}, word)
 
             print('Repaired word: ' + word['original'])
