@@ -111,6 +111,8 @@ onMounted(() => {
 <template>
   <div class="article-page" v-if="article.title">
     <div class="content" v-if="article.content && article.content.length">
+      <Statistics :article="article" :dictionary="dictionary" showPercentage />
+      <h1>{{ article.title }}</h1>
       <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
     </div>
     <div class="dictionary-container">
@@ -173,5 +175,6 @@ h1 {
 
 .statistics {
   float: right;
+  margin-left: 20px;
 }
 </style>
