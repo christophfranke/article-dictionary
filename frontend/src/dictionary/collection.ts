@@ -32,7 +32,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   };
 
   const addWord = async (original: string): Promise<void> => {
-    const addedWord = await DictionaryRequest.addWord(original);
+    const addedWord = await DictionaryRequest.addWord(original.toLowerCase());
     if (addedWord) {
       words.value = [...words.value, addedWord];
       wordsByOriginal.value[addedWord.original] = addedWord;
@@ -44,14 +44,14 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   }
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-    const updatedWord = await DictionaryRequest.updateWord(original, data);
+    const updatedWord = await DictionaryRequest.updateWord(original.toLowerCase(), data);
     if (updatedWord) {
       updateLocalCollection([updatedWord]);
     }
   };
 
   const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
-    const updatedWords = await DictionaryRequest.updateMany(originals, data);
+    const updatedWords = await DictionaryRequest.updateMany(originals.map(word => word.toLowerCase()), data);
     if (updatedWords) {
       updateLocalCollection(updatedWords);
     }
@@ -71,7 +71,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   }
 
   const retranslateWord = async (original: string): Promise<void> => {
-    const retranslatedWord = await DictionaryRequest.retranslate(original);
+    const retranslatedWord = await DictionaryRequest.retranslate(original.toLowerCase());
     if (retranslatedWord) {
       words.value = [...words.value.map(word => word.original === retranslatedWord.original
         ? {
@@ -89,7 +89,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   set(collection);
 
   return {
-    find: (original: string): Word | undefined => wordsByOriginal.value[original],
+    find: (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()],
     get: () => words.value.filter(filter.value),
     all: () => words.value,
     set,

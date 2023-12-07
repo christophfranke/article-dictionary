@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import type { DictionaryCollection } from '../dictionary/collection';
 
 const props = defineProps({
@@ -28,6 +28,33 @@ const setTooltipPosition = (event: MouseEvent): void => {
   position.x = event.clientX + 10; // Add an offset to prevent the tooltip from overlapping with the cursor
   position.y = event.clientY + 20; // Adjust the offset based on your design preference
 };
+
+// time how long a translation is shown
+const UPDATE_TIME = 500
+let timer = 0
+let word = ''
+let timeoutId: ReturnType<typeof setTimeout> | null = null
+watch(isVisible, (newValue, oldValue) => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+    timeoutId = null;
+  }
+  if (!oldValue && newValue) {
+    word = props.highlightedWord;
+    timer = Date.now();
+    timeoutId = setTimeout(() => {
+      props.dictionary.updateWord(word, { status: 'seen' });
+    }, UPDATE_TIME);
+  }
+  if (!newValue && oldValue) {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  }
+});
+
+
 
 onMounted(() => {
   document.addEventListener('mousemove', setTooltipPosition);
