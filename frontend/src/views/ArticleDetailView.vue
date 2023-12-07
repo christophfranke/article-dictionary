@@ -144,7 +144,7 @@ onMounted(() => {
 
 .content {
   max-width: 800px;
-  width: calc(100vw - 750px);
+  width: calc(10px + 50vw);
   margin-right: 20px;
 }
 
@@ -153,6 +153,24 @@ onMounted(() => {
   margin: 0 auto;
   width: 100vw;
 }
+
+@media (max-width: 1240px) {
+  .content {
+    width: calc(100vw - 610px);
+  }
+
+  .content.no-dictionary {
+    margin: 0 auto;
+    width: calc(100vw - 70px);
+  }
+}
+
+@media (max-width: 1000px) {
+  .content {
+    width: calc(100vw - 40px);
+  }
+}
+
 
 h1 {
   color: #333;
