@@ -5,16 +5,12 @@ import { useRoute } from 'vue-router';
 import type { Word, ArticleDetail } from '../types';
 
 import createDictionaryCollection from '../dictionary/collection';
-import useTooltip from '../use/tooltip';
 
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
+import Tooltip from '../components/Tooltip.vue';
+import ArticleContent from '../components/ArticleContent.vue';
 
-
-interface ProcessedContentItem {
-  word: string;
-  separator: string[];
-}
 
 const tableDisplayConfig = {
   header: true,
@@ -46,15 +42,6 @@ const article = ref<ArticleDetail>({
 });
 
 const highlightedWord = ref<string>('');
-const setHighlight = (word: string) => {
-  highlightedWord.value = word;
-};
-const unsetHighlight = (word: string) => {
-  if (highlightedWord.value === word) {
-    highlightedWord.value = '';
-  }
-};
-
 
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
@@ -64,7 +51,6 @@ const newWordsCount = computed<number>(() => dictionary.get().filter((word) => w
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = createDictionaryCollection([], displayFilter);
-const tooltip = useTooltip({ dictionary, highlightedWord });
 
 const fetchArticleDetails = async () => {
   try {
@@ -111,31 +97,6 @@ const fetchArticleDetails = async () => {
   }
 };
 
-const getSeparator = (index: number, nextWord: string): string => {
-  const nextIndex = article.value.content.substring(index).indexOf(nextWord);
-  return nextIndex === -1 || nextIndex === 0
-    ? ''
-    : article.value.content.substring(index, index + nextIndex);
-};
-
-const processedContent = computed<ProcessedContentItem[]>(() => {
-  const result: ProcessedContentItem[] = [];
-  let currentIndex = 0;
-
-  article.value.words.forEach((word, index) => {
-    const separator = getSeparator(currentIndex, word);
-    result.push({ word, separator: separator.split('\n') });
-    currentIndex += separator.length + word.length;
-  });
-
-  return result;
-});
-
-const toggleStatusSeen = (word: string) => {
-  const original = word.toLowerCase()
-  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status || '') ? 'known' : 'seen' });
-};
-
 const markAllAsSeen = () => {
   const words = dictionary.get().filter((word) => word.status === 'new');
   dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
@@ -150,35 +111,14 @@ onMounted(() => {
 <template>
   <div class="article-page" v-if="article.title">
     <div class="content">
-      <Statistics :article="article" :dictionary="dictionary" showPercentage />
-      <h1>{{ article.title }}</h1>
       <div v-if="article.content && article.content.length">
-        <p>
-          <template v-for="({ word, separator }, index) in processedContent" :key="index">
-            <span class="separator">
-              <template v-for="(sep, index) in separator">
-                {{ sep }}<br v-if="index < separator.length - 1" />
-              </template>
-            </span>
-            <span
-              @mouseover="setHighlight(word)"
-              @mouseout="unsetHighlight(word)"
-              @click="toggleStatusSeen(word)"
-              :class="{ word: true, new: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'new', seen: displayedWords.find(entry => entry.original === word.toLowerCase())?.status === 'seen' }"
-            >
-              {{ word }}
-            </span>
-          </template>
-        </p>
+        <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
       </div>
-      <button :disabled="newWordsCount === 0" class="mark-all-seen-button" @click="markAllAsSeen">Mark All as Seen</button>
     </div>
     <div class="dictionary-container">
       <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
     </div>
-    <div v-if="tooltip.isVisible.value" class="tooltip" :style="{ top: `${tooltip.position.y}px`, left: `${tooltip.position.x}px` }">
-      {{ tooltip.content.value }}
-    </div>
+    <Tooltip :dictionary="dictionary" :highlightedWord="highlightedWord" v-model="highlightedWord" />
   </div>
 </template>
 
@@ -199,29 +139,6 @@ h1 {
   color: #333;
   font-size: 2em;
   margin-bottom: 20px;
-}
-
-p {
-  font-size: 18px;
-  line-height: 2;
-}
-
-span.word {
-  cursor: pointer;
-  padding: 2px 3px;
-}
-
-span.separator {
-  padding: 2px 0;
-  margin: 0 -2px;
-}
-
-span.new {
-  background-color: rgba(51, 153, 255, 0.15);
-}
-
-span.seen {
-  background-color: rgba(255, 191, 128, 0.25);
 }
 
 .dictionary-container {
@@ -254,26 +171,6 @@ span.seen {
   background-color: #b0b0b0; /* Light gray background for disabled state */
   cursor: default; /* Default cursor on disabled state */
   color: #666; /* Dim text color for disabled state */
-}
-
-.tooltip {
-  position: fixed;
-  z-index: 9999;
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 5px;
-  font-size: 14px;
-  pointer-events: none; /* Ensures tooltip doesn't interfere with mouse events */
-}
-
-/* Optional: Add some animation for the tooltip */
-.tooltip-enter-active, .tooltip-leave-active {
-  transition: opacity 0.5s;
-}
-
-.tooltip-enter, .tooltip-leave-to {
-  opacity: 0;
 }
 
 .statistics {

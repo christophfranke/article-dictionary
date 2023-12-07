@@ -1,0 +1,68 @@
+<script setup lang="ts">
+import { ref, computed, reactive, onMounted, onBeforeUnmount } from 'vue';
+import type { DictionaryCollection } from '../dictionary/collection';
+import useTooltip from '../use/tooltip';
+
+const props = defineProps({
+	dictionary: {
+		type: Object as unknown as () => DictionaryCollection,
+		required: true,
+	},
+	highlightedWord: {
+		type: String,
+		required: true
+	},
+});
+
+
+const isVisible = computed(() => !!props.highlightedWord
+    && ['new', 'seen'].includes(props.dictionary.find(props.highlightedWord?.toLowerCase() || '')?.status || '')
+);
+
+const content = computed(() => isVisible.value
+  ? (props.dictionary.find(props.highlightedWord?.toLowerCase() || '')?.translations.join(', ') || '')
+  : ''
+);
+
+const position = reactive({ x: 0, y: 0 });
+const setTooltipPosition = (event: MouseEvent): void => {
+  position.x = event.clientX + 10; // Add an offset to prevent the tooltip from overlapping with the cursor
+  position.y = event.clientY + 20; // Adjust the offset based on your design preference
+};
+
+onMounted(() => {
+  document.addEventListener('mousemove', setTooltipPosition);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousemove', setTooltipPosition);
+});
+</script>
+
+<template>
+  <div v-if="isVisible" class="tooltip" :style="{ top: `${position.y}px`, left: `${position.x}px` }">
+		{{ content }}
+  </div>	
+</template>
+
+<style scoped>
+.tooltip {
+  position: fixed;
+  z-index: 9999;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  pointer-events: none; /* Ensures tooltip doesn't interfere with mouse events */
+}
+
+/* Optional: Add some animation for the tooltip */
+.tooltip-enter-active, .tooltip-leave-active {
+  transition: opacity 0.5s;
+}
+
+.tooltip-enter, .tooltip-leave-to {
+  opacity: 0;
+}
+</style>
