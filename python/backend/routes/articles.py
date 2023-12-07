@@ -9,21 +9,82 @@ articles = Blueprint('articles', __name__)
 def slugify(title):
     return title.lower().replace(' ', '-')[:50]
 
+def get_dictionary_entries(words):
+    # Retrieve dictionary entries for each word
+    dictionary_collection = get_collection('dictionary')
+
+    # Convert words to lowercase and remove duplicates
+    unique_words = list(set([word.lower() for word in words]))
+
+    # Use a single query to fetch dictionary entries
+    cursor = dictionary_collection.find(
+        {'original': {'$in': unique_words}},
+        {'original': 1, 'translations': 1, 'frequency': 1, 'status': 1}
+    )
+
+    # Transform cursor to list and add 'id' field
+    dictionary_entries = [
+        {'id': str(entry['_id']), 'original': entry['original'], 'translations': entry['translations'],
+         'frequency': entry['frequency'], 'status': entry['status']} for entry in cursor
+    ]
+
+    return dictionary_entries
+
+def create_status_map(words):
+    # Retrieve dictionary entries for each word
+    dictionary_collection = get_collection('dictionary')
+
+    # Convert words to lowercase and remove duplicates
+    unique_words = list(set([word.lower() for word in words]))
+
+    # Use a single query to fetch dictionary entries
+    cursor = dictionary_collection.find(
+        {'original': {'$in': unique_words}},
+        {'original': 1, 'status': 1}
+    )
+
+    # Transform cursor to a dictionary with word as key and status as value
+    status_map = {
+        entry['original']: entry['status'] for entry in cursor
+    }
+
+    return status_map
+
+
+def get_word_status(original, status_map):
+    return status_map.get(original, 'unknown')
+
+
 @articles.route('/')
 def list_articles():
     # Retrieve all articles from the collection
     all_articles = get_collection('articles').find()
 
-    # Format articles for response
-    formatted_articles = [
-        {
+    formatted_articles = []
+
+    # Iterate through articles
+    for article in all_articles:
+        # Get dictionary entries for the article's words
+        status_map = create_status_map(article['words'])
+
+        # Calculate statistics for the article
+        statistics = {
+            'total': len(article['words']),
+            'new': len([word for word in article['words'] if get_word_status(word, status_map) == 'new']),
+            'seen': len([word for word in article['words'] if get_word_status(word, status_map) == 'seen']),
+            'known': len([word for word in article['words'] if get_word_status(word, status_map) == 'known']),
+        }
+
+        # Format the article for response
+        formatted_article = {
             'id': str(article['_id']),
             'title': article['title'],
             'excerpt': article['content'][:150],  # Truncate content to 150 characters for excerpt
             'slug': article['slug'],
+            'statistics': statistics
         }
-        for article in all_articles
-    ]
+
+        formatted_articles.append(formatted_article)
 
     # Return formatted articles as JSON
     return jsonify(formatted_articles)
@@ -49,6 +110,8 @@ def create_article():
         'title': title,
         'content': content,
         'slug': slugify(title),
+        'words': extract_words(content),
+        'dictionary': get_dictionary_entries(article['words'])
     }
 
     result = articles_collection.insert_one(new_article)
@@ -67,25 +130,12 @@ def get_article(slug):
     if not article:
         return jsonify({'error': 'Article not found'}), 404
 
-    # Extract words from the article content
-    article_words = extract_words(article['content'])
-
-    # Retrieve dictionary entries for each word
-    dictionary_entries = []
-    dictionary_collection = get_collection('dictionary')
-
-
-    for word in list(set([word.lower() for word in article_words])):
-        dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 1, 'original': 1, 'translations': 1, 'frequency': 1, 'status': 1 })
-        if dictionary_entry:
-            dictionary_entry['id'] = str(dictionary_entry.pop('_id'))
-            dictionary_entries.append(dictionary_entry)
 
     # Return article with additional 'dictionary' field as JSON
     return jsonify({
         'title': article['title'],
         'content': article['content'],
         'slug': article['slug'],
-        'words': article_words,
-        'dictionary': dictionary_entries,
+        'words': article['words'],
+        'dictionary': get_dictionary_entries(article['words'])
     })

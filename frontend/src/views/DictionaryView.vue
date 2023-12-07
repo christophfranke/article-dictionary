@@ -112,7 +112,7 @@ onMounted(async () => {
 
     <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
 
-    <button class="rebuild-button" @click="rebuildDictionary">Drop and Rebuild Dictionary</button>
+    <button v-if="false" class="rebuild-button" @click="rebuildDictionary">Drop and Rebuild Dictionary</button>
   </div>
 </template>
 

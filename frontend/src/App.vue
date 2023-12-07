@@ -43,10 +43,13 @@ nav {
   justify-content: flex-start;
 }
 
+nav a {  
+  padding: 5px 10px;
+}
+
 a, a:visited {
   color: #fff;
   text-decoration: none;
-  padding: 5px 10px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
 }

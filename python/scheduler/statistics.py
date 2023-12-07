@@ -1,6 +1,10 @@
 from utils.mongo_external import get_collection
 from datetime import datetime
 
+def jobs():
+    create_statistics()
+
+
 def create_statistics():
     dictionary = get_collection('dictionary')
 

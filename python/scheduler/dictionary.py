@@ -4,7 +4,7 @@ from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 from text_processing.extract import extract_words
 
-def do_jobs():
+def jobs():
     retranslate_word()
     remove_malformat()
     update_word_frequency()

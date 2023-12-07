@@ -2,16 +2,18 @@ import schedule
 import sys
 import time
 from datetime import datetime
-from statistics import create_statistics
-from dictionary import do_jobs
+import statistics
+import dictionary
+import articles
 
 # wait a minute
 # time.sleep(60)
 print("Scheduler Running")
 
 # create_statistics()
-schedule.every(2).hours.do(create_statistics)
-schedule.every(5).seconds.do(do_jobs)
+schedule.every(2).hours.do(statistics.jobs)
+schedule.every(5).seconds.do(dictionary.jobs)
+schedule.every(60).seconds.do(articles.jobs)
 
 while True:
     schedule.run_pending()

@@ -51,7 +51,7 @@ const navigateToCreateArticle = (): void => {
 
 <style scoped>
 .container {
-  max-width: 800px;
+  max-width: 950px;
   margin: 0 auto;
   padding: 20px;
 }

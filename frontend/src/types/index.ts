@@ -23,6 +23,12 @@ export interface ArticleBase extends ArticleData {
 
 export interface ArticlePreview extends ArticleBase {
   excerpt: string;
+  statistics: {
+    total: number;
+    new: number;
+    seen: number;
+    known: number;
+  }
 }
 
 export interface ArticleDetail extends ArticleBase {
