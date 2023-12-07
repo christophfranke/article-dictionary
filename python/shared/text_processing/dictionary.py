@@ -37,7 +37,7 @@ def add_words(words, dictionary_collection):
             'translations': [primary],
             'status': status,
             'language': 'greek',
-            'needs_review': True,
+            'needs_retranslate': True,
         }
 
         dictionary_collection.insert_one(new_word)

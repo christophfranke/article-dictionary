@@ -123,7 +123,7 @@ def retranslate(original):
     word['translations'] = translate_single_word(original)
 
     # Has been retranslated manually, does not need automatic review
-    word['needs_review'] = False
+    word['needs_retranslate'] = False
 
     # Save the updated word back to the dictionary collection
     dictionary_collection.replace_one({'original': original}, word)

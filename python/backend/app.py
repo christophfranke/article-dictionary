@@ -2,8 +2,6 @@ from flask import Flask
 import logging
 import sys
 
-from migrations import migrate
-
 from routes.articles import articles
 from routes.dictionary import dictionary
 

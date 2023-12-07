@@ -1,11 +1,11 @@
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 
-def repair():
-    repair_word()
+def do_jobs():
+    retranslate_word()
     remove_malformat()
 
-def repair_word():
+def retranslate_word():
     try:
         dictionary = get_collection('dictionary')
 
@@ -17,8 +17,7 @@ def repair_word():
                 {'translations': {'$elemMatch': {'$eq': ''}}},  # Empty translation entry in the array
                 {'translations': {'$elemMatch': {'$regex': '\\.$'}}},  # Contains a dot in any translation
                 {'translations': {'$elemMatch': {'$regex': '#'}}},   # Contains a hash in any translation
-                {'needs_review': True},  # Needs Review is set to True
-                {'needs_review': {'$exists': False}},  # 'needs_review' does not exist
+                {'needs_retranslate': True},  # Needs Review is set to True
             ]
         }
         word = dictionary.find_one(query)
@@ -29,14 +28,15 @@ def repair_word():
 
             # Update entry with translations
             word['translations'] = translations
-            word['needs_review'] = False
+            word['needs_retranslate'] = False
             dictionary.replace_one({'_id': word['_id']}, word)
 
-            print('Repaired word: ' + word['original'])
+            print('Translated word: ' + word['original'])
         else:
-            print('No word to repair')
+            print('No word to translate')
     except Exception as e:
-        print('Error repairing word: ' + str(e))
+        print('Error retranslating word: ' + str(e))
+
 
 def remove_malformat():
     dictionary = get_collection('dictionary')
