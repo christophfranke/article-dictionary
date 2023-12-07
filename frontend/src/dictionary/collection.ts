@@ -43,15 +43,21 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
     set(await DictionaryRequest.loadAll());
   }
 
+  const find =  (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()]
+
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-    const updatedWord = await DictionaryRequest.updateWord(original.toLowerCase(), data);
-    if (updatedWord) {
-      updateLocalCollection([updatedWord]);
+    const id = find(original.toLowerCase())?.id;
+    if (id) {      
+      const updatedWord = await DictionaryRequest.updateWord(id, data);
+      if (updatedWord) {
+        updateLocalCollection([updatedWord]);
+      }
     }
   };
 
   const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
-    const updatedWords = await DictionaryRequest.updateMany(originals.map(word => word.toLowerCase()), data);
+    const ids = originals.map(original => find(original.toLowerCase())?.id).filter(id => id);
+    const updatedWords = await DictionaryRequest.updateMany(ids, data);
     if (updatedWords) {
       updateLocalCollection(updatedWords);
     }
@@ -71,25 +77,28 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   }
 
   const retranslateWord = async (original: string): Promise<void> => {
-    const retranslatedWord = await DictionaryRequest.retranslate(original.toLowerCase());
-    if (retranslatedWord) {
-      words.value = [...words.value.map(word => word.original === retranslatedWord.original
-        ? {
-          ...word,
+    const id = find(original.toLowerCase())?.id;
+    if (id) {
+      const retranslatedWord = await DictionaryRequest.retranslate(original.toLowerCase());
+      if (retranslatedWord) {
+        words.value = [...words.value.map(word => word.original === retranslatedWord.original
+          ? {
+            ...word,
+            ...retranslatedWord
+          } : word
+        )];
+        wordsByOriginal.value[retranslatedWord.original] = {
+          ...wordsByOriginal.value[retranslatedWord.original],
           ...retranslatedWord
-        } : word
-      )];
-      wordsByOriginal.value[retranslatedWord.original] = {
-        ...wordsByOriginal.value[retranslatedWord.original],
-        ...retranslatedWord
-      };
+        };
+      }      
     }
   };
 
   set(collection);
 
   return {
-    find: (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()],
+    find,
     get: () => words.value.filter(filter.value),
     all: () => words.value,
     set,

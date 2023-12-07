@@ -30,9 +30,9 @@ export const rebuild = async (): Promise<{ message: string } | null> => {
   }
 };
 
-export const retranslate = async (original: string): Promise<PartialWord | null> => {
+export const retranslate = async (id: string): Promise<PartialWord | null> => {
   try {
-    const response = await fetch(`/api/dictionary/retranslate/${original}`, { method: 'POST' });
+    const response = await fetch(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
     if (response.ok) {
       return await response.json();
     } else {
@@ -68,9 +68,9 @@ export const addWord = async (original: string): Promise<PartialWord | null> => 
   }
 };
 
-export const updateWord = async (original: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
+export const updateWord = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
   try {
-    const result = await fetch(`/api/dictionary/update/${original}`, {
+    const result = await fetch(`/api/dictionary/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -90,14 +90,14 @@ export const updateWord = async (original: string, data: Record<string, unknown>
   }
 };
 
-export const updateMany = async (originals: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {
+export const updateMany = async (ids: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {
   try {
     const result = await fetch('/api/dictionary/update/', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ originals, update }),
+      body: JSON.stringify({ ids, update }),
     });
 
     if (result.ok) {

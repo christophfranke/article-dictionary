@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from utils.mongo import get_collection, drop_collection
 from text_processing.dictionary import add_text, add_words
 from text_processing.translate import translate_single_word
+from bson import ObjectId
 
 dictionary = Blueprint('dictionary', __name__)
 
@@ -42,16 +43,18 @@ def reset_dictionary():
 
     return jsonify({'message': 'Reset successful'})
 
-@dictionary.route('/update/<original>', methods=['PUT'])
-def update_word(original):
+@dictionary.route('/update/<id>', methods=['PUT'])
+def update_word(id):
+    _id = ObjectId(id)
+
     # Retrieve the dictionary collection
     dictionary_collection = get_collection('dictionary')
 
     # Find the word in the dictionary
-    word = dictionary_collection.find_one({'original': original})
+    word = dictionary_collection.find_one({'_id': _id})
 
     if word is None:
-        return jsonify({'error': f'Word not found: {original}'}), 404
+        return jsonify({'error': f'Word not found: {id}'}), 404
 
     # Update the word with the provided JSON data
     data = request.get_json()
@@ -63,10 +66,10 @@ def update_word(original):
         word[key] = value
 
     # Save the updated word back to the dictionary collection
-    dictionary_collection.replace_one({'original': original}, word)
+    dictionary_collection.replace_one({'_id': _id}, word)
 
     # Retrieve the updated word from the dictionary
-    updated_word = dictionary_collection.find_one({'original': original})
+    updated_word = dictionary_collection.find_one({'_id': _id})
     updated_word['id'] = str(updated_word.pop('_id'))
     return jsonify(updated_word)
 
@@ -81,23 +84,23 @@ def update_many():
     if not data:
         return jsonify({'error': 'No data provided for update'}), 400
 
-    originals = data.get('originals', [])
+    ids = [ObjectId(id) for id in data.get('ids', [])]
     update = data.get('update', {})
 
-    if not originals:
-        return jsonify({'error': 'No originals provided for update'}), 400
+    if not ids:
+        return jsonify({'error': 'No ids provided for update'}), 400
 
     if not update:
         return jsonify({'error': 'No update provided for update'}), 400
 
     # Find the words in the dictionary
-    words = list(dictionary_collection.find({'original': {'$in': originals}}))
+    words = list(dictionary_collection.find({'_id': {'$in': ids}}))
 
     # Update fields based on the data
     for word in words:
         for key, value in update.items():
             word[key] = value
-            dictionary_collection.replace_one({'original': word['original']}, word)
+            dictionary_collection.replace_one({'_id': word['_id']}, word)
 
     # Return the json words to the user
     for word in words:
