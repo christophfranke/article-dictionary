@@ -114,6 +114,7 @@ onMounted(() => {
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <h1>{{ article.title }}</h1>
       <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
+      <button :disabled="newWordsCount === 0" class="mark-all-seen-button" @click="markAllAsSeen">Mark All as Seen</button>
     </div>
     <div class="dictionary-container">
       <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
