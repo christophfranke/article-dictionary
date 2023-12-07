@@ -23,6 +23,7 @@ const tableDisplayConfig = {
     translations: true,
     status: false,
     actions: true,
+    frequency: false,
   },
   action: {
     known: true,

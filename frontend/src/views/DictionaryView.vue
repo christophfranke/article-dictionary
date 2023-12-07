@@ -26,6 +26,7 @@ const tableDisplayConfig = {
     translations: true,
     status: true,
     actions: true,
+    frequency: true,
   },
   action: {
     known: false,

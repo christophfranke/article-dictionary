@@ -4,6 +4,7 @@ export interface PartialWord {
   original: string;
   translations: string[];
   status: string;
+  frequency: number;
 }
 
 export interface Word extends PartialWord {

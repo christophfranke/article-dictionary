@@ -16,7 +16,10 @@ def add_words(words, dictionary_collection):
             # If the word is not in the dictionary, add it to the array
             new_words.append(word)
         else:
-            print(f"Word '{word}' already exists in the dictionary.")
+            dictionary_collection.update_one(
+                {'_id': existing_word['_id']},
+                {'$set': {'needs_recount': True}}
+            )
 
     # Assuming translate function returns a dictionary
     try:

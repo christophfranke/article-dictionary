@@ -27,6 +27,7 @@ const props = defineProps({
         number: false,
         original: true,
         translations: true,
+        frequency: true,
         status: true,
         actions: true,
       },
@@ -186,6 +187,7 @@ const retranslateWord = dict.retranslateWord;
           <th @click="sortTable('number')" v-if="display.col.number">#</th>
           <th @click="sortTable('original')" v-if="display.col.original">Original</th>
           <th @click="sortTable('translations')" v-if="display.col.translations">Translations</th>
+          <th @click="sortTable('frequency')" v-if="display.col.frequency">Frequency</th>
           <th @click="sortTable('status')" v-if="display.col.status">Status</th>
           <th v-if="display.col.actions">Actions</th>
         </tr>
@@ -210,6 +212,7 @@ const retranslateWord = dict.retranslateWord;
               </form>
             </td>
           </template>
+          <td v-if="display.col.frequency">{{ word.frequency }}</td>
           <td v-if="display.col.status" @click="changeStatus(word)" class="status-column">{{ word.status }}</td>
           <td v-if="display.col.actions" class="actions-column">
             <div>

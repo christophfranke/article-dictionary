@@ -76,7 +76,7 @@ def get_article(slug):
 
 
     for word in list(set([word.lower() for word in article_words])):
-        dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 1, 'language': 0 })
+        dictionary_entry = dictionary_collection.find_one({'original': word}, { '_id': 1, 'original': 1, 'translations': 1, 'frequency': 1, 'status': 1 })
         if dictionary_entry:
             dictionary_entry['id'] = str(dictionary_entry.pop('_id'))
             dictionary_entries.append(dictionary_entry)

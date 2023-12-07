@@ -56,7 +56,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   };
 
   const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
-    const ids = originals.map(original => find(original.toLowerCase())?.id).filter(id => id);
+    const ids = originals.map(original => find(original.toLowerCase())?.id!).filter(id => id);
     const updatedWords = await DictionaryRequest.updateMany(ids, data);
     if (updatedWords) {
       updateLocalCollection(updatedWords);
