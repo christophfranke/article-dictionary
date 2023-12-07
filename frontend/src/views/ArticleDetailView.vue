@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import type { Word, ArticleDetail } from '../types';
 
@@ -10,6 +11,7 @@ import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
 import Tooltip from '../components/Tooltip.vue';
 import ArticleContent from '../components/ArticleContent.vue';
+
 
 
 const tableDisplayConfig = {
@@ -123,7 +125,7 @@ onMounted(() => {
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">
       <button class="toggle-dictionary-button" @click="toggleShowDictionary">
-        {{ showDictionary ? 'Hide Dictionary' : 'Show Dictionary' }}
+        <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
       </button>
       <div class="dictionary-scoller">
         <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
@@ -196,6 +198,14 @@ h1 {
 
 .toggle-dictionary-button:hover {
   background-color: #2980b9;
+}
+
+.toggle-dictionary-button svg {
+  transition: transform 0.3s ease;
+}
+
+.rotate {
+  transform: rotate(180deg);
 }
 
 .mark-all-seen-button {
