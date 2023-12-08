@@ -3,7 +3,9 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 import type { ArticlePreview } from '@/types';
+
 import ArticlePreviewComponent from '../components/ArticlePreview.vue';
+import ProgresseComponent from '../components/Progress.vue';
 
 
 const articles = ref<ArticlePreview[]>([]);
@@ -33,8 +35,8 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
+    <ProgresseComponent />
     <h1 class="main-heading">Articles</h1>
-
     <div v-if="articles.length > 0" class="article-list">
       <article v-for="article in articles" :key="article.id" class="article-preview">
         <ArticlePreviewComponent :article="article" />
