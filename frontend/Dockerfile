@@ -4,6 +4,10 @@ FROM node:20
 # Set the working directory to /app/frontend
 WORKDIR /app/frontend
 
+# Move node modules outside the app folder
+ENV NODE_PATH /node_modules
+ENV PATH $PATH:/node_modules/.bin
+
 # Copy the package.json and package-lock.json files into the container
 COPY ./package*.json .
 
@@ -15,6 +19,3 @@ RUN date > /app/frontend/timestamp.txt
 
 # Copy the rest of the application code into the container
 COPY . .
-
-# Build the application
-CMD ["npm", "run", "build"]

@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  frontend-build:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - frontend-dist:/app/frontend/dist
+    command: npm run build
+
+  backend:
+    build:
+      context: ./python
+      dockerfile: backend.Dockerfile
+    depends_on:
+      - mongodb
+    command: gunicorn -c /app/backend/gunicorn_config.py main:app
+
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data:/data/db
+    command: mongod --quiet --logpath /dev/null
+
+  scheduler:
+    build:
+      context: ./python
+      dockerfile: scheduler.Dockerfile
+    depends_on:
+      - mongodb
+
+  webserver:
+    build:
+      context: ./nginx
+    volumes:
+      - frontend-dist:/usr/share/nginx/html
+    ports:
+      - "9900:80"
+    depends_on:
+      - frontend-build
+      - backend
+
+volumes:
+  frontend-dist:

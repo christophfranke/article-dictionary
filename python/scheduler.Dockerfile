@@ -11,8 +11,8 @@ RUN pip3 install -r requirements.txt
 COPY ./scheduler .
 
 # Set PYTHONPATH to include the shared directory
-ENV PYTHONPATH="${PYTHONPATH}:/shared"
-COPY ./shared /shared
+ENV PYTHONPATH="${PYTHONPATH}:/app/shared"
+COPY ./shared /app/shared
 
 # Run app.py when the container launches
 CMD ["python3", "main.py"]

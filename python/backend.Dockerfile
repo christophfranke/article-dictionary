@@ -10,11 +10,8 @@ RUN pip3 install -r requirements.txt
 # Copy the current directory contents into the container at /app/backend
 COPY ./backend /app/backend
 
-ENV PYTHONPATH="${PYTHONPATH}:/shared"
+ENV PYTHONPATH="${PYTHONPATH}:/app/shared"
 COPY ./shared /app/shared
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
-
-# Run app.py when the container launches
-CMD ["python3", "app.py"]
