@@ -1,0 +1,67 @@
+from flask import Blueprint, jsonify
+from datetime import datetime, timedelta
+from utils.mongo import get_collection
+
+statistics = Blueprint('statistics', __name__)
+
+@statistics.route('/daily', methods=['GET'])
+def get_statistics():
+    statistics_collection = get_collection('statistics')
+
+    # Calculate the date 7 days ago from today
+    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+
+    # MongoDB Aggregation Pipeline
+    pipeline = [
+        {
+            '$match': {
+                'timestamp': {'$gte': seven_days_ago}
+            }
+        },
+        {
+            '$sort': {
+                'timestamp': -1
+            }
+        },
+        {
+            '$group': {
+                '_id': {
+                    '$dateToString': {
+                        'format': '%Y-%m-%d',
+                        'date': '$timestamp'
+                    }
+                },
+                'latest_timestamp': {'$first': '$timestamp'},
+                'new_words': {'$first': '$new_words'},
+                'seen_words': {'$first': '$seen_words'},
+                'known_words': {'$first': '$known_words'},
+                'ignore_words': {'$first': '$ignore_words'}
+            }
+        },
+        {
+            '$project': {
+                '_id': 0,
+                'date': '$_id',
+                'latest_timestamp': 1,
+                'new_words': 1,
+                'seen_words': 1,
+                'known_words': 1,
+                'ignore_words': 1
+            }
+        },
+        {
+            '$sort': {
+                'latest_timestamp': -1
+            }
+        }
+    ]
+
+    # Execute the aggregation pipeline
+    result = list(statistics_collection.aggregate(pipeline))
+
+    # Modify the result to add 'total_words' and remove 'ignore_words'
+    for entry in result:
+        entry['total_words'] = entry['new_words'] + entry['seen_words'] + entry['known_words']
+        del entry['ignore_words']
+
+    return jsonify(result)
