@@ -35,3 +35,12 @@ export interface ArticleDetail extends ArticleBase {
   words: string[];
   dictionary: Word[];
 }
+
+export interface Progress {
+    date: string;
+    known_words: number;
+    latest_timestamp: string;
+    new_words: number;
+    seen_words: number;
+    total_words: number;
+}

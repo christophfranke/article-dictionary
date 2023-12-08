@@ -64,4 +64,17 @@ def get_statistics():
         entry['total_words'] = entry['new_words'] + entry['seen_words'] + entry['known_words']
         del entry['ignore_words']
 
+    if len(result) < 7:
+        # Add missing dates
+        for i in range(7 - len(result)):
+            date = (datetime.utcnow() - timedelta(days=6 - i)).strftime('%Y-%m-%d')
+            result.append({
+                'date': date,
+                'latest_timestamp': None,
+                'new_words': 0,
+                'seen_words': 0,
+                'known_words': 0,
+                'total_words': 0
+            })
+
     return jsonify(result)
