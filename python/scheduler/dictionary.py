@@ -16,7 +16,6 @@ def update_word_frequency():
         # Find word that meets the specified criteria
         query = {
             'original': {'$exists': True},  # Document must have the 'original' field
-            'status': {'$ne': 'ignore'},  # 'status' is not set to 'ignore'
             '$or': [
                 {'frequency': {'$exists': False}},  # 'frequency' is not set
                 {'needs_recount': True},  # Needs Review is set to True
@@ -33,9 +32,10 @@ def update_word_frequency():
 
             # Update entry with frequency
             word['frequency'] = frequency
+            word['needs_recount'] = False
             dictionary.replace_one({'_id': word['_id']}, word)
 
-            print('Counted frequency for word: ' + word['original'] + ' - ' + str(frequency))
+            print('Counted frequency for word: ' + word['original'] + ': ' + str(frequency))
     except Exception as e:
         print('Error counting frequency for word: ' + str(e))
 
@@ -65,9 +65,7 @@ def retranslate_word():
             word['needs_retranslate'] = False
             dictionary.replace_one({'_id': word['_id']}, word)
 
-            print('Translated word: ' + word['original'])
-        else:
-            print('No word to translate')
+            print(f'Retranslated word {word["original"]}: {", ".join(map(str, translations))}')
     except Exception as e:
         print('Error retranslating word: ' + str(e))
 

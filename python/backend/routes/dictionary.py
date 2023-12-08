@@ -26,9 +26,6 @@ def list_words():
 
 @dictionary.route('/reset', methods=['POST'])
 def reset_dictionary():
-    # Drop the dictionary collection
-    drop_collection('dictionary')
-
     # Access the article collection
     article_collection = get_collection('articles')
 

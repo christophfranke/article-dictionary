@@ -25,10 +25,11 @@ def add_words(words, dictionary_collection):
     try:
         translations = translate_words(new_words)
     except Exception as e:
-        raise Exception(f'Error translating words: {e}')
+        print(f'Error translating words: {e}')
+        translations = {}
 
     if not set(new_words).issubset(translations.keys()):
-        raise Exception(f'Translations do not cover all new words: {translations}')
+        print(f'Translations do not cover all new words: {translations}')
 
     # Iterate over the translations dictionary and add each word to the dictionary
     for original_word, translation_possibilities in translations.items():
@@ -41,6 +42,8 @@ def add_words(words, dictionary_collection):
             'status': status,
             'language': 'greek',
             'needs_retranslate': True,
+            'needs_recount': True,
+            'frequency': 1
         }
 
         dictionary_collection.insert_one(new_word)

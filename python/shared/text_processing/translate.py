@@ -12,7 +12,7 @@ def translate_single_word(word, src_language='el', dest_language='en'):
 
     return [primary] + alternatives
 
-def translate_words(words, src_language='el', dest_language='en', chunk_size=500):
+def translate_words(words, src_language='el', dest_language='en', chunk_size=200):
     translations = {}
     
     if words:

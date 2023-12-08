@@ -105,13 +105,19 @@ def create_article():
     if articles_collection.find_one({'title': title}):
         return jsonify({'error': 'Title already taken'}), 409
 
+    # This is only for debug purposes
+    # if articles_collection.find_one({'title': title}):
+    #     articles_collection.delete_one({'title': title})
+
+    words = extract_words(content)
+
     # Insert new article into MongoDB
     new_article = {
         'title': title,
         'content': content,
         'slug': slugify(title),
-        'words': extract_words(content),
-        'dictionary': get_dictionary_entries(article['words'])
+        'words': words,
+        'dictionary': get_dictionary_entries(words)
     }
 
     result = articles_collection.insert_one(new_article)
