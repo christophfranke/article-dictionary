@@ -9,7 +9,7 @@ type FilterFunction = (x: PartialWord) => boolean;
 export default (words: PartialWord[] = [], filter: FilterFunction): DictionaryCollection => {
 	const fetchAuthorized = useFetchAuthorized()
 	const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
-	const dictionary = createDictionaryCollection(dictionaryRequest, words)
+	const dictionary = createDictionaryCollection(dictionaryRequest, words, filter)
 
 	return dictionary
 }

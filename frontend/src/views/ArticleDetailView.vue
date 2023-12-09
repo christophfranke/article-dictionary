@@ -50,8 +50,7 @@ const highlightedWord = ref<string>('');
 const route = useRoute();
 const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
 
-const displayedWords = computed<Word[]>(() => dictionary.get());
-const newWordsCount = computed<number>(() => dictionary.get().filter((word) => word.status === 'new').length);
+const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = useDictionary([], displayFilter);
@@ -102,7 +101,7 @@ const fetchArticleDetails = async () => {
 };
 
 const markAllAsSeen = () => {
-  const words = dictionary.get().filter((word) => word.status === 'new');
+  const words = dictionary.words.value.filter((word) => word.status === 'new');
   dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
 };
 

@@ -50,7 +50,7 @@ const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<Art
     newWords,
     seenWords,
     knownWords,
-    uniqueWords: dictionary.all().length,
+    uniqueWords: dictionary.allWords.value.length,
     totalWords: article.value.words.length,
   };
 }
@@ -60,7 +60,7 @@ const statisticsForDictionary = (dictionary: DictionaryCollection): StatisticsRe
   let seenWords = 0;
   let knownWords = 0;
 
-  dictionary.all().forEach((word: Word) => {
+  dictionary.allWords.value.forEach((word: Word) => {
     if (word.status === 'new') {
       newWords++;
     } else if (word.status === 'seen') {

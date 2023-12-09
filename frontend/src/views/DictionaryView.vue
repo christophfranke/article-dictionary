@@ -56,7 +56,6 @@ const filterFn = (word: Word) => {
 
 
 const dictionary = useDictionary([], filterFn);
-const words = computed<Word[]>(() => dictionary.get());
 const filter = ref<string>('');
 const statusFilters = ref({
   new: true,

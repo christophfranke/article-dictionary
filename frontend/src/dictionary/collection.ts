@@ -1,4 +1,5 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import type { ComputedRef } from 'vue';
 import type { DictionaryApi } from './request';
 import type { Word, PartialWord } from '@/types';
 
@@ -6,15 +7,17 @@ type FilterFunction = (x: PartialWord) => boolean;
 
 export interface DictionaryCollection {
   find: (original: string) => Word | undefined;
-  get: () => Word[];
+  words: ComputedRef<Word[]>;
+  allWords: ComputedRef<Word[]>;
+
   set: (newWords: PartialWord[]) => void;
-  all: () => Word[];
+  setFilter: (filterFn: FilterFunction) => void;
+
+  load: () => Promise<void>;
   updateMany: (originals: string[], data: Record<string, unknown>) => Promise<void>;
   retranslateWord: (original: string) => Promise<void>;
-  load: () => Promise<void>;
   updateWord: (original: string, data: Record<string, unknown>) => Promise<void>;
   addWord: (original: string) => Promise<void>;
-  filter: (filterFn: FilterFunction) => void;
   rebuild: () => Promise<void>;
 }
 
@@ -108,8 +111,8 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
 
   return {
     find,
-    get: () => words.value.filter(filter.value),
-    all: () => words.value,
+    words: computed(() => words.value.filter(filter.value)),
+    allWords: computed(() => words.value),
     set,
     load,
     updateMany,
@@ -117,7 +120,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
     updateWord,
     addWord,
     rebuild,
-    filter: filterFn => {
+    setFilter: filterFn => {
       filter.value = filterFn
     }
   }

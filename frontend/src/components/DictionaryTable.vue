@@ -44,8 +44,7 @@ const props = defineProps({
   }
 });
 
-const dict = props.dictionary;
-const words = computed<Word[]>(() => dict.get());
+const dictionary = props.dictionary;
 
 const newWord = ref<string>('');
 const editingTranslationId = ref<string>('');
@@ -69,7 +68,7 @@ const sortTable = (column: string): void => {
 };
 
 const sortedWords = computed<Array<Word>>(() => {
-  const sorted = [...words.value];
+  const sorted = [...dictionary.words.value];
   if (sortedBy.value) {
     sorted.sort((a, b) => {
       const order = sortOrder.value === 'asc' ? 1 : -1;
@@ -99,7 +98,7 @@ const editTranslations = async (id: string): Promise<void> => {
   if (props.display.action.edit) {
     editingTranslationId.value = id;
     if (id) {
-      const word: Word | undefined = words.value.find((word) => word.id === id);
+      const word: Word | undefined = dictionary.words.value.find((word) => word.id === id);
 
       if (word) {
         editTranslationsValue.value = word.translations.join(', ');
@@ -125,7 +124,6 @@ const stopEditTranslations = async (id: string): Promise<void> => {
 };
 
 
-
 const isUpdating = ref(false)
 const updateTranslation = async (e: Event): Promise<void> => {
   e.preventDefault();
@@ -134,7 +132,7 @@ const updateTranslation = async (e: Event): Promise<void> => {
   }
 
   isUpdating.value = true;
-  const word: Word | undefined = words.value.find((word) => word.id === editingTranslationId.value);
+  const word: Word | undefined = dictionary.words.value.find((word) => word.id === editingTranslationId.value);
 
   if (word) {
     const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
@@ -164,13 +162,13 @@ const changeStatus = async (word: Word): Promise<void> => {
 
 const addWord = async (): Promise<void> => {
   if (newWord.value) {
-    await dict.addWord(newWord.value);
+    await dictionary.addWord(newWord.value);
     newWord.value = '';
   }
 };
 
-const updateWord = dict.updateWord;
-const retranslateWord = dict.retranslateWord;
+const updateWord = dictionary.updateWord;
+const retranslateWord = dictionary.retranslateWord;
 </script>
 
 <template>
