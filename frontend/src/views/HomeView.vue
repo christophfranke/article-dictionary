@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 import type { ArticlePreview } from '@/types';
@@ -10,6 +10,25 @@ import ProgresseComponent from '../components/Progress.vue';
 
 const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
+
+const latestArticles = computed(() => {
+  const baseArticles = articles.value.filter(article => !newestArticles.value.includes(article))
+  // const sortedArticles = articles.value.sort((a, b) => {
+  //   return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
+  // });
+
+  return baseArticles.slice(0, 3);
+})
+
+const newestArticles = computed(() => {
+  // const baseArticles = articles.value.filter(article => !latestArticles.value.includes(article))
+  const baseArticles = articles.value
+  // const sortedArticles = baseArticles.sort((a, b) => {
+  //   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  // });
+
+  return baseArticles.slice(0, 3);
+})
 
 const fetchArticles = async (): Promise<void> => {
   try {
@@ -35,10 +54,20 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
+    <h2>Progress</h2>
     <ProgresseComponent />
-    <h1 class="main-heading">Articles</h1>
-    <div v-if="articles.length > 0" class="article-list">
-      <article v-for="article in articles" :key="article.id" class="article-preview">
+
+    <h2>Newest Articles</h2>
+    <div v-if="newestArticles.length > 0" class="article-list">
+      <article v-for="article in newestArticles" :key="article.id" class="article-preview">
+        <ArticlePreviewComponent :article="article" />
+      </article>
+    </div>
+    <router-link to="/create" class="create-link">Create New Article</router-link>
+
+    <h2>Continue Reading</h2>
+    <div v-if="latestArticles.length > 0" class="article-list">
+      <article v-for="article in latestArticles" :key="article.id" class="article-preview">
         <ArticlePreviewComponent :article="article" />
       </article>
     </div>
@@ -46,8 +75,6 @@ const navigateToCreateArticle = (): void => {
     <div v-else class="no-articles">
       <p>No articles available.</p>
     </div>
-
-    <router-link to="/create" class="create-link">Create Article</router-link>
   </main>
 </template>
 
@@ -56,12 +83,7 @@ const navigateToCreateArticle = (): void => {
   max-width: 950px;
   margin: 0 auto;
   padding: 20px;
-}
-
-.main-heading {
-  font-size: 2em;
-  color: #333;
-  margin-bottom: 20px;
+  padding-bottom: 100px;
 }
 
 .article-list {

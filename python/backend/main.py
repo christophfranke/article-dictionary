@@ -9,6 +9,7 @@ from routes.articles import articles
 from routes.dictionary import dictionary
 from routes.statistics import statistics
 from routes.authentication import auth
+from routes.profile import profile
 
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ login_manager = LoginManager(app)
 login_manager.user_loader(load_user)
 
 app.register_blueprint(auth, url_prefix='/api/auth')
+app.register_blueprint(profile, url_prefix='/api/profile')
 app.register_blueprint(articles, url_prefix='/api/articles')
 app.register_blueprint(dictionary, url_prefix='/api/dictionary')
 app.register_blueprint(statistics, url_prefix='/api/statistics')

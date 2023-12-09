@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import HeaderComponent from '@/components/HeaderComponent.vue'
+
 </script>
 
 <template>
   <div>
-    <header>
-      <div class="wrapper">
-        <nav>
-          <RouterLink to="/">Home</RouterLink>
-          <RouterLink to="/dictionary">Dictionary</RouterLink>
-        </nav>
-      </div>
-    </header>
-
+    <HeaderComponent />
     <RouterView />
   </div>
 </template>
@@ -25,36 +19,13 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
-
-header {
-  background-color: #333;
-  color: #fff;
-  padding: 10px 0;
-}
-
-.wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-nav {
-  display: flex;
-  justify-content: flex-start;
-}
-
-nav a {  
-  padding: 5px 10px;
-}
-
 a, a:visited {
   color: #fff;
   text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
 }
 
 a:hover {
   background-color: #555;
 }
+
 </style>
