@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from utils.mongo import get_collection, drop_collection
 from text_processing.dictionary import add_text, add_words
 from text_processing.translate import translate_single_word
+from text_processing.language import get_languages
 from flask_login import login_required, current_user
 from bson import ObjectId
 
@@ -105,8 +106,8 @@ def retranslate(original):
     if word is None:
         return jsonify({'error': f'Word not found: {original}'}), 404
 
-    word['translations'] = translate_single_word(original)
-
+    source_language, target_language = get_languages()
+    word['translations'] = translate_single_word(original, source_language, target_language)
     word['needs_retranslate'] = False
 
     dictionary_collection.replace_one({'original': original, 'user_id': get_user_id()}, word)

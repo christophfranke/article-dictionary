@@ -50,6 +50,8 @@ def retranslate_word():
         # Find word that meets the specified criteria
         query = {
             'original': {'$exists': True},  # Document must have the 'original' field
+            'source_language': {'$exists': True},  # Document must have the 'source_language' field
+            'target_language': {'$exists': True},  # Document must have the 'target_language' field
             'status': {'$ne': 'ignore'},  # 'status' is not set to 'ignore'
             '$or': [
                 {'translations': {'$elemMatch': {'$eq': ''}}},  # Empty translation entry in the array
@@ -62,7 +64,7 @@ def retranslate_word():
 
         if word:
             # Translate
-            translations = translate_single_word(word['original'])
+            translations = translate_single_word(word['original'], word['source_language'], word['target_language'])
 
             # Update entry with translations
             word['translations'] = translations
