@@ -63,6 +63,10 @@ const navigateToCreateArticle = (): void => {
         <ArticlePreviewComponent :article="article" />
       </article>
     </div>
+    <div v-else class="no-articles">
+      <p>No articles available.</p>
+    </div>
+
     <router-link to="/create" class="create-link">Create New Article</router-link>
 
     <h2>Continue Reading</h2>
@@ -71,7 +75,6 @@ const navigateToCreateArticle = (): void => {
         <ArticlePreviewComponent :article="article" />
       </article>
     </div>
-
     <div v-else class="no-articles">
       <p>No articles available.</p>
     </div>
