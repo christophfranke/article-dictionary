@@ -39,7 +39,7 @@ services:
     volumes:
       - frontend-dist:/usr/share/nginx/html
     ports:
-      - "9900:80"
+      - "9300:80"
     depends_on:
       - frontend-build
       - backend
