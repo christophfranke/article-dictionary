@@ -102,6 +102,8 @@ export const useRegister = () => {
 	const localEmail = ref('')
 	const localName = ref('')
 	const localPassword = ref('')
+	const localSourceLanguage = ref('')
+	const localTargetLanguage = ref('')
 
 	const register = async (): Promise<boolean> => {
     const data = await fetchAuthorized<UserPreview>('/api/auth/register', {
@@ -112,7 +114,9 @@ export const useRegister = () => {
       body: JSON.stringify({
       	email: localEmail.value,
       	name: localName.value,
-      	password: localPassword.value
+      	password: localPassword.value,
+      	sourceLanguage: localSourceLanguage.value,
+      	targetLanguage: localTargetLanguage.value,
       }),
     });
 
@@ -128,7 +132,14 @@ export const useRegister = () => {
     return false;
 	}
 
-	return { register, email: localEmail, name: localName, password: localPassword }
+	return {
+		register,
+		email: localEmail,
+		name: localName,
+		password: localPassword,
+		sourceLanguage: localSourceLanguage,
+		targetLanguage: localTargetLanguage,
+	}
 };
 
 export const useLogout = () => {

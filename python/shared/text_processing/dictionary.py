@@ -1,8 +1,8 @@
 from text_processing.translate import translate_words
 from text_processing.extract import extract_unique_words
 
-def add_text(text, dictionary_collection, language='greek'):
-    words = extract_unique_words(text, language)
+def add_text(text, dictionary_collection):
+    words = extract_unique_words(text)
     add_words(words, dictionary_collection)
 
 def add_words(words, dictionary_collection):

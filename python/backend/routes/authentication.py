@@ -11,9 +11,11 @@ def register():
     data = request.get_json()
     email = data.get('email')
     name = data.get('name', '')
+    source_language = data.get('sourceLanguage')
+    target_language = data.get('targetLanguage')
     password = data.get('password')
 
-    if not email or not password:
+    if not email or not password or not source_language or not target_language:
         return jsonify({'message': 'Email and password are required'}), 400
 
     users = get_collection('users')
@@ -24,7 +26,13 @@ def register():
 
     # Hash the password before storing it in the database
     hashed_password = generate_password_hash(password)
-    user_id = users.insert_one({'email': email, 'name': name, 'password': hashed_password}).inserted_id
+    user_id = users.insert_one({
+        'email': email,
+        'name': name,
+        'password': hashed_password,
+        'sourceLanguage': source_language,
+        'targetLanguage': target_language,
+    }).inserted_id
 
     user_data = users.find_one({'email': email})
     user_obj = User(user_data)

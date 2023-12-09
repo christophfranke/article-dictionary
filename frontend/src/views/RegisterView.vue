@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRegister } from '@/use/user';
 
-const { email, name, password, register } = useRegister();
+const { email, name, password, sourceLanguage, targetLanguage, register } = useRegister();
 const router = useRouter();
 
 const registerAndRedirect = async () => {
@@ -11,6 +11,13 @@ const registerAndRedirect = async () => {
   if (result) {
     router.push('/')
   }
+};
+
+const languages = {
+  es: 'Spanish',
+  en: 'English',
+  el: 'Greek',
+  de: 'German',
 };
 </script>
 
@@ -28,6 +35,21 @@ const registerAndRedirect = async () => {
       <label for="password">Password:</label>
       <input type="password" id="password" v-model="password" required />
     </div>
+
+    <div class="form-group">
+      <label for="sourceLanguage">Source Language:</label>
+      <select id="sourceLanguage" v-model="sourceLanguage" required>
+        <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="targetLanguage">Target Language:</label>
+      <select id="targetLanguage" v-model="targetLanguage" required>
+        <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
+      </select>
+    </div>
+
     <div class="form-group">
       <button type="submit">Register</button>
     </div>
@@ -57,7 +79,7 @@ label {
   color: #333;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 10px;
   font-size: 16px;
