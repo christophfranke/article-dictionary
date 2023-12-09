@@ -9,7 +9,7 @@ services:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
     ports:
-      - "9900:5173"
+      - "8800:5173"
     command: npm run dev
 
   backend:
@@ -24,6 +24,7 @@ services:
     depends_on:
       - mongodb
     command: python3 develop.py
+    restart: unless-stopped
 
   mongodb:
     image: mongo:latest

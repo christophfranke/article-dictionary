@@ -1,10 +1,14 @@
 from flask import Blueprint, jsonify
 from datetime import datetime, timedelta
 from utils.mongo import get_collection
+from flask_login import login_required
+
 
 statistics = Blueprint('statistics', __name__)
 
+
 @statistics.route('/daily', methods=['GET'])
+@login_required
 def get_statistics():
     statistics_collection = get_collection('statistics')
 

@@ -1,8 +1,8 @@
-# routes/articles.py
 from flask import Blueprint, request, jsonify
 from text_processing.extract import extract_words
 from text_processing.dictionary import add_text
 from utils.mongo import get_collection
+
 
 articles = Blueprint('articles', __name__)
 
