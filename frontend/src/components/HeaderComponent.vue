@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ProfileLink from './ProfileLink.vue';
+import LogoutLink from './LogoutLink.vue';
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import ProfileLink from './ProfileLink.vue';
         <RouterLink to="/articles">Articles</RouterLink>
         <RouterLink to="/dictionary">Dictionary</RouterLink>
         <ProfileLink class="profile-link" />
+        <LogoutLink />
       </nav>
     </div>
   </header>

@@ -1,30 +1,11 @@
 <template>
-	<RouterLink :to="isLoggedIn ? '/profile' : '/login'">
-		{{ isLoggedIn ? name : 'Login' }}
+	<RouterLink :to="user.isLoggedIn.value ? '/profile' : '/login'">
+		{{ user.isLoggedIn.value ? user.name.value : 'Login' }}
 	</RouterLink>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useUser } from '@/use/user';
 
-const loading = ref(true);
-const isLoggedIn = ref(false);
-const name = ref('');
-
-const route = useRoute();
-
-onMounted(async () => {
-  try {
-    const response = await fetch('/api/profile/preview');
-    const data = await response.json();
-
-    isLoggedIn.value = data.isLoggedIn;
-    name.value = data.name;
-  } catch (error) {
-    console.error('Error fetching profile preview:', error);
-  } finally {
-    loading.value = false;
-  }
-});
+const user = useUser();
 </script>

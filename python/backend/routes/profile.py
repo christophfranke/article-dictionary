@@ -22,7 +22,7 @@ def preview():
         response_data = {
             'isLoggedIn': True,
             'name': user_data.get('name', user.email),
-            'from_language': user_data.get('from_language', ''),
+            'source_language': user_data.get('source_language', ''),
         }
 
         return jsonify(response_data), 200
@@ -39,15 +39,17 @@ def update():
     users = get_collection('users')
 
     # Only include fields that are provided in the data
-    new_data = {key: data[key] for key in data if key in ['name', 'email', 'from_language', 'to_language']}
+    new_data = {key: data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage']}
 
     # Hash the password if provided in the data
     if 'password' in data:
         new_data['password'] = generate_password_hash(data['password'])
 
-    users.update_one({'email': user['email']}, {'$set': new_data})
-    updated_user = users.find_one({'email': user['email']})
+    users.update_one({'email': user.email}, {'$set': new_data})
+    updated_user = users.find_one({'email': user.email})
 
+    updated_user.pop('_id')
+    updated_user.pop('password')
     return jsonify(updated_user), 200
 
 
@@ -65,8 +67,8 @@ def settings():
     settings_data = {
         'email': user_data['email'],
         'name': user_data.get('name', ''),
-        'from_language': user_data.get('from_language', ''),
-        'to_language': user_data.get('to_language', ''),
+        'sourceLanguage': user_data.get('sourceLanguage', ''),
+        'targetLanguage': user_data.get('targetLanguage', ''),
         # Add more settings as needed
     }
 

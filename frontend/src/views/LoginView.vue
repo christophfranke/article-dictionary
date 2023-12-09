@@ -1,40 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useLogin, useUser } from '@/use/user';
 
-const email = ref('');
-const password = ref('');
 const router = useRouter();
 
-const login = async () => {
-  try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: email.value, password: password.value }),
-    });
+const { login, email, password } = useLogin();
 
-    if (response.ok) {
-      const nextPath = Array.isArray(router.currentRoute.value.query.next)
-        ? '/'
-        : router.currentRoute.value.query.next || '/';
-      router.push(nextPath);
-    } else {
-      console.error('Login failed:', response.status);
-      // Handle login failure, e.g., show an error message
-    }
-  } catch (error) {
-    console.error('Error during login:', error);
-    // Handle error, e.g., show an error message
+const loginAndRedirect = async () => {
+  if (await login()) {    
+    const nextPath = Array.isArray(router.currentRoute.value.query.next)
+      ? '/'
+      : router.currentRoute.value.query.next || '/';
+    router.push(nextPath);
   }
-};
+
+}
 </script>
 
 
 <template>
-  <form @submit.prevent="login" class="login-form">
+  <form @submit.prevent="loginAndRedirect" class="login-form">
     <div class="form-group">
       <label for="email">Email:</label>
       <input type="email" id="email" v-model="email" required />
