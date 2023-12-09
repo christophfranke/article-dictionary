@@ -49,13 +49,13 @@ onMounted(async () => {
     chartData.value = {
       labels: data.map(entry => entry.date),
       datasets: [
-        {
-          label: 'New',
-          backgroundColor: 'rgba(51, 153, 255)',
-          borderColor: 'rgba(51, 153, 255)',
-          data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.new_words })),
-          fill: false,
-        },
+        // {
+        //   label: 'New',
+        //   backgroundColor: 'rgba(51, 153, 255)',
+        //   borderColor: 'rgba(51, 153, 255)',
+        //   data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.new_words })),
+        //   fill: false,
+        // },
         {
           label: 'Seen',
           backgroundColor: 'rgba(255, 191, 128)',
