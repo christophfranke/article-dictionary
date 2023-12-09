@@ -14,7 +14,6 @@ const loginAndRedirect = async () => {
       : router.currentRoute.value.query.next || '/';
     router.push(nextPath);
   }
-
 }
 </script>
 

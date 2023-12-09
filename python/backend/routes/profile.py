@@ -21,7 +21,8 @@ def preview():
 
         response_data = {
             'isLoggedIn': True,
-            'name': user_data.get('name', user.email),
+            'name': user_data.get('name', ''),
+            'email': user_data.get('email'),
             'source_language': user_data.get('source_language', ''),
         }
 

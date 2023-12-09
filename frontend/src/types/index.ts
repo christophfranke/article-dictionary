@@ -48,10 +48,10 @@ export interface Progress {
 export interface UserPreview {
   isLoggedIn: boolean;
   name: string;
+  email: string;
 }
 
 export interface User extends UserPreview {
-  email: string;
   sourceLanguage: string;
   targetLanguage: string;
 }

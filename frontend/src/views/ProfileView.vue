@@ -13,6 +13,7 @@ const form = ref({
 });
 
 const languages = {
+  es: 'Spanish',
   en: 'English',
   el: 'Greek',
   de: 'German',

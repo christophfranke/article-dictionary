@@ -10,6 +10,7 @@ auth = Blueprint('auth', __name__)
 def register():
     data = request.get_json()
     email = data.get('email')
+    name = data.get('name', '')
     password = data.get('password')
 
     if not email or not password:
@@ -23,9 +24,11 @@ def register():
 
     # Hash the password before storing it in the database
     hashed_password = generate_password_hash(password)
+    user_id = users.insert_one({'email': email, 'name': name, 'password': hashed_password}).inserted_id
 
-    # Assuming 'users' is the collection storing user data
-    user_id = users.insert_one({'email': email, 'password': hashed_password}).inserted_id
+    user_data = users.find_one({'email': email})
+    user_obj = User(user_data)
+    login_user(user_obj)
 
     return jsonify({'message': 'User registered successfully'}), 201
 

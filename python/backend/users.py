@@ -2,7 +2,6 @@ from utils.mongo import get_collection
 from bson import ObjectId
 
 def load_user(user_id):
-    print('loading user', user_id)
     user_data = get_collection('users').find_one({'_id': ObjectId(user_id)})
     if user_data:
         return User(user_data)

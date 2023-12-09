@@ -1,39 +1,28 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useRegister } from '@/use/user';
 
-const email = ref('');
-const password = ref('');
+const { email, name, password, register } = useRegister();
 const router = useRouter();
 
-const register = async () => {
-  try {
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: email.value, password: password.value }),
-    });
-
-    if (response.ok) {
-      router.push('/');
-    } else {
-      console.error('Registration failed:', response.status);
-      // Handle registration failure, e.g., show an error message
-    }
-  } catch (error) {
-    console.error('Error during registration:', error);
-    // Handle error, e.g., show an error message
+const registerAndRedirect = async () => {
+  const result = await register()
+  if (result) {
+    router.push('/')
   }
 };
 </script>
 
 <template>
-  <form @submit.prevent="register" class="register-form">
+  <form @submit.prevent="registerAndRedirect" class="register-form">
     <div class="form-group">
       <label for="email">Email:</label>
       <input type="email" id="email" v-model="email" required />
+    </div>
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" v-model="name" />
     </div>
     <div class="form-group">
       <label for="password">Password:</label>
