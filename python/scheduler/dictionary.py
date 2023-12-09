@@ -3,11 +3,14 @@ from collections import Counter
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 from text_processing.extract import extract_words
+from bson import ObjectId
+
 
 def jobs():
     retranslate_word()
     remove_malformat()
     update_word_frequency()
+    add_user_id()
 
 def update_word_frequency():
     try:
@@ -82,3 +85,20 @@ def remove_malformat():
     if word:
         dictionary.delete_one({'_id': word['_id']})
         print('Removed word: ' + word)
+
+
+krito_id = ObjectId('657488efbf4ba7afa277e164')
+def add_user_id():
+    collection = get_collection('dictionary')
+
+    query = {
+        'user_id': {'$exists': False}
+    }
+
+    words = collection.find(query)
+
+    for word in words:
+        word['user_id'] = krito_id
+        collection.replace_one({'_id': word['_id']}, word)
+        print('Added user_id to word: ' + word['original'])
+

@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify
 from datetime import datetime, timedelta
 from utils.mongo import get_collection
-from flask_login import login_required
+from flask_login import login_required, current_user
+from bson import ObjectId
 
 
 statistics = Blueprint('statistics', __name__)
@@ -19,7 +20,8 @@ def get_statistics():
     pipeline = [
         {
             '$match': {
-                'timestamp': {'$gte': seven_days_ago}
+                'timestamp': {'$gte': seven_days_ago},
+                'user_id': ObjectId(current_user.id)  # Filter by current user_id
             }
         },
         {
