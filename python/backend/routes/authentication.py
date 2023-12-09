@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.mongo import get_collection
+from users import User
 
 auth = Blueprint('auth', __name__)
 
