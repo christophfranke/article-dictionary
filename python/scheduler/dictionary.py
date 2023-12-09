@@ -11,6 +11,7 @@ def jobs():
     remove_malformat()
     update_word_frequency()
     add_user_id()
+    add_src_and_target_lang()
 
 def update_word_frequency():
     try:
@@ -101,4 +102,22 @@ def add_user_id():
         word['user_id'] = krito_id
         collection.replace_one({'_id': word['_id']}, word)
         print('Added user_id to word: ' + word['original'])
+
+
+def add_src_and_target_lang():
+    collection = get_collection('dictionary')
+
+    query = {
+        'source_language': {'$exists': False},
+        'target_language': {'$exists': False}
+    }
+
+    words = collection.find(query)
+
+    for word in words:
+        word['source_language'] = 'el'
+        word['target_language'] = 'en'
+        word.pop('language')
+        collection.replace_one({'_id': word['_id']}, word)
+        print('Added source and target language to word: ' + word['original'])
 

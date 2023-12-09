@@ -30,8 +30,8 @@ def register():
         'email': email,
         'name': name,
         'password': hashed_password,
-        'sourceLanguage': source_language,
-        'targetLanguage': target_language,
+        'source_language': source_language,
+        'target_language': target_language,
     }).inserted_id
 
     user_data = users.find_one({'email': email})

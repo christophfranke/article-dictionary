@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from utils.mongo import get_collection
+from utils.casing import camel_to_snake
 
 
 profile = Blueprint('profile', __name__)
@@ -23,7 +24,7 @@ def preview():
             'isLoggedIn': True,
             'name': user_data.get('name', ''),
             'email': user_data.get('email'),
-            'source_language': user_data.get('source_language', ''),
+            'sourceLanguage': user_data.get('source_language', ''),
         }
 
         return jsonify(response_data), 200
@@ -40,7 +41,7 @@ def update():
     users = get_collection('users')
 
     # Only include fields that are provided in the data
-    new_data = {key: data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage']}
+    new_data = {camel_to_snake(key): data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage']}
 
     # Hash the password if provided in the data
     if 'password' in data:
@@ -68,8 +69,8 @@ def settings():
     settings_data = {
         'email': user_data['email'],
         'name': user_data.get('name', ''),
-        'sourceLanguage': user_data.get('sourceLanguage', ''),
-        'targetLanguage': user_data.get('targetLanguage', ''),
+        'sourceLanguage': user_data.get('source_language', ''),
+        'targetLanguage': user_data.get('target_language', ''),
         # Add more settings as needed
     }
 

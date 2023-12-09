@@ -5,14 +5,14 @@ def chunk_list(input_list, chunk_size):
     """Chunks a list into smaller lists of a specified size."""
     return [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
 
-def translate_single_word(word, src_language='el', dest_language='en'):
-    translation_result = translate(word, source_lang='el', target_lang='en').results[0]
+def translate_single_word(word, source_language, target_language):
+    translation_result = translate(word, source_lang=src_language, target_lang=target_language).results[0]
     primary = translation_result['paraphrase']
     alternatives = translation_result['alternatives']
 
     return [primary] + alternatives
 
-def translate_words(words, src_language='el', dest_language='en', chunk_size=200):
+def translate_words(words, source_language, target_language, chunk_size=200):
     translations = {}
     
     if words:
@@ -25,7 +25,7 @@ def translate_words(words, src_language='el', dest_language='en', chunk_size=200
             chunk_text = '.\n##\n'.join(chunk)
 
             # Translate the chunk
-            translation_result = translate(chunk_text, source_lang='el', target_lang='en').results[0]
+            translation_result = translate(chunk_text, source_lang=source_language, target_lang=target_language).results[0]
 
             # Use regex to split the translations back into a list
             primary_chunk = re.split(r'.?\s*\#\#\s*', translation_result['paraphrase'])
