@@ -1,113 +1,65 @@
-import type { PartialWord } from '../types';
+import type { PartialWord, FetchFn } from '@/types';
 
-export const loadAll = async (): Promise<PartialWord[]> => {
-  try {
-    const response = await fetch('/api/dictionary/');
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.error('Failed to fetch dictionary:', response.status);
-      return [];
-    }
-  } catch (error) {
-    console.error('Error fetching dictionary:', error);
-    return [];
-  }
-};
+export interface DictionaryApi {
+  loadAll: () => Promise<PartialWord[]>;
+  rebuild: () => Promise<{ message: string } | null>;
+  retranslate: (id: string) => Promise<PartialWord | null>;
+  addWord: (original: string) => Promise<PartialWord | null>;
+  updateWord: (id: string, data: Record<string, unknown>) => Promise<PartialWord | null>;
+  updateMany: (ids: string[], update: Record<string, unknown>) => Promise<PartialWord[] | null>;
+}
 
-export const rebuild = async (): Promise<{ message: string } | null> => {
-  try {
-    const response = await fetch('/api/dictionary/reset', { method: 'POST' });
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.error('Failed to fetch dictionary:', response.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching dictionary:', error);
-    return null;
-  }
-};
+export default (apiRequest: FetchFn): DictionaryApi => {
+  const loadAll = async (): Promise<PartialWord[]> => {
+    return await apiRequest<PartialWord[]>('/api/dictionary/') || [];
+  };
 
-export const retranslate = async (id: string): Promise<PartialWord | null> => {
-  try {
-    const response = await fetch(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.error('Failed to retranslate:', response.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error retranslating:', error);
-    return null;
-  }
-};
+  const rebuild = async (): Promise<{ message: string } | null> => {
+    return await apiRequest('/api/dictionary/reset', { method: 'POST' });
+  };
+
+  const retranslate = async (id: string): Promise<PartialWord | null> => {
+    return await apiRequest(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
+  };
 
 
-export const addWord = async (original: string): Promise<PartialWord | null> => {
-  try {
-    const result = await fetch('/api/dictionary/add', {
+  const addWord = async (original: string): Promise<PartialWord | null> => {
+    return await apiRequest('/api/dictionary/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ original }),
     });
+  };
 
-    if (result.ok) {
-      return await result.json();
-    } else {
-      console.error('Error adding word to dictionary:', result.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error adding word to dictionary:', error);
-    return null;
-  }
-};
-
-export const updateWord = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
-  try {
-    const result = await fetch(`/api/dictionary/update/${id}`, {
+  const updateWord = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
+    return await apiRequest(`/api/dictionary/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
+  };
 
-    if (result.ok) {
-      return await result.json();
-    } else {
-      console.error('Error updating word in dictionary:', result.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error updating word in dictionary:', error);
-    return null;
-  }
-};
-
-export const updateMany = async (ids: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {
-  try {
-    const result = await fetch('/api/dictionary/update/', {
+  const updateMany = async (ids: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {
+    return await apiRequest('/api/dictionary/update/', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ ids, update }),
     });
+  }
 
-    if (result.ok) {
-      return await result.json();
-    } else {
-      console.error('Error updating words in dictionary:', result.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error updating words in dictionary:', error);
-    return null;
+  return {
+    loadAll,
+    rebuild,
+    retranslate,
+    addWord,
+    updateWord,
+    updateMany,
   }
 }
+

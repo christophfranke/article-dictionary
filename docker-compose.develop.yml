@@ -12,6 +12,15 @@ services:
       - "8800:5173"
     command: npm run dev
 
+  type-check:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app/frontend/
+      - node_modules:/app/frontend/node_modules/
+    command: npm run watch-types
+
   backend:
     build:
       context: ./python

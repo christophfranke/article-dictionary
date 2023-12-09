@@ -6,8 +6,7 @@ import type { Word } from '../types';
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
 
-import createDictionaryCollection from '../dictionary/collection';
-import * as DictionaryRequest from '../dictionary/request';
+import useDictionary from '@/use/dictionary';
 
 
 interface StatusFilters {
@@ -56,7 +55,7 @@ const filterFn = (word: Word) => {
 };
 
 
-const dictionary = createDictionaryCollection([], filterFn);
+const dictionary = useDictionary([], filterFn);
 const words = computed<Word[]>(() => dictionary.get());
 const filter = ref<string>('');
 const statusFilters = ref({
@@ -68,8 +67,7 @@ const statusFilters = ref({
 
 
 const rebuildDictionary = async (): Promise<void> => {
-  await DictionaryRequest.rebuild();
-  await dictionary.load();
+  await dictionary.rebuild();
 };
 
 onMounted(async () => {

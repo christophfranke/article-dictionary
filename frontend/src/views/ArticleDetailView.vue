@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import type { Word, ArticleDetail } from '../types';
 
-import createDictionaryCollection from '../dictionary/collection';
+import useDictionary from '@/use/dictionary';
 
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
@@ -54,7 +54,7 @@ const displayedWords = computed<Word[]>(() => dictionary.get());
 const newWordsCount = computed<number>(() => dictionary.get().filter((word) => word.status === 'new').length);
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
-const dictionary = createDictionaryCollection([], displayFilter);
+const dictionary = useDictionary([], displayFilter);
 
 const fetchArticleDetails = async () => {
   try {

@@ -44,3 +44,5 @@ export interface Progress {
     seen_words: number;
     total_words: number;
 }
+
+export type FetchFn = <T>(...args: Parameters<typeof fetch>) => Promise<T | null>;

@@ -9,6 +9,7 @@ import { ref, onMounted } from 'vue';
 import { Line } from 'vue-chartjs';
 import type { ChartData, Point } from 'chart.js';
 import type { Progress } from '@/types';
+import { useFetchAuthorized } from '@/use/api';
 
 
 const chartData = ref<ChartData<"line", (number | Point | null)[], unknown> | null>(null);
@@ -38,11 +39,11 @@ const chartOptions = ref({
   },
 });
 
+const fetchAuthorized = useFetchAuthorized();
 onMounted(async () => {
-  try {
-    const response = await fetch('/api/statistics/daily');
-    const data = await response.json() as Progress[];
+  const data = await fetchAuthorized<Progress[]>('/api/statistics/daily');
 
+  if (data) {      
     // sort data by date
     data.sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -79,8 +80,6 @@ onMounted(async () => {
         // },
       ],
     };
-  } catch (error) {
-    console.error('Error fetching data:', error);
   }
 });
 </script>

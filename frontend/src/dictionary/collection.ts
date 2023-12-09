@@ -1,6 +1,6 @@
 import { ref } from 'vue';
-import * as DictionaryRequest from './request';
-import type { Word, PartialWord } from '../types';
+import type { DictionaryApi } from './request';
+import type { Word, PartialWord } from '@/types';
 
 type FilterFunction = (x: PartialWord) => boolean;
 
@@ -15,11 +15,12 @@ export interface DictionaryCollection {
   updateWord: (original: string, data: Record<string, unknown>) => Promise<void>;
   addWord: (original: string) => Promise<void>;
   filter: (filterFn: FilterFunction) => void;
+  rebuild: () => Promise<void>;
 }
 
 
 
-export default (collection: PartialWord[] = [], filterFn: FilterFunction): DictionaryCollection => {
+export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn: FilterFunction = x => !!x): DictionaryCollection => {
   const words = ref<Word[]>([])
   const wordsByOriginal = ref<{
     [key: string]: Word;
@@ -32,7 +33,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   };
 
   const addWord = async (original: string): Promise<void> => {
-    const addedWord = await DictionaryRequest.addWord(original.toLowerCase());
+    const addedWord = await request.addWord(original.toLowerCase());
     if (addedWord) {
       words.value = [...words.value, addedWord];
       wordsByOriginal.value[addedWord.original] = addedWord;
@@ -40,7 +41,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   };
 
   const load = async () => {
-    set(await DictionaryRequest.loadAll());
+    set(await request.loadAll());
   }
 
   const find =  (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()]
@@ -48,7 +49,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
     const id = find(original.toLowerCase())?.id;
     if (id) {      
-      const updatedWord = await DictionaryRequest.updateWord(id, data);
+      const updatedWord = await request.updateWord(id, data);
       if (updatedWord) {
         updateLocalCollection([updatedWord]);
       }
@@ -57,7 +58,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
 
   const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
     const ids = originals.map(original => find(original.toLowerCase())?.id!).filter(id => id);
-    const updatedWords = await DictionaryRequest.updateMany(ids, data);
+    const updatedWords = await request.updateMany(ids, data);
     if (updatedWords) {
       updateLocalCollection(updatedWords);
     }
@@ -79,7 +80,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
   const retranslateWord = async (original: string): Promise<void> => {
     const id = find(original.toLowerCase())?.id;
     if (id) {
-      const retranslatedWord = await DictionaryRequest.retranslate(original.toLowerCase());
+      const retranslatedWord = await request.retranslate(original.toLowerCase());
       if (retranslatedWord) {
         words.value = [...words.value.map(word => word.original === retranslatedWord.original
           ? {
@@ -95,6 +96,14 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
     }
   };
 
+  const rebuild = async (): Promise<void> => {
+    await request.rebuild();
+    const newCollection = await request.loadAll();
+    if (newCollection) {
+      set(newCollection);
+    }
+  }
+
   set(collection);
 
   return {
@@ -107,6 +116,7 @@ export default (collection: PartialWord[] = [], filterFn: FilterFunction): Dicti
     retranslateWord,
     updateWord,
     addWord,
+    rebuild,
     filter: filterFn => {
       filter.value = filterFn
     }
