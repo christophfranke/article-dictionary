@@ -45,4 +45,15 @@ export interface Progress {
     total_words: number;
 }
 
+export interface UserPreview {
+  isLoggedIn: boolean;
+  name: string;
+}
+
+export interface User extends UserPreview {
+  email: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+}
+
 export type FetchFn = <T>(...args: Parameters<typeof fetch>) => Promise<T | null>;

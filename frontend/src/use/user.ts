@@ -1,5 +1,6 @@
 import { ref, onMounted } from 'vue';
 import { useFetchAuthorized } from '@/use/api';
+import type { User, UserPreview } from '@/types';
 
 const name = ref('');
 const isLoggedIn = ref(false);
@@ -10,14 +11,16 @@ const fetchAuthorized = useFetchAuthorized();
 
 
 const fetchPreview = async () => {
-  const data = await fetchAuthorized('/api/profile/preview');
+  const data = await fetchAuthorized<UserPreview>('/api/profile/preview');
 
-  isLoggedIn.value = data.isLoggedIn;
-  name.value = data.name;
+  if (data) {  	
+	  isLoggedIn.value = data.isLoggedIn;
+	  name.value = data.name;
+  }
 };
 
 const fetchProfileSettings = async () => {
-  const data = await fetchAuthorized('/api/profile/settings');
+  const data = await fetchAuthorized<User>('/api/profile/settings');
 
   if (data) {
     email.value = data.email;
@@ -44,8 +47,8 @@ export const useProfile = () => {
 }
 
 export const useUpdateProfile = () => {
-	return async (formData) => {
-	  const data = await fetchAuthorized('/api/profile/update', {
+	return async (formData: {}) => {
+	  const data = await fetchAuthorized<User>('/api/profile/update', {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
@@ -71,19 +74,20 @@ export const useLogin = () => {
 	const localEmail = ref('')
 	const localPassword = ref('')
 
-	const login = async (): boolean => {
-    data = await fetchAuthorized('/api/auth/login', {
+	const login = async (): Promise<boolean> => {
+    const data = await fetchAuthorized<UserPreview>('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email: localEmail.value, localPassword: password.value }),
+      body: JSON.stringify({ email: localEmail.value, password: localPassword.value }),
     });
 
     if (data) {
     	isLoggedIn.value = true;
     	email.value = localEmail.value;
     	fetchPreview();
+
     	return true;
     }
 
@@ -94,14 +98,15 @@ export const useLogin = () => {
 };
 
 export const useLogout = () => {
-	return async (): boolean => {
+	return async (): Promise<boolean> => {
     const data = await fetchAuthorized('/api/auth/logout');
 
     if (data) {
 	    isLoggedIn.value = false
 	    name.value = ''
 	    email.value = ''
-	    password.value = ''
+	    sourceLanguage.value = '';
+	    targetLanguage.value = '';
 	    return true
     }
 
