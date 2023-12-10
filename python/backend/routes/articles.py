@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from text_processing.extract import extract_words
 from text_processing.dictionary import add_text
+from text_processing.language import get_languages
 from utils.mongo import get_collection
 from flask_login import login_required, current_user
 from bson import ObjectId
@@ -84,12 +85,15 @@ def create_article():
 
     words = extract_words(content)
 
+    source_language, _ = get_languages(current_user.id)
+
     new_article = {
         'title': title,
         'content': content,
         'slug': slugify(title),
         'words': words,
         'dictionary': get_dictionary_entries(words),
+        'language': source_language,
         'user_id': ObjectId(current_user.id)
     }
 

@@ -16,32 +16,66 @@ def jobs():
 def update_word_frequency():
     try:
         dictionary = get_collection('dictionary')
+        article_collection = get_collection('articles')
 
-        # Find word that meets the specified criteria
-        query = {
-            'original': {'$exists': True},  # Document must have the 'original' field
-            '$or': [
-                {'frequency': {'$exists': False}},  # 'frequency' is not set
-                {'needs_recount': True},  # Needs Review is set to True
-            ]
-        }
-        words = dictionary.find(query)
+        # Group by user_id and collect unique words from articles
+        pipeline = [
+            {
+                '$match': {
+                    'original': {'$exists': True},  # Document must have the 'original' field
+                    '$or': [
+                        {'frequency': {'$exists': False}},  # 'frequency' is not set
+                        {'needs_recount': True},  # Needs Review is set to True
+                    ]
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'articles',
+                    'localField': 'user_id',
+                    'foreignField': 'user_id',
+                    'as': 'articles'
+                }
+            },
+            {
+                '$unwind': '$articles'
+            },
+            {
+                '$group': {
+                    '_id': '$user_id',
+                    'user_articles': {'$addToSet': '$articles.content'}
+                }
+            }
+        ]
 
-        articles = get_collection('articles').find()
-        base_words = [word.lower() for sublist in [extract_words(a['content']) for a in articles] for word in sublist]
-        word_frequencies = Counter(base_words)
+        user_articles = dictionary.aggregate(pipeline)
 
-        for word in words:
-            frequency = word_frequencies[word['original']]
+        for user_entry in user_articles:
+            user_id = user_entry['_id']
+            articles = user_entry['user_articles']
+            user_word_frequencies = Counter()
 
-            # Update entry with frequency
-            word['frequency'] = frequency
-            word['needs_recount'] = False
-            dictionary.replace_one({'_id': word['_id']}, word)
+            # Calculate word frequencies for the user
+            for article_content in articles:
+                base_words = extract_words(article_content)
+                user_word_frequencies.update([base_word.lower() for base_word in base_words])
 
-            print('Counted frequency for word: ' + word['original'] + ': ' + str(frequency))
+            # Update word frequencies for each word in the user's dictionary
+            words_to_update = dictionary.find({'user_id': user_id, 'needs_recount': True})
+
+            for word in words_to_update:
+                frequency = user_word_frequencies[word['original']]
+
+                # Update entry with frequency
+                word['frequency'] = frequency
+                word['needs_recount'] = False
+                dictionary.replace_one({'_id': word['_id']}, word)
+
+                print(f'Counted frequency for word {word["original"]} for user {user_id}: {frequency}')
+
     except Exception as e:
         print('Error counting frequency for word: ' + str(e))
+
 
 def retranslate_word():
     try:

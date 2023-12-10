@@ -6,7 +6,7 @@ def chunk_list(input_list, chunk_size):
     return [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
 
 def translate_single_word(word, source_language, target_language):
-    translation_result = translate(word, source_lang=src_language, target_lang=target_language).results[0]
+    translation_result = translate(word, source_lang=source_language, target_lang=target_language).results[0]
     primary = translation_result['paraphrase']
     alternatives = translation_result['alternatives']
 
@@ -14,7 +14,7 @@ def translate_single_word(word, source_language, target_language):
 
 def translate_words(words, source_language, target_language, chunk_size=200):
     translations = {}
-    
+
     if words:
         # Chunk the list of words to be translated into smaller lists
         word_chunks = chunk_list(words, chunk_size)

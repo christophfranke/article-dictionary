@@ -10,6 +10,8 @@ import user
 
 # statistics.jobs()
 # user.jobs()
+# articles.jobs()
+# dictionary.jobs()
 schedule.every(2).hours.do(statistics.jobs)
 schedule.every(10).seconds.do(dictionary.jobs)
 schedule.every(60).seconds.do(articles.jobs)

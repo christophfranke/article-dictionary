@@ -6,6 +6,7 @@ from bson import ObjectId
 def jobs():
     add_words()
     add_user_id()
+    add_language()
 
 def add_words():
     collection = get_collection('articles')
@@ -37,3 +38,17 @@ def add_user_id():
         article['user_id'] = krito_id
         collection.replace_one({'_id': article['_id']}, article)
         print('Added user_id to article: ' + article['title'])
+
+def add_language():
+    collection = get_collection('articles')
+
+    query = {
+        'language': {'$exists': False}
+    }
+
+    articles = collection.find(query)
+
+    for article in articles:
+        article['language'] = 'el'
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Added language to article: ' + article['title'])
