@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { ArticlePreview } from '@/types';
 
@@ -12,6 +13,51 @@ const props = defineProps({
     required: true,
   }
 });
+
+const difficultyScore = computed(() => {
+  const total = props.article.statistics.seen
+    + props.article.statistics.known
+    + props.article.statistics.new;
+
+  return Math.round(100 * (0.3 * props.article.statistics.seen
+    + props.article.statistics.known
+    + 0. * props.article.statistics.new) / (total))
+})
+
+const scoreDescription = computed(() => {
+  if (difficultyScore.value < 50) {
+    return 'Very Hard';
+  } else if (difficultyScore.value < 62) {
+    return 'Hard';
+  } else if (difficultyScore.value < 79) {
+    return 'Medium'
+  } else if (difficultyScore.value < 91) {
+    return 'Easy';
+  } else if (difficultyScore.value < 100) {
+    return 'Very Easy'
+  } else {
+    return 'Too Easy';
+  }
+});
+
+const lengthDescription = computed(() => {
+  if (props.article.statistics.total < 100) {
+    return 'Very Short';
+  } else if (props.article.statistics.total < 400) {
+    return 'Short';
+  } else if (props.article.statistics.total < 1000) {
+    return 'Medium'
+  } else if (props.article.statistics.total < 2000) {
+    return 'Long';
+  } else if (props.article.statistics.total < 5000) {
+    return 'Very Long'
+  } else {
+    return 'Epic';
+  }
+
+});
+
+
 </script>
 
 <template>
@@ -29,9 +75,19 @@ const props = defineProps({
         <span style="color: #666;">
           <FontAwesomeIcon icon="check" /> {{ props.article.statistics.known }}
         </span>
-        <span style="color: #666;">
-          <FontAwesomeIcon icon="globe" /> {{ props.article.statistics.total }}
-        </span>
+      </div>
+
+      <div class="difficulty">
+        <div class="left">
+          <span>{{ scoreDescription }}</span>
+          <span><FontAwesomeIcon icon="lightbulb" /></span>
+          <span>{{ 100 - difficultyScore }}%</span>
+        </div>
+        <div class="right">
+          <span>{{ props.article.statistics.total }}</span>
+          <span><FontAwesomeIcon icon="globe" /></span>
+          <span>{{ lengthDescription }}</span>
+        </div>
       </div>
     </router-link>
   </div>
@@ -75,6 +131,23 @@ p {
   display: flex;
   justify-content: space-between;
 }
+
+.difficulty {
+  font-size: 14px;
+  margin-top: 15px;
+  color: #666;
+  display: flex;
+  justify-content: space-between;
+}
+
+.difficulty .left span {
+  padding-right: 5px;
+}
+
+.difficulty .right span {
+  padding-left: 5px;
+}
+
 
 a:hover {
   background-color: transparent;
