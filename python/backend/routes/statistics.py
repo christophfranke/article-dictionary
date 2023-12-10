@@ -70,17 +70,23 @@ def get_statistics():
         entry['total_words'] = entry['new_words'] + entry['seen_words'] + entry['known_words']
         del entry['ignore_words']
 
-    if len(result) < 7:
-        # Add missing dates
-        for i in range(7 - len(result)):
-            date = (datetime.utcnow() - timedelta(days=6 - i)).strftime('%Y-%m-%d')
-            result.append({
+    # Fill in missing dates based on the latest available entry
+    for i in range(1, 7):  # Loop through the next 6 days
+        date = (datetime.utcnow() - timedelta(days=i)).strftime('%Y-%m-%d')
+
+        # Check if an entry for the date already exists
+        existing_entry = next((entry for entry in result if entry['date'] == date), None)
+
+        if existing_entry is None:
+            # Create a dummy entry if no entry exists for the date
+            dummy_entry = {
                 'date': date,
                 'latest_timestamp': None,
                 'new_words': 0,
                 'seen_words': 0,
                 'known_words': 0,
-                'total_words': 0
-            })
+                'ignore_words': 0  # Assuming 'ignore_words' should also be present in the result
+            }
+            result.append(dummy_entry)
 
     return jsonify(result)
