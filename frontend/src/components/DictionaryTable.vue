@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import createDictionaryCollection from '../dictionary/collection';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Word } from '../types/index.ts';
@@ -39,10 +39,34 @@ const props = defineProps({
         edit: true,
         retranslate: true,
         status: true,
+      },
+      behaviour: {
+        highlight: true,
+        scroll: true,
       }
     }
   }
 });
+
+const isInViewport = (element: HTMLElement) => {
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
+const rows = ref<HTMLElement[] | null>(null);
+watchEffect(() => {
+  if (props.display.behaviour.scroll && props.dictionary.isVisible(props.highlight) && rows.value) {
+    const word = props.dictionary.find(props.highlight)!;
+    const elem = rows.value.find((row) => row?.id === `word-${word.id}`);
+    if (elem && !isInViewport(elem)) {
+      elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+})
 
 const dictionary = props.dictionary;
 
@@ -191,7 +215,7 @@ const retranslateWord = dictionary.retranslateWord;
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(word) in sortedWords" :key="word.id" :class="{ highlighted: word.original === highlight.toLowerCase() }">
+        <tr v-for="(word) in sortedWords" :key="word.id" :class="{ highlighted: display.behaviour.highlight && word.original === highlight.toLowerCase() }" ref="rows" :id="`word-${word.id}`">
           <td v-if="display.col.number">{{ word.index }}</td>
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">

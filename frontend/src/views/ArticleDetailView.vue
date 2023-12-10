@@ -14,7 +14,6 @@ import Tooltip from '../components/Tooltip.vue';
 import ArticleContent from '../components/ArticleContent.vue';
 
 
-
 const tableDisplayConfig = {
   header: true,
   limit: 0,
@@ -35,6 +34,10 @@ const tableDisplayConfig = {
     retranslate: true,
     status: false,
   },
+  behaviour: {
+    highlight: true,
+    scroll: true,
+  }
 };
 
 const article = ref<ArticleDetail>({

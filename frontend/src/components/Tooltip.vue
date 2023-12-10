@@ -32,7 +32,7 @@ const setTooltipPosition = (event: MouseEvent): void => {
 // time how long a translation is shown
 const UPDATE_TIME = 500
 let timer = 0
-let word = ''
+let original = ''
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 watch(isVisible, (newValue, oldValue) => {
   if (timeoutId) {
@@ -40,10 +40,12 @@ watch(isVisible, (newValue, oldValue) => {
     timeoutId = null;
   }
   if (!oldValue && newValue) {
-    word = props.highlightedWord;
+    original = props.highlightedWord;
     timer = Date.now();
     timeoutId = setTimeout(() => {
-      props.dictionary.updateWord(word, { status: 'seen' });
+      if (props.dictionary.find(original)?.status === 'new') {
+        props.dictionary.updateWord(original, { status: 'seen' });
+      }
     }, UPDATE_TIME);
   }
   if (!newValue && oldValue) {

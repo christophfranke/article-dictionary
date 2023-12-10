@@ -35,6 +35,10 @@ const tableDisplayConfig = {
     edit: true,
     status: true,
     retranslate: true,
+  },
+  behaviour: {
+    highlight: true,
+    scroll: true,
   }
 };
 

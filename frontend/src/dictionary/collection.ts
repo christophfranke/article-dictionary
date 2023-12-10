@@ -7,6 +7,7 @@ type FilterFunction = (x: PartialWord) => boolean;
 
 export interface DictionaryCollection {
   find: (original: string) => Word | undefined;
+  isVisible: (original: string) => boolean;
   words: ComputedRef<Word[]>;
   allWords: ComputedRef<Word[]>;
 
@@ -47,7 +48,15 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
     set(await request.loadAll());
   }
 
-  const find =  (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()]
+  const find = (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()]
+  const isVisible = (orginal: string): boolean => {
+    const word = find(orginal);
+    if (word) {
+      return filter.value(word);
+    }
+
+    return false
+  }
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
     const id = find(original.toLowerCase())?.id;
@@ -111,6 +120,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
 
   return {
     find,
+    isVisible,
     words: computed(() => words.value.filter(filter.value)),
     allWords: computed(() => words.value),
     set,

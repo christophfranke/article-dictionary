@@ -9,7 +9,7 @@ services:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
     ports:
-      - "8800:5173"
+      - "9300:5173"
     command: npm run dev
 
   type-check:
