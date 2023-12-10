@@ -53,28 +53,30 @@ const navigateToCreateArticle = (): void => {
     <h2>Progress</h2>
     <ProgresseComponent />
 
-    <h2>Continue Reading</h2>
-    <div v-if="latestArticles.length > 0" class="article-list">
-      <article v-for="article in latestArticles" :key="article.id" class="article-preview">
-        <ArticlePreviewComponent :article="article" />
-      </article>
-    </div>
+    <template v-if="latestArticles.length > 0">
+      <h2>Continue Reading</h2>
+      <div class="article-list">
+        <article v-for="article in latestArticles" :key="article.id" class="article-preview">
+          <ArticlePreviewComponent :article="article" />
+        </article>
+      </div>
+    </template>
     <div v-else class="no-articles">
-      <p>No articles available.</p>
+      <h3>You have no articles yet.</h3>
     </div>
 
     <router-link to="/create" class="create-link">Create New Article</router-link>
 
-    <h2>Newest Articles</h2>
-    <div v-if="newestArticles.length > 0" class="article-list">
-      <article v-for="article in newestArticles" :key="article.id" class="article-preview">
-        <ArticlePreviewComponent :article="article" />
-      </article>
-    </div>
-    <div v-else class="no-articles">
-      <p>No articles available.</p>
-    </div>
+    <template v-if="newestArticles.length > 0">
+      <h2>Newest Articles</h2>
+      <div class="article-list">
+        <article v-for="article in newestArticles" :key="article.id" class="article-preview">
+          <ArticlePreviewComponent :article="article" />
+        </article>
+      </div>
+    </template>
 
+    <router-link to="/create" class="create-link">Create New Article</router-link>
   </main>
 </template>
 
@@ -101,7 +103,7 @@ const navigateToCreateArticle = (): void => {
 
 .no-articles {
   text-align: center;
-  margin: 20px 0;
+  margin: 50px 0;
 }
 
 .create-link {
@@ -110,7 +112,7 @@ const navigateToCreateArticle = (): void => {
   color: #fff;
   text-align: center;
   padding: 10px;
-  margin-top: 20px;
+  margin: 20px auto;
   text-decoration: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;

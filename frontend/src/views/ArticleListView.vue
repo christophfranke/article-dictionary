@@ -41,7 +41,10 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
-    <h2>Articles</h2>
+    <div class="title">
+      <h2>Articles</h2>
+      <router-link to="/create" class="create-link">Create New Article</router-link>
+    </div>
     <div v-if="newestArticles.length > 0" class="article-list">
       <article v-for="article in newestArticles" :key="article.id" class="article-preview">
         <ArticlePreviewComponent :article="article" />
@@ -61,6 +64,12 @@ const navigateToCreateArticle = (): void => {
   margin: 0 auto;
   padding: 20px;
   padding-bottom: 100px;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .article-list {
