@@ -15,7 +15,7 @@ services:
       dockerfile: backend.Dockerfile
     depends_on:
       - mongodb
-    command: gunicorn -c /app/backend/gunicorn_config.py main:app
+    command: gunicorn --capture-output --enable-stdio-inheritance -c /app/backend/gunicorn_config.py main:app
 
   mongodb:
     image: mongo:latest

@@ -13,7 +13,9 @@ export const useFetchAuthorized = (): FetchFn => {
       if (response.status === 401) {
         // Redirect to login with the current path as the 'next' parameter using Vue Router
         const currentPath = router.currentRoute.value.fullPath;
-        router.push(`/login?next=${encodeURIComponent(currentPath)}`);
+        if (!currentPath.startsWith('/login')) {
+          router.push(`/login?next=${encodeURIComponent(currentPath)}`);
+        }
       }
 
       if (response.ok) {

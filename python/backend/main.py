@@ -15,7 +15,10 @@ from routes.profile import profile
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
+
 app.config['SECRET_KEY'] = secrets.token_hex(16)
+# app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+# app.config['SESSION_COOKIE_SECURE'] = False
 
 login_manager = LoginManager(app)
 login_manager.user_loader(load_user)
