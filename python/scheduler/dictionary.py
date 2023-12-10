@@ -89,7 +89,6 @@ def retranslate_word():
             'status': {'$ne': 'ignore'},  # 'status' is not set to 'ignore'
             '$or': [
                 {'translations': {'$elemMatch': {'$eq': ''}}},  # Empty translation entry in the array
-                {'translations': {'$elemMatch': {'$regex': '\\.$'}}},  # Contains a dot in any translation
                 {'translations': {'$elemMatch': {'$regex': '#'}}},   # Contains a hash in any translation
                 {'needs_retranslate': True},  # Needs Review is set to True
             ]
