@@ -216,7 +216,7 @@ const retranslateWord = dictionary.retranslateWord;
       </thead>
       <tbody>
         <tr v-for="(word) in sortedWords" :key="word.id" :class="{ highlighted: display.behaviour.highlight && word.original === highlight.toLowerCase() }" ref="rows" :id="`word-${word.id}`">
-          <td v-if="display.col.number">{{ word.index }}</td>
+          <td v-if="display.col.number">{{ word.index + 1 }}</td>
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
             <td @mousedown="editTranslations(word.id)" v-if="word.id !== editingTranslationId">

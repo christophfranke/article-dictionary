@@ -14,7 +14,7 @@ import Tooltip from '../components/Tooltip.vue';
 import ArticleContent from '../components/ArticleContent.vue';
 
 
-const tableDisplayConfig = {
+const tableDisplayConfig = computed(() => ({
   header: true,
   limit: 0,
   col: {
@@ -35,10 +35,10 @@ const tableDisplayConfig = {
     status: false,
   },
   behaviour: {
-    highlight: true,
-    scroll: true,
+    highlight: showDictionary.value,
+    scroll: showDictionary.value,
   }
-};
+}));
 
 const article = ref<ArticleDetail>({
   id: '',
@@ -66,33 +66,11 @@ const fetchArticleDetails = async () => {
   if (data) {
     article.value = data;
 
-    // Sort dictionary based on occurrences in article content
-    article.value.dictionary.sort((a, b) => {
-      const indexA = getWordIndex(a.original);
-      const indexB = getWordIndex(b.original);
-
-      if (indexA < indexB) {
-        return -1;
-      }
-      if (indexA > indexB) {
-        return 1;
-      }
-      // If indices are equal, sort by original order
-      if (a.index < b.index) {
-        return -1;
-      }
-      if (a.index > b.index) {
-        return 1;
-      }
-      return 0;
-    });
-
-    // Function to get the index of the word in content, considering word boundaries
-    function getWordIndex(word: string) {
-      const regex = new RegExp(`${word}`, 'i');
-      const index = article.value.content.search(regex);
-      return index >= 0 ? index : Infinity;
-    }
+    // Sort dictionary based on position in article
+    const lowerCaseWords = article.value.words.map((word) => word.toLowerCase());
+    article.value.dictionary.sort(
+      (a, b) => lowerCaseWords.indexOf(a.original) - lowerCaseWords.indexOf(b.original)
+    );
     
     dictionary.set(article.value.dictionary)
 
