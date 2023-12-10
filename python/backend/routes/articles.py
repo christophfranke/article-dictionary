@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from datetime import datetime
+from bson import ObjectId
+
 from text_processing.extract import extract_words
 from text_processing.dictionary import add_text
 from text_processing.language import get_languages
 from utils.mongo import get_collection
 from flask_login import login_required, current_user
-from bson import ObjectId
 
 articles = Blueprint('articles', __name__)
 
@@ -61,6 +63,8 @@ def list_articles():
             'title': article['title'],
             'excerpt': article['content'][:150],
             'slug': article['slug'],
+            'createdAt': article['created_at'],
+            'lastRead': article['last_read'],
             'statistics': statistics
         }
 
@@ -94,6 +98,8 @@ def create_article():
         'words': words,
         'dictionary': get_dictionary_entries(words),
         'language': source_language,
+        'created_at': datetime.utcnow(),
+        'last_read': datetime.utcnow(),
         'user_id': ObjectId(current_user.id)
     }
 
@@ -103,20 +109,46 @@ def create_article():
 
     new_article.pop('_id')
     new_article.pop('user_id')
+    new_article['createdAt'] = new_article.pop('created_at')
+    new_article['lastRead'] = new_article.pop('last_read')
     return jsonify(new_article), 201
 
 @articles.route('/<slug>', methods=['GET'])
 @login_required
 def get_article(slug):
-    article = get_collection('articles').find_one({'slug': slug, 'user_id': ObjectId(current_user.id)})
+    collection = get_collection('articles')
+    article = collection.find_one({'slug': slug, 'user_id': ObjectId(current_user.id)})
 
     if not article:
         return jsonify({'error': 'Article not found'}), 404
 
     return jsonify({
+        'id': str(article['_id']),
         'title': article['title'],
         'content': article['content'],
         'slug': article['slug'],
         'words': article['words'],
+        'createdAt': article['created_at'],
+        'lastRead': article['last_read'],
         'dictionary': get_dictionary_entries(article['words'])
     })
+
+@articles.route('/seen', methods=['POST'])
+@login_required
+def read_article():
+    data = request.json
+    id = data.get('id')
+
+    if not id:
+        return jsonify({'error': 'Article id is required'}), 400
+
+    collection = get_collection('articles')
+    article = collection.find_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)})
+
+    if not article:
+        return jsonify({'error': 'Article not found'}), 404
+
+    # update last read field
+    collection.update_one({'_id': article['_id']}, {'$set': {'last_read': datetime.utcnow()}})
+
+    return jsonify({'message': 'Article updated successfully'}), 200

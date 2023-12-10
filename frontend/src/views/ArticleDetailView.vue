@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Word, ArticleDetail } from '../types';
 
 import useDictionary from '@/use/dictionary';
+import { useFetchAuthorized } from '@/use/api';
 
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
@@ -55,47 +56,52 @@ const newWordsCount = computed<number>(() => dictionary.words.value.filter((word
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = useDictionary([], displayFilter);
 
+const fetchAuthorized = useFetchAuthorized();
+
 const fetchArticleDetails = async () => {
-  try {
-    const response = await fetch(`/api/articles/${articleName.value}`);
-    if (response.ok) {
-      article.value = await response.json();
+  const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${articleName.value}`);
+  if (data) {
+    article.value = data;
 
-      // Sort dictionary based on occurrences in article content
-      article.value.dictionary.sort((a, b) => {
-        const indexA = getWordIndex(a.original);
-        const indexB = getWordIndex(b.original);
+    // Sort dictionary based on occurrences in article content
+    article.value.dictionary.sort((a, b) => {
+      const indexA = getWordIndex(a.original);
+      const indexB = getWordIndex(b.original);
 
-        if (indexA < indexB) {
-          return -1;
-        }
-        if (indexA > indexB) {
-          return 1;
-        }
-        // If indices are equal, sort by original order
-        if (a.index < b.index) {
-          return -1;
-        }
-        if (a.index > b.index) {
-          return 1;
-        }
-        return 0;
-      });
-
-      // Function to get the index of the word in content, considering word boundaries
-      function getWordIndex(word: string) {
-        const regex = new RegExp(`${word}`, 'i');
-        const index = article.value.content.search(regex);
-        return index >= 0 ? index : Infinity;
+      if (indexA < indexB) {
+        return -1;
       }
-      
-      dictionary.set(article.value.dictionary)
-    } else {
-      console.error('Failed to fetch article details:', response.status);
-      // Handle error as needed
+      if (indexA > indexB) {
+        return 1;
+      }
+      // If indices are equal, sort by original order
+      if (a.index < b.index) {
+        return -1;
+      }
+      if (a.index > b.index) {
+        return 1;
+      }
+      return 0;
+    });
+
+    // Function to get the index of the word in content, considering word boundaries
+    function getWordIndex(word: string) {
+      const regex = new RegExp(`${word}`, 'i');
+      const index = article.value.content.search(regex);
+      return index >= 0 ? index : Infinity;
     }
-  } catch (error) {
-    console.error('Error fetching article details:', error);
+    
+    dictionary.set(article.value.dictionary)
+
+    await fetchAuthorized('/api/articles/seen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: article.value.id }),
+    });
+  } else {
+    console.error('Failed to fetch article details');
     // Handle error as needed
   }
 };

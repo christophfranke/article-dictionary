@@ -12,22 +12,21 @@ const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
 const latestArticles = computed(() => {
-  const baseArticles = articles.value.filter(article => !newestArticles.value.includes(article))
-  // const sortedArticles = articles.value.sort((a, b) => {
-  //   return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
-  // });
+  const baseArticles = articles.value
+  const sortedArticles = articles.value.sort((a, b) => {
+    return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
+  });
 
-  return baseArticles.slice(0, 3);
+  return sortedArticles.slice(0, 3);
 })
 
 const newestArticles = computed(() => {
-  // const baseArticles = articles.value.filter(article => !latestArticles.value.includes(article))
-  const baseArticles = articles.value
-  // const sortedArticles = baseArticles.sort((a, b) => {
-  //   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  // });
+  const baseArticles = articles.value.filter(article => !latestArticles.value.includes(article))
+  const sortedArticles = baseArticles.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
-  return baseArticles.slice(0, 3);
+  return sortedArticles.slice(0, 6);
 })
 
 const fetchArticles = async (): Promise<void> => {
@@ -57,6 +56,18 @@ const navigateToCreateArticle = (): void => {
     <h2>Progress</h2>
     <ProgresseComponent />
 
+    <h2>Continue Reading</h2>
+    <div v-if="latestArticles.length > 0" class="article-list">
+      <article v-for="article in latestArticles" :key="article.id" class="article-preview">
+        <ArticlePreviewComponent :article="article" />
+      </article>
+    </div>
+    <div v-else class="no-articles">
+      <p>No articles available.</p>
+    </div>
+
+    <router-link to="/create" class="create-link">Create New Article</router-link>
+
     <h2>Newest Articles</h2>
     <div v-if="newestArticles.length > 0" class="article-list">
       <article v-for="article in newestArticles" :key="article.id" class="article-preview">
@@ -67,17 +78,6 @@ const navigateToCreateArticle = (): void => {
       <p>No articles available.</p>
     </div>
 
-    <router-link to="/create" class="create-link">Create New Article</router-link>
-
-    <h2>Continue Reading</h2>
-    <div v-if="latestArticles.length > 0" class="article-list">
-      <article v-for="article in latestArticles" :key="article.id" class="article-preview">
-        <ArticlePreviewComponent :article="article" />
-      </article>
-    </div>
-    <div v-else class="no-articles">
-      <p>No articles available.</p>
-    </div>
   </main>
 </template>
 
