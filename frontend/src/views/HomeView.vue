@@ -76,7 +76,7 @@ const navigateToCreateArticle = (): void => {
       </div>
     </template>
 
-    <router-link to="/create" class="create-link">Create New Article</router-link>
+    <router-link  v-if="newestArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
   </main>
 </template>
 
