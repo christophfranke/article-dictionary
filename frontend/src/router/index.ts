@@ -5,6 +5,7 @@ import DictionaryView from '@/views/DictionaryView.vue';
 import LoginView from '@/views/LoginView.vue';
 import RegisterView from '@/views/RegisterView.vue';
 import ProfileView from '@/views/ProfileView.vue';
+import ArticleListView from '@/views/ArticleListView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
       path: '/dictionary',
       name: 'dictionary',
       component: DictionaryView,
+    },
+    {
+      path: '/articles',
+      name: 'articles',
+      component: ArticleListView,
     },
     {
       path: '/articles/:name',

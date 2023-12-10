@@ -12,23 +12,9 @@ import ProgresseComponent from '../components/Progress.vue';
 const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
-const latestArticles = computed(() => {
-  const baseArticles = articles.value
-  const sortedArticles = articles.value.sort((a, b) => {
-    return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
-  });
-
-  return sortedArticles.slice(0, 3);
-})
-
-const newestArticles = computed(() => {
-  const baseArticles = articles.value.filter(article => !latestArticles.value.includes(article))
-  const sortedArticles = baseArticles.sort((a, b) => {
-    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-  });
-
-  return sortedArticles.slice(0, 6);
-})
+const sortedArticles = computed(() => 
+  [...articles.value].sort((a, b) => a.title.localeCompare(b.title))
+);
 
 const fetchAuthorized = useFetchAuthorized();
 const fetchArticles = async (): Promise<void> => {
@@ -51,12 +37,9 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
-    <h2>Progress</h2>
-    <ProgresseComponent />
-
-    <h2>Continue Reading</h2>
-    <div v-if="latestArticles.length > 0" class="article-list">
-      <article v-for="article in latestArticles" :key="article.id" class="article-preview">
+    <h2>Articles</h2>
+    <div v-if="sortedArticles.length > 0" class="article-list">
+      <article v-for="article in sortedArticles" :key="article.id" class="article-preview">
         <ArticlePreviewComponent :article="article" />
       </article>
     </div>
@@ -65,17 +48,6 @@ const navigateToCreateArticle = (): void => {
     </div>
 
     <router-link to="/create" class="create-link">Create New Article</router-link>
-
-    <h2>Newest Articles</h2>
-    <div v-if="newestArticles.length > 0" class="article-list">
-      <article v-for="article in newestArticles" :key="article.id" class="article-preview">
-        <ArticlePreviewComponent :article="article" />
-      </article>
-    </div>
-    <div v-else class="no-articles">
-      <p>No articles available.</p>
-    </div>
-
   </main>
 </template>
 
