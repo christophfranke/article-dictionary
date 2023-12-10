@@ -6,6 +6,31 @@ import type { Progress } from '@/types';
 import { useFetchAuthorized } from '@/use/api';
 
 
+import 'chartjs-adapter-moment';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
+
 const showRelativeData = ref(false);
 const toggleRelativeData = () => showRelativeData.value = !showRelativeData.value;
 const processedChartData = computed(() => {
