@@ -19,7 +19,7 @@ const difficultyScore = computed(() => {
     + props.article.statistics.known
     + props.article.statistics.new;
 
-  return Math.round(100 * (0.3 * props.article.statistics.seen
+  return Math.round(100 * (0.2 * props.article.statistics.seen
     + props.article.statistics.known
     + 0. * props.article.statistics.new) / (total))
 })
@@ -29,11 +29,11 @@ const scoreDescription = computed(() => {
     return 'Very Hard';
   } else if (difficultyScore.value < 62) {
     return 'Hard';
-  } else if (difficultyScore.value < 79) {
+  } else if (difficultyScore.value < 74) {
     return 'Medium'
-  } else if (difficultyScore.value < 91) {
+  } else if (difficultyScore.value < 86) {
     return 'Easy';
-  } else if (difficultyScore.value < 100) {
+  } else if (difficultyScore.value < 98) {
     return 'Very Easy'
   } else {
     return 'Too Easy';

@@ -68,7 +68,7 @@ const navigateToCreateArticle = (): void => {
     <router-link to="/create" class="create-link">Create New Article</router-link>
 
     <template v-if="newestArticles.length > 0">
-      <h2>Newest Articles</h2>
+      <h2>More Articles</h2>
       <div class="article-list">
         <article v-for="article in newestArticles" :key="article.id" class="article-preview">
           <ArticlePreviewComponent :article="article" />

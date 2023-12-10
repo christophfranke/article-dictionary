@@ -1,15 +1,44 @@
-<template>
-  <div v-if="chartData">
-    <Line :data="chartData" :options="chartOptions" />
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import type { ChartData, Point } from 'chart.js';
 import type { Progress } from '@/types';
 import { useFetchAuthorized } from '@/use/api';
+
+
+const showRelativeData = ref(false);
+const toggleRelativeData = () => showRelativeData.value = !showRelativeData.value;
+const processedChartData = computed(() => {
+  if (!chartData.value)
+    return null
+
+  if (showRelativeData.value) {
+    return {
+      ...chartData.value,
+      datasets: chartData.value.datasets.map(dataset => ({
+        ...dataset,
+        data: dataset.data.map((point, index) => {
+          if (index === 0)
+            return {
+              x: point.x,
+              y: 0,
+            };
+
+          const previous = dataset.data[index - 1];
+          if (previous === null || point === null)
+            return null;
+
+          return {
+            x: point.x,
+            y: point.y - previous.y,
+          }
+        })
+      }))
+    }
+  }
+
+  return chartData.value;
+});
 
 
 const chartData = ref<ChartData<"line", (number | Point | null)[], unknown> | null>(null);
@@ -59,15 +88,15 @@ onMounted(async () => {
         // },
         {
           label: 'Seen',
-          backgroundColor: 'rgba(255, 191, 128)',
-          borderColor: 'rgba(255, 191, 128)',
+          backgroundColor: 'rgb(255, 191, 128)',
+          borderColor: 'rgb(255, 191, 128)',
           data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.seen_words })),
           fill: false,
         },
         {
           label: 'Known',
-          backgroundColor: 'rgb(51, 204, 51)',
-          borderColor: 'rgb(51, 204, 51)',
+          backgroundColor: '#a83252',
+          borderColor: '#a83252',
           data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.known_words })),
           fill: false,
         },
@@ -83,3 +112,45 @@ onMounted(async () => {
   }
 });
 </script>
+<template>
+  <div class="chart-container">
+    <div class="chart-toggle">
+      <button @click="toggleRelativeData" class="toggle-button">
+        {{ showRelativeData ? 'New words' : 'Total words'}}
+      </button>
+    </div>
+    <div v-if="processedChartData" class="chart">
+      <Line :data="processedChartData" :options="chartOptions" />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.chart-container {
+  margin: 20px auto;
+  max-width: 800px; /* Set a maximum width for the chart if needed */
+}
+
+.chart-toggle {
+  margin-bottom: 10px; /* Add margin below the toggle button */
+  text-align: right;
+}
+
+.toggle-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #0056b3;
+}
+
+.chart {
+}
+</style>
