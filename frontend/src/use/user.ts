@@ -48,13 +48,18 @@ export const useProfile = () => {
 }
 
 export const useUpdateProfile = () => {
-	return async (formData: {}) => {
+	return async (formData: any) => {
 	  const data = await fetchAuthorized<User>('/api/profile/update', {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
 	    },
-	    body: JSON.stringify(formData),
+			// remove sourceLanguage and targetLanguage, because not yet supported
+	    body: JSON.stringify({
+	    	name: formData['name'] as string,
+	    	email: formData['email'] as string,
+	    	password: formData['password'] as string,
+	    }),
 	  });
 
 	  if (data) {

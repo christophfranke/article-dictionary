@@ -8,10 +8,12 @@ from bson import ObjectId
 
 def jobs():
     retranslate_word()
-    remove_malformat()
+    remove_no_original()
     update_word_frequency()
     add_user_id()
     add_src_and_target_lang()
+    remove_duplicates()
+    remove_src_is_target()
 
 def update_word_frequency():
     try:
@@ -109,7 +111,7 @@ def retranslate_word():
         print('Error retranslating word: ' + str(e))
 
 
-def remove_malformat():
+def remove_no_original():
     dictionary = get_collection('dictionary')
 
     # Find word that meets the specified criteria
@@ -155,4 +157,47 @@ def add_src_and_target_lang():
         word.pop('language')
         collection.replace_one({'_id': word['_id']}, word)
         print('Added source and target language to word: ' + word['original'])
+
+
+def remove_duplicates():
+    collection = get_collection('dictionary')
+
+    query = {
+        'original': {'$exists': True},
+        'source_language': {'$exists': True},
+        'target_language': {'$exists': True},
+        'user_id': {'$exists': True},
+    }
+
+    words = collection.find(query)
+
+    for word in words:
+        query = {
+            'original': word['original'],
+            'source_language': word['source_language'],
+            'target_language': word['target_language'],
+            'user_id': word['user_id'],
+            '_id': {'$ne': word['_id']}
+        }
+
+        duplicate = collection.find_one(query)
+
+        if duplicate:
+            collection.delete_one({'_id': duplicate['_id']})
+            print('Removed duplicate word: ' + duplicate['original'] + ' lang: ' + word['source_language'] + ' -> ' + word['target_language'])
+
+def remove_src_is_target():
+    collection = get_collection('dictionary')
+
+    query = {
+        'source_language': {'$exists': True},
+        'target_language': {'$exists': True},
+    }
+
+    words = collection.find(query)
+
+    for word in words:
+        if word['source_language'] == word['target_language']:
+            collection.delete_one({'_id': word['_id']})
+            print('Removed malformat word: ' + word['original'] + ' lang: ' + word['source_language'] + ' -> ' + word['target_language'])
 

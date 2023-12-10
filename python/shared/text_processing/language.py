@@ -10,7 +10,7 @@ def get_languages(user_id):
     if user:
         # Extract source and target languages from the user document
         source_language = user.get('source_language', 'en')
-        target_language = user.get('target_language', 'en')
+        target_language = user.get('target_language', 'de')
 
         return source_language, target_language
     else:
@@ -18,4 +18,4 @@ def get_languages(user_id):
         print(f"User not found for user_id: {user_id}")
 
         # Return default values if user is not found
-        return 'en', 'en'
+        return 'en', 'de'

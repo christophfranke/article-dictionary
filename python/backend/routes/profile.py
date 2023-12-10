@@ -43,6 +43,9 @@ def update():
     # Only include fields that are provided in the data
     new_data = {camel_to_snake(key): data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage']}
 
+    if 'source_language' in new_data or 'target_language' in new_data:
+        return jsonify({'message': 'Source and target language cannot be updated'}), 400
+
     # Hash the password if provided in the data
     if 'password' in data:
         new_data['password'] = generate_password_hash(data['password'])
