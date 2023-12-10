@@ -41,7 +41,7 @@ const processedChartData = computed(() => {
 });
 
 
-const chartData = ref<ChartData<"line", (number | Point | null)[], unknown> | null>(null);
+const chartData = ref<ChartData<"line", Point[], unknown> | null>(null);
 const chartOptions = ref({
   responsive: true,
   maintainAspectRatio: false,
