@@ -7,6 +7,9 @@ WORKDIR /app/scheduler
 COPY ./scheduler/requirements.txt .
 RUN pip3 install -r requirements.txt
 
+# cache buster
+RUN date > /app/timestamp.txt
+
 # Copy the current directory contents into the container at /app/backend
 COPY ./scheduler .
 
