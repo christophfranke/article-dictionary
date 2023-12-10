@@ -12,9 +12,13 @@ import ProgresseComponent from '../components/Progress.vue';
 const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
-const sortedArticles = computed(() => 
-  [...articles.value].sort((a, b) => a.title.localeCompare(b.title))
-);
+const newestArticles = computed(() =>
+  [...articles.value].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  );
+// const sortedArticles = computed(() => 
+//   [...articles.value].sort((a, b) => a.title.localeCompare(b.title))
+// );
 
 const fetchAuthorized = useFetchAuthorized();
 const fetchArticles = async (): Promise<void> => {
@@ -38,8 +42,8 @@ const navigateToCreateArticle = (): void => {
 <template>
   <main class="container">
     <h2>Articles</h2>
-    <div v-if="sortedArticles.length > 0" class="article-list">
-      <article v-for="article in sortedArticles" :key="article.id" class="article-preview">
+    <div v-if="newestArticles.length > 0" class="article-list">
+      <article v-for="article in newestArticles" :key="article.id" class="article-preview">
         <ArticlePreviewComponent :article="article" />
       </article>
     </div>

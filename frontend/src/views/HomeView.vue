@@ -13,7 +13,6 @@ const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
 const latestArticles = computed(() => {
-  const baseArticles = articles.value
   const sortedArticles = articles.value.sort((a, b) => {
     return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
   });
@@ -24,7 +23,7 @@ const latestArticles = computed(() => {
 const newestArticles = computed(() => {
   const baseArticles = articles.value.filter(article => !latestArticles.value.includes(article))
   const sortedArticles = baseArticles.sort((a, b) => {
-    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   return sortedArticles.slice(0, 6);
