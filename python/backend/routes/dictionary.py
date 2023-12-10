@@ -106,7 +106,7 @@ def retranslate(original):
     if word is None:
         return jsonify({'error': f'Word not found: {original}'}), 404
 
-    source_language, target_language = get_languages()
+    source_language, target_language = get_languages(get_user_id())
     word['translations'] = translate_single_word(original, source_language, target_language)
     word['needs_retranslate'] = False
 
