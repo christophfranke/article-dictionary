@@ -1,6 +1,6 @@
-Flask==3.0.*
-Flask-Login==0.6.*
-pymongo==4.6.*
-nltk==3.8.*
+Flask==3.0.0
+Flask-Login==0.6.3
+pymongo==4.6.1
+nltk==3.8.1
 translate-shell==0.0.37 
-gunicorn==21.2.*
+gunicorn==21.2.0
