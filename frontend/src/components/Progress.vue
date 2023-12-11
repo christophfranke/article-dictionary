@@ -81,7 +81,7 @@ const chartOptions = ref({
         },
       },
       grid: {
-        display: false
+        display: false,
       },
     },
     y: {
