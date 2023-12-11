@@ -33,6 +33,7 @@ const tableDisplayConfig = computed(() => ({
     edit: true,
     retranslate: true,
     status: false,
+    link: false,
   },
   behaviour: {
     highlight: showDictionary.value,

@@ -20,12 +20,6 @@ body {
   box-sizing: border-box;
 }
 a, a:visited {
-  color: #fff;
   text-decoration: none;
 }
-
-a:hover {
-  background-color: #555;
-}
-
 </style>

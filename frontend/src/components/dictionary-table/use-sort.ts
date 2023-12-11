@@ -1,0 +1,49 @@
+import { computed, ref } from 'vue';
+import type { Word } from '@/types';
+
+export default (props: any) => {
+	const sortOrder = ref<string>('asc');
+	const sortedBy = ref<string>(props.sort);
+
+	const sortTable = (column: string): void => {
+	  if (!props.display.action.sort) {
+	    return
+	  }
+
+	  if (column === sortedBy.value) {
+	    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+	  } else {
+	    sortedBy.value = column;
+	    sortOrder.value = 'asc';
+	  }
+	};
+
+	const sortedWords = computed<Array<Word>>(() => {
+	  const sorted = [...props.dictionary.words.value];
+	  if (sortedBy.value) {
+	    sorted.sort((a, b) => {
+	      const order = sortOrder.value === 'asc' ? 1 : -1;
+
+	      // Access property values
+	      const propertyA = (a as any)[sortedBy.value];
+	      const propertyB = (b as any)[sortedBy.value];
+
+	      // Use localeCompare for string comparison with locale awareness
+	      if (typeof propertyA === 'string' && typeof propertyB === 'string') {
+	        return propertyA.localeCompare(propertyB) * order;
+	      }
+
+	      // For non-string properties, use regular comparison
+	      return propertyA > propertyB ? order : -order;
+	    });
+	  }
+
+	  if (props.display.limit > 0) {
+	    return sorted.slice(0, props.display.limit);
+	  }
+
+	  return sorted;
+	});
+
+	return { sortedWords, sortTable }
+};

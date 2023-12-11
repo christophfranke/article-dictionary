@@ -35,6 +35,7 @@ const tableDisplayConfig = {
     edit: true,
     status: true,
     retranslate: true,
+    link: true,
   },
   behaviour: {
     highlight: true,

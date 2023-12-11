@@ -67,13 +67,13 @@ const lengthDescription = computed(() => {
       <p>{{ props.article.excerpt }}...</p>
       <div class="statistics">
         <span style="color: #666;">
-          <FontAwesomeIcon icon="plus" /> {{ props.article.statistics.new }}
+          <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new }}
         </span>
         <span style="color: #666;">
           <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen }}
         </span>
         <span style="color: #666;">
-          <FontAwesomeIcon icon="check" /> {{ props.article.statistics.known }}
+          <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known }}
         </span>
       </div>
 
@@ -85,7 +85,7 @@ const lengthDescription = computed(() => {
         </div>
         <div class="right">
           <span>{{ props.article.statistics.total }}</span>
-          <span><FontAwesomeIcon icon="globe" /></span>
+          <span><FontAwesomeIcon icon="database" /></span>
           <span>{{ lengthDescription }}</span>
         </div>
       </div>

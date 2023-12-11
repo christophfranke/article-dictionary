@@ -35,10 +35,12 @@ nav {
   justify-content: flex-start;
 }
 
-nav a {  
+a, a:visited {
   padding: 5px 10px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  color: #fff;
+  text-decoration: none;
 }
 
 a:hover {

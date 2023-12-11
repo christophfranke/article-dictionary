@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue';
-import createDictionaryCollection from '../dictionary/collection';
+import type { DictionaryCollection } from '@/dictionary/collection';
+import { useProfile } from '@/use/user';
+import useScroll from './dictionary-table/use-scroll';
+import useSort from './dictionary-table/use-sort';
+import useEdit from './dictionary-table/use-edit';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Word } from '../types/index.ts';
 
 
 const props = defineProps({
   dictionary: {
-    type: Object as unknown as () => ReturnType<typeof createDictionaryCollection>,
+    type: Object as unknown as () => DictionaryCollection,
     required: true,
   },
   highlight: {
@@ -39,6 +43,7 @@ const props = defineProps({
         edit: true,
         retranslate: true,
         status: true,
+        link: true,
       },
       behaviour: {
         highlight: true,
@@ -48,124 +53,20 @@ const props = defineProps({
   }
 });
 
-const isInViewport = (element: HTMLElement) => {
-  const rect = element.getBoundingClientRect();
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  );
-}
-const rows = ref<HTMLElement[] | null>(null);
-watchEffect(() => {
-  if (props.display.behaviour.scroll && props.dictionary.isVisible(props.highlight) && rows.value) {
-    const word = props.dictionary.find(props.highlight)!;
-    const elem = rows.value.find((row) => row?.id === `word-${word.id}`);
-    if (elem && !isInViewport(elem)) {
-      elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }
-})
 
-const dictionary = props.dictionary;
+const { rows } = useScroll(props);
+const { sortTable, sortedWords } = useSort(props);
+const {
+  editingTranslationId,
+  editTranslationsValue,
+  editTranslationsInput,
+  editTranslations,
+  stopEditTranslations,
+  updateTranslation
+} = useEdit(props)
 
-const newWord = ref<string>('');
-const editingTranslationId = ref<string>('');
-const editTranslationsValue = ref<string>('');
-const editTranslationsInput = ref<HTMLInputElement[] | null>(null);
-
-const sortOrder = ref<string>('asc');
-const sortedBy = ref<string>(props.sort);
-
-const sortTable = (column: string): void => {
-  if (!props.display.action.sort) {
-    return
-  }
-
-  if (column === sortedBy.value) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortedBy.value = column;
-    sortOrder.value = 'asc';
-  }
-};
-
-const sortedWords = computed<Array<Word>>(() => {
-  const sorted = [...dictionary.words.value];
-  if (sortedBy.value) {
-    sorted.sort((a, b) => {
-      const order = sortOrder.value === 'asc' ? 1 : -1;
-
-      // Access property values
-      const propertyA = (a as any)[sortedBy.value];
-      const propertyB = (b as any)[sortedBy.value];
-
-      // Use localeCompare for string comparison with locale awareness
-      if (typeof propertyA === 'string' && typeof propertyB === 'string') {
-        return propertyA.localeCompare(propertyB) * order;
-      }
-
-      // For non-string properties, use regular comparison
-      return propertyA > propertyB ? order : -order;
-    });
-  }
-
-  if (props.display.limit > 0) {
-    return sorted.slice(0, props.display.limit);
-  }
-
-  return sorted;
-});
-
-const editTranslations = async (id: string): Promise<void> => {
-  if (props.display.action.edit) {
-    editingTranslationId.value = id;
-    if (id) {
-      const word: Word | undefined = dictionary.words.value.find((word) => word.id === id);
-
-      if (word) {
-        editTranslationsValue.value = word.translations.join(', ');
-
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        // Focus the input field for editing translations
-        if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
-          editTranslationsInput.value[0].focus();
-          editTranslationsInput.value[0].select();
-        }
-      }
-    }
-  }
-};
-
-const stopEditTranslations = async (id: string): Promise<void> => {
-  await new Promise(resolve => setTimeout(resolve, 0));
-
-  if (editingTranslationId.value === id) {
-    editingTranslationId.value = '';
-  }
-};
-
-
-const isUpdating = ref(false)
-const updateTranslation = async (e: Event): Promise<void> => {
-  e.preventDefault();
-  if (isUpdating.value) {
-    return
-  }
-
-  isUpdating.value = true;
-  const word: Word | undefined = dictionary.words.value.find((word) => word.id === editingTranslationId.value);
-
-  if (word) {
-    const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
-    await updateWord(word.original, { translations });
-    editingTranslationId.value = '';
-  }
-
-  isUpdating.value = false;
-};
+const profile = useProfile();
+const dictionaryLink = (word: Word): string => `https://glosbe.com/${profile.sourceLanguage.value}/${profile.targetLanguage.value}/${word.original}`
 
 const setStatus = async (word: Word, status: string): Promise<void> => {
   await updateWord(word.original, { status });
@@ -184,15 +85,17 @@ const changeStatus = async (word: Word): Promise<void> => {
   await updateWord(word.original, { status: newStatus });
 };
 
+
+const newWord = ref<string>('');
 const addWord = async (): Promise<void> => {
   if (newWord.value) {
-    await dictionary.addWord(newWord.value);
+    await props.dictionary.addWord(newWord.value);
     newWord.value = '';
   }
 };
 
-const updateWord = dictionary.updateWord;
-const retranslateWord = dictionary.retranslateWord;
+const updateWord = props.dictionary.updateWord;
+const retranslateWord = props.dictionary.retranslateWord;
 </script>
 
 <template>
@@ -219,12 +122,12 @@ const retranslateWord = dictionary.retranslateWord;
           <td v-if="display.col.number">{{ word.index + 1 }}</td>
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
-            <td @mousedown="editTranslations(word.id)" v-if="word.id !== editingTranslationId">
+            <td @mousedown="editTranslations(word.id)" v-if="word.id !== editingTranslationId" class="edit-column">
               {{ word.translations.join(', ') }}
             </td>
             <td v-else>
               <form @submit="updateTranslation" class="edit-form">
-                <button @click="stopEditTranslations(word.id)">x</button>
+                <button @click="stopEditTranslations(word.id)" class="cancel-button">x</button>
                 <input
                   ref="editTranslationsInput"
                   v-model="editTranslationsValue"
@@ -241,6 +144,7 @@ const retranslateWord = dictionary.retranslateWord;
               <button v-if="display.action.known" @click="setStatus(word, 'known')"><FontAwesomeIcon icon="check-circle" /></button>
               <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')"><FontAwesomeIcon icon="times-circle" /></button>
               <button v-if="display.action.retranslate" @click="retranslateWord(word.original)"><FontAwesomeIcon icon="rotate-left" /></button>
+              <a v-if="display.action.link" :href="dictionaryLink(word)" target="_blank"><button><FontAwesomeIcon icon="globe" /></button></a>
             </div>
           </td>
         </tr>
@@ -286,6 +190,53 @@ th:hover {
 .status-column:hover {
   background-color: #f9f9f9;
 }
+
+.edit-column {
+  cursor: pointer;
+}
+
+.edit-column:hover {
+  background-color: #f9f9f9;
+}
+
+.edit-form {
+  display: flex;
+  align-items: center;
+}
+
+.edit-form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: background-color 0.3s ease;
+}
+
+
+.edit-form button:hover {
+  background-color: #0056b3;
+}
+
+.edit-form button.cancel-button {
+  background-color: #b0c4de;
+}
+.edit-form button.cancel-button:hover {
+  background-color: #a9a9a9;
+}
+
+.edit-form input {
+  flex: 1;
+  padding: 2px 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+/*  outline: none;*/
+}
+
 
 .actions-column div {
   display: flex;
