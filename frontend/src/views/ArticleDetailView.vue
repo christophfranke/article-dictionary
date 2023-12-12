@@ -63,6 +63,21 @@ const dictionary = useDictionary([], displayFilter);
 
 const fetchAuthorized = useFetchAuthorized();
 
+const markArticleAsSeen = async () => {
+  const result = await fetchAuthorized('/api/articles/seen', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: article.value.id }),
+  });
+  
+  if (result) {
+    article.value.status = 'seen';
+  } else {
+    console.error('Failed to mark article as seen');
+  }
+}
 const fetchArticleDetails = async () => {
   const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${articleName.value}`);
   if (data) {
@@ -76,25 +91,19 @@ const fetchArticleDetails = async () => {
     
     dictionary.set(article.value.dictionary)
 
-    const result = await fetchAuthorized('/api/articles/seen', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: article.value.id }),
-    });
-    if (result) {
-      article.value.status = 'seen';
+    if (!route.query.dontMarkAsSeen) {
+      markArticleAsSeen();
     }
   } else {
     console.error('Failed to fetch article details');
-    // Handle error as needed
   }
 };
 
 const markAllAsSeen = async () => {
   const words = dictionary.words.value.filter((word) => word.status === 'new');
-  await dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
+  if (words.length > 0) {
+    await dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
+  }
 };
 
 const markArticleAsRead = async () => {

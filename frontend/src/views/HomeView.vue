@@ -12,7 +12,7 @@ import ProgresseComponent from '../components/Progress.vue';
 const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
-const continueReadingArticlesCount = ref(6)
+const continueReadingArticlesCount = ref(3)
 const continueReadingArticles = computed(() => {
   const sortedArticles = articles.value
     .filter(article => article.status === 'seen')
@@ -27,35 +27,49 @@ const usefulness = (article: ArticlePreview): number => {
   return (1.0 * article.statistics.seen - 0.5 * article.statistics.new) / article.statistics.total;
 }
 
-const mostSeenWordsArticlesCount = ref(6)
-const mostSeenWordsArticles = computed(() => {
+const suggestedArticlesCount = ref(3)
+const suggestedArticles = computed(() => {
   const baseArticles = articles.value
-    .filter(article => !continueReadingArticles.value.includes(article))
+    // .filter(article => !continueReadingArticles.value.includes(article))
     .filter(article => article.status !== 'read')
 
   const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
-  return sortedArticles.slice(0, mostSeenWordsArticlesCount.value);
+  return sortedArticles.slice(0, suggestedArticlesCount.value);
 });
 
-const newestArticlesCount = ref(6)
-const newestArticles = computed(() => {
+const newArticlesCount = ref(6)
+const newArticles = computed(() => {
   const baseArticles = articles.value
-    .filter(article => !continueReadingArticles.value.includes(article))
-    .filter(article => !mostSeenWordsArticles.value.includes(article))
+    // .filter(article => !continueReadingArticles.value.includes(article))
+    // .filter(article => !suggestedArticles.value.includes(article))
     .filter(article => article.status === 'new')
 
   const sortedArticles = baseArticles.sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-  return sortedArticles.slice(0, newestArticlesCount.value);
+  return sortedArticles.slice(0, newArticlesCount.value);
+});
+
+
+const readArticlesCount = ref(6)
+const readArticles = computed(() => {
+  const baseArticles = articles.value
+    // .filter(article => !continueReadingArticles.value.includes(article))
+    // .filter(article => !suggestedArticles.value.includes(article))
+    // .filter(article => !newArticles.value.includes(article))
+    .filter(article => article.status === 'read')
+
+  const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
+  return sortedArticles.slice(0, readArticlesCount.value);
 });
 
 const remainingArticles = computed(() => {
   const baseArticles = articles.value
     .filter(article => !continueReadingArticles.value.includes(article))
-    .filter(article => !mostSeenWordsArticles.value.includes(article))
-    .filter(article => !newestArticles.value.includes(article))
+    .filter(article => !suggestedArticles.value.includes(article))
+    .filter(article => !newArticles.value.includes(article))
+    .filter(article => !readArticles.value.includes(article))
 
   const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
   return sortedArticles
@@ -102,27 +116,38 @@ const navigateToCreateArticle = (): void => {
 
     <router-link v-if="continueReadingArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
 
-    <template v-if="mostSeenWordsArticles.length > 0">
-      <h2>New Articles</h2>
+    <template v-if="suggestedArticles.length > 0">
+      <h2>Suggested Articles</h2>
       <div class="article-list">
-        <article v-for="article in mostSeenWordsArticles" :key="article.id" class="article-preview">
+        <article v-for="article in suggestedArticles" :key="article.id" class="article-preview">
           <ArticlePreviewComponent :article="article" />
         </article>
       </div>
     </template>
 
-    <router-link v-if="mostSeenWordsArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
+    <router-link v-if="suggestedArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
 
-    <template v-if="newestArticles.length > 0">
+    <template v-if="newArticles.length > 0">
       <h2>New Articles</h2>
       <div class="article-list">
-        <article v-for="article in newestArticles" :key="article.id" class="article-preview">
+        <article v-for="article in newArticles" :key="article.id" class="article-preview">
           <ArticlePreviewComponent :article="article" />
         </article>
       </div>
     </template>
 
-    <router-link v-if="newestArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
+    <router-link v-if="newArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
+
+    <template v-if="readArticles.length > 0">
+      <h2>Read again</h2>
+      <div class="article-list">
+        <article v-for="article in readArticles" :key="article.id" class="article-preview">
+          <ArticlePreviewComponent :article="article" />
+        </article>
+      </div>
+    </template>
+
+    <router-link v-if="readArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
 
     <template v-if="remainingArticles.length > 0">
       <h2>More Articles</h2>
