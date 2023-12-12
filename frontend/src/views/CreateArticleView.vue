@@ -27,10 +27,7 @@ const submitForm = async (): Promise<void> => {
     if (response.ok) {
       // If there's a 'url' field in the response, redirect to that URL
       if (responseData.slug) {
-        router.push({
-          path: `/articles/${responseData.slug}`,
-          query: { dontMarkAsSeen: 'true' }
-        });
+        router.push(`/articles/${responseData.slug}`);
       } else {
         console.error('Invalid response format: missing "slug" field.');
         // Handle error as needed

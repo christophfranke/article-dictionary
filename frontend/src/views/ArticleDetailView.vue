@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -90,10 +90,6 @@ const fetchArticleDetails = async () => {
     );
     
     dictionary.set(article.value.dictionary)
-
-    if (!route.query.dontMarkAsSeen) {
-      markArticleAsSeen();
-    }
   } else {
     console.error('Failed to fetch article details');
   }
@@ -131,9 +127,23 @@ const toggleShowDictionary = () => {
 };
 
 
+let timeoutId: ReturnType<typeof setTimeout> | null = null
+const SECOND: number = 1000
+const TIME_TO_MARK_AS_SEEN: number = 60 * SECOND;
 onMounted(() => {
   fetchArticleDetails();
+
+  timeoutId = setTimeout(() => {
+    markArticleAsSeen();
+  }, TIME_TO_MARK_AS_SEEN);
 });
+
+onBeforeUnmount(() => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+});
+
 </script>
 
 <template>
