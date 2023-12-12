@@ -108,7 +108,6 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
-    <h2>Progress</h2>
     <ProgresseComponent />
 
     <div v-if="articles.length === 0" class="no-articles">

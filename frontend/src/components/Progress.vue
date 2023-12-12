@@ -106,6 +106,15 @@ const chartOptions = computed<any>(() => ({
   },
 }));
 
+const hasEnoughData = computed(() => {
+  if (!chartData.value)
+    return false;
+
+  return chartData.value.labels.length > 1;
+});
+
+
+
 const fetchAuthorized = useFetchAuthorized();
 onMounted(async () => {
   const data = await fetchAuthorized<Progress[]>('/api/statistics/daily');
@@ -151,8 +160,9 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="chart-container">
+  <div class="chart-container" v-if="hasEnoughData">
     <div class="chart-toggle">
+      <h2>Progress</h2>
       <button @click="toggleRelativeData" class="toggle-button">
         {{ showRelativeData ? 'Words per Day' : 'Total words'}}
       </button>
@@ -165,13 +175,16 @@ onMounted(async () => {
 
 <style scoped>
 .chart-container {
-  margin: 20px auto;
+  margin: 0 auto;
+  margin-bottom: 50px;
   max-width: 800px; /* Set a maximum width for the chart if needed */
 }
 
 .chart-toggle {
   margin-bottom: 10px; /* Add margin below the toggle button */
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .toggle-button {

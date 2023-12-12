@@ -88,23 +88,4 @@ def get_statistics():
     # Add today's statistics to the result
     result.append(today_statistics)
 
-    # Fill in missing dates based on the latest available entry
-    for i in range(1, 8):  # Loop through the next 7 days
-        date = (datetime.utcnow() - timedelta(days=i)).strftime('%Y-%m-%d')
-
-        # Check if an entry for the date already exists
-        existing_entry = next((entry for entry in result if entry['date'] == date), None)
-        if existing_entry is None:
-            # Create a dummy entry if no entry exists for the date
-            dummy_entry = {
-                'date': date,
-                'latest_timestamp': None,
-                'new_words': 0,
-                'seen_words': 0,
-                'known_words': 1,
-                'ignore_words': 0  # Assuming 'ignore_words' should also be present in the result
-            }
-            result.append(dummy_entry)
-
-
     return jsonify(result)
