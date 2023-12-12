@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { Line } from 'vue-chartjs';
-import type { ChartData, Point } from 'chart.js';
+import type { ChartData, Point, ChartOptions } from 'chart.js';
 import type { Progress } from '@/types';
 import { useFetchAuthorized } from '@/use/api';
 
@@ -11,6 +11,7 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  LogarithmicScale,
   TimeScale,
   PointElement,
   LineElement,
@@ -22,6 +23,7 @@ import {
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  LogarithmicScale,
   TimeScale,
   PointElement,
   LineElement,
@@ -57,19 +59,27 @@ const processedChartData = computed(() => {
             x: point.x,
             y: point.y - previous.y,
           }
-        })
+        }).filter((point, index) => index > 0)
       }))
     }
   }
 
-  return chartData.value;
+  return {
+    ...chartData.value,
+    datasets: chartData.value.datasets.map(dataset => ({
+      ...dataset,
+      data: dataset.data.filter((point, index) => index > 0)
+    })),
+  }
 });
 
 
 const chartData = ref<ChartData<"line", Point[], unknown> | null>(null);
-const chartOptions = ref({
+// It would have been nice to put ChartOptions here, but it errors like crazy
+const chartOptions = computed<any>(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  aspectRatio: 1.5,
   scales: {
     x: {
       type: 'time',
@@ -86,12 +96,15 @@ const chartOptions = ref({
     },
     y: {
       beginAtZero: true,
+      type: showRelativeData.value ? 'linear': 'logarithmic',
       grid: {
-        display: false
+        display: true,
+        drawOnChartArea: true,
+        color: '#f3f3f3'
       },
     },
   },
-});
+}));
 
 const fetchAuthorized = useFetchAuthorized();
 onMounted(async () => {
@@ -102,7 +115,7 @@ onMounted(async () => {
     data.sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     chartData.value = {
-      labels: data.map(entry => entry.date),
+      labels: data.map(entry => entry.date).filter((date, index) => index > 0),
       datasets: [
         // {
         //   label: 'New',
