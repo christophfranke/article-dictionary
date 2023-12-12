@@ -7,7 +7,7 @@ from utils.casing import camel_to_snake
 from text_processing.extract import extract_words
 from text_processing.dictionary import add_text
 
-from .helpers import slugify, get_dictionary_entries
+from .helpers import slugify, get_dictionary_entries, serialize
 
 
 @login_required
@@ -40,14 +40,4 @@ def update_article(slug):
     collection.update_one({'_id': article['_id']}, {'$set': article_data})
 
     updated_article = collection.find_one({'_id': article['_id']})
-    return jsonify({
-        'id': str(updated_article['_id']),
-        'title': updated_article['title'],
-        'content': updated_article['content'],
-        'slug': updated_article['slug'],
-        'words': updated_article['words'],
-        'createdAt': updated_article['created_at'],
-        'lastRead': updated_article['last_read'],
-        'status': updated_article['status'],
-        'dictionary': get_dictionary_entries(updated_article['words'])
-    }), 200
+    return serialize(updated_article, current_user.id), 200

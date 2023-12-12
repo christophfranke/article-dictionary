@@ -101,7 +101,7 @@ def get_statistics():
                 'latest_timestamp': None,
                 'new_words': 0,
                 'seen_words': 0,
-                'known_words': 0,
+                'known_words': 1,
                 'ignore_words': 0  # Assuming 'ignore_words' should also be present in the result
             }
             result.append(dummy_entry)

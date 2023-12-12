@@ -47,15 +47,14 @@ const article = ref<ArticleDetail>({
   content: '',
   slug: '',
   status: '',
+  owned: false,
   words: [],
   dictionary: [],
 });
 
-const highlightedWord = ref<string>('');
-
 const route = useRoute();
-const articleName = ref<string>(route.params.name ? String(route.params.name) : '');
 
+const highlightedWord = ref<string>('');
 const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
@@ -78,8 +77,14 @@ const markArticleAsSeen = async () => {
     console.error('Failed to mark article as seen');
   }
 }
+
 const fetchArticleDetails = async () => {
-  const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${articleName.value}`);
+  const slug = route.params.slug;
+  if (!slug) {
+    console.error('No slug provided');
+    return;
+  }
+  const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${slug}`);
   if (data) {
     article.value = data;
 

@@ -58,12 +58,15 @@ const lengthDescription = computed(() => {
 
 });
 
+const link = (article: ArticlePreview): string => article.owned
+  ? `/articles/${article.slug}`
+  : `/articles/import/${article.id}`
 
 </script>
 
 <template>
   <div class="article-preview">
-    <router-link :to="`/articles/${props.article.slug}`">
+    <router-link :to="link(props.article)">
       <h2>{{ props.article.title }}</h2>
       <p>{{ props.article.excerpt }}...</p>
       <div class="statistics">

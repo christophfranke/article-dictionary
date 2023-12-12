@@ -12,6 +12,8 @@ def jobs():
     add_dates()
     add_status()
     add_privacy()
+    add_owner()
+    remove_dictionary()
 
 def add_words():
     collection = get_collection('articles')
@@ -101,3 +103,31 @@ def add_privacy():
         article['privacy'] = 'public'
         collection.replace_one({'_id': article['_id']}, article)
         print('Added privacy to article: ' + article['title'])
+
+def add_owner():
+    collection = get_collection('articles')
+
+    query = {
+        'owner_id': {'$exists': False}
+    }
+
+    articles = collection.find(query)
+
+    for article in articles:
+        article['owner_id'] = article['user_id']
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Added owner_id to article: ' + article['title'])
+
+def remove_dictionary():
+    collection = get_collection('articles')
+
+    query = {
+        'dictionary': {'$exists': True}
+    }
+
+    articles = collection.find(query)
+
+    for article in articles:
+        del article['dictionary']
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Removed dictionary from article: ' + article['title'])

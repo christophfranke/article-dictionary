@@ -20,6 +20,7 @@ export interface ArticleBase extends ArticleData {
   id: string;
   slug: string;
   status: string;
+  owned: boolean;
 }
 
 export interface ArticlePreview extends ArticleBase {

@@ -1,3 +1,4 @@
+from flask import jsonify
 from flask_login import current_user
 from bson import ObjectId
 
@@ -33,4 +34,20 @@ def create_status_map(words):
     return status_map
 
 def get_word_status(original, status_map):
-    return status_map.get(original, 'unknown')
+    return status_map.get(original.lower(), None)
+
+
+def serialize(article, user_id):
+    return jsonify({
+        'id': str(article['_id']),
+        'title': article['title'],
+        'content': article['content'],
+        'owned': article['owner_id'] == ObjectId(user_id),
+        'privacy': article['privacy'],
+        'slug': article['slug'],
+        'words': article['words'],
+        'createdAt': article['created_at'],
+        'lastRead': article['last_read'],
+        'status': article['status'],
+        'dictionary': get_dictionary_entries(article['words'])
+    })

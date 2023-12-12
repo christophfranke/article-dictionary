@@ -4,7 +4,7 @@ from bson import ObjectId
 
 from utils.mongo import get_collection
 
-from .helpers import get_dictionary_entries
+from .helpers import serialize
 
 
 @login_required
@@ -15,14 +15,4 @@ def get_article(slug):
     if not article:
         return jsonify({'error': 'Article not found'}), 404
 
-    return jsonify({
-        'id': str(article['_id']),
-        'title': article['title'],
-        'content': article['content'],
-        'slug': article['slug'],
-        'words': article['words'],
-        'createdAt': article['created_at'],
-        'lastRead': article['last_read'],
-        'status': article['status'],
-        'dictionary': get_dictionary_entries(article['words'])
-    })
+    return serialize(article, current_user.id), 200

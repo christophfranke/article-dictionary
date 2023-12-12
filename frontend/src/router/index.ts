@@ -40,10 +40,16 @@ const router = createRouter({
       component: () => import('@/views/ArticleListView.vue'),
     },
     {
-      path: '/articles/:name',
+      path: '/articles/:slug',
       name: 'article-detail',
-      component: () => import('../views/ArticleDetailView.vue'),
+      component: () => import('@/views/ArticleDetailView.vue'),
     },
+    {
+      path: '/articles/import/:id',
+      name: 'article-import',
+      component: () => import('@/views/ArticleImportView.vue'),
+    },
+
     // Add the catch-all route at the end
     {
       path: '/:catchAll(.*)',

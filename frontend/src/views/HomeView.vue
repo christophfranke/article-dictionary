@@ -5,8 +5,9 @@ import { useRouter } from 'vue-router';
 import type { ArticlePreview } from '@/types';
 import { useFetchAuthorized } from '@/use/api';
 
-import ArticlePreviewComponent from '../components/ArticlePreview.vue';
-import ProgresseComponent from '../components/Progress.vue';
+import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
+import ArticlePreviewList from '@/components/ArticlePreviewList.vue';
+import ProgresseComponent from '@/components/Progress.vue';
 
 
 const articles = ref<ArticlePreview[]>([]);
@@ -15,6 +16,7 @@ const router = useRouter();
 const continueReadingArticlesCount = ref(3)
 const continueReadingArticles = computed(() => {
   const sortedArticles = articles.value
+    .filter(article => article.owned)
     .filter(article => article.status === 'seen')
     .sort((a, b) => {
       return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
@@ -30,7 +32,7 @@ const usefulness = (article: ArticlePreview): number => {
 const suggestedArticlesCount = ref(6)
 const suggestedArticles = computed(() => {
   const baseArticles = articles.value
-    // .filter(article => !continueReadingArticles.value.includes(article))
+    .filter(article => article.owned)
     .filter(article => article.status !== 'read')
 
   const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
@@ -40,8 +42,7 @@ const suggestedArticles = computed(() => {
 const newArticlesCount = ref(6)
 const newArticles = computed(() => {
   const baseArticles = articles.value
-    // .filter(article => !continueReadingArticles.value.includes(article))
-    // .filter(article => !suggestedArticles.value.includes(article))
+    .filter(article => article.owned)
     .filter(article => article.status === 'new')
 
   const sortedArticles = baseArticles.sort((a, b) => {
@@ -55,9 +56,7 @@ const newArticles = computed(() => {
 const readArticlesCount = ref(6)
 const readArticles = computed(() => {
   const baseArticles = articles.value
-    // .filter(article => !continueReadingArticles.value.includes(article))
-    // .filter(article => !suggestedArticles.value.includes(article))
-    // .filter(article => !newArticles.value.includes(article))
+    .filter(article => article.owned)
     .filter(article => article.status === 'read')
 
   const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
@@ -66,6 +65,7 @@ const readArticles = computed(() => {
 
 const remainingArticles = computed(() => {
   const baseArticles = articles.value
+    .filter(article => article.owned)
     .filter(article => !continueReadingArticles.value.includes(article))
     .filter(article => !suggestedArticles.value.includes(article))
     .filter(article => !newArticles.value.includes(article))
@@ -74,6 +74,15 @@ const remainingArticles = computed(() => {
   const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
   return sortedArticles
 });
+
+const publicArticlesCount = ref(9)
+const publicArticles = computed(() => {
+  const baseArticles = articles.value
+    .filter(article => !article.owned)
+
+  const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
+  return sortedArticles.slice(0, publicArticlesCount.value);
+})
 
 
 const fetchAuthorized = useFetchAuthorized();
@@ -105,60 +114,30 @@ const navigateToCreateArticle = (): void => {
       <router-link to="/create" class="create-link">Create New Article</router-link>
     </div>
 
-    <template v-if="continueReadingArticles.length > 0">
-      <h2>Continue Reading</h2>
-      <div class="article-list">
-        <article v-for="article in continueReadingArticles" :key="article.id" class="article-preview">
-          <ArticlePreviewComponent :article="article" />
-        </article>
-      </div>
-    </template>
+    <ArticlePreviewList
+      title="Continue Reading"
+      :articleList="continueReadingArticles" />
 
-    <router-link v-if="continueReadingArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
+    <ArticlePreviewList
+      title="Suggested Articles"
+      :articleList="suggestedArticles" />
 
-    <template v-if="suggestedArticles.length > 0">
-      <h2>Suggested Articles</h2>
-      <div class="article-list">
-        <article v-for="article in suggestedArticles" :key="article.id" class="article-preview">
-          <ArticlePreviewComponent :article="article" />
-        </article>
-      </div>
-    </template>
+    <ArticlePreviewList
+      title="New Articles"
+      :articleList="newArticles" />
 
-    <router-link v-if="suggestedArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
+    <ArticlePreviewList
+      title="Public Articles"
+      :articleList="publicArticles"
+      :showCreateButton="false" />
 
-    <template v-if="newArticles.length > 0">
-      <h2>New Articles</h2>
-      <div class="article-list">
-        <article v-for="article in newArticles" :key="article.id" class="article-preview">
-          <ArticlePreviewComponent :article="article" />
-        </article>
-      </div>
-    </template>
+    <ArticlePreviewList
+      title="Read again"
+      :articleList="readArticles" />
 
-    <router-link v-if="newArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
-
-    <template v-if="readArticles.length > 0">
-      <h2>Read again</h2>
-      <div class="article-list">
-        <article v-for="article in readArticles" :key="article.id" class="article-preview">
-          <ArticlePreviewComponent :article="article" />
-        </article>
-      </div>
-    </template>
-
-    <router-link v-if="readArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
-
-    <template v-if="remainingArticles.length > 0">
-      <h2>More Articles</h2>
-      <div class="article-list">
-        <article v-for="article in remainingArticles" :key="article.id" class="article-preview">
-          <ArticlePreviewComponent :article="article" />
-        </article>
-      </div>
-    </template>
-
-    <router-link v-if="remainingArticles.length > 0" to="/create" class="create-link">Create New Article</router-link>
+    <ArticlePreviewList
+      title="More Articles"
+      :articleList="remainingArticles" />
   </main>
 </template>
 
@@ -170,19 +149,6 @@ const navigateToCreateArticle = (): void => {
   padding-bottom: 100px;
 }
 
-.article-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.article-preview {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-}
-
 .no-articles {
   text-align: center;
   margin: 50px 0;
@@ -192,19 +158,4 @@ const navigateToCreateArticle = (): void => {
   margin: 70px 0;
 }
 
-.create-link {
-  display: block;
-  background-color: #007bff;
-  color: #fff;
-  text-align: center;
-  padding: 10px;
-  margin: 20px auto;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.create-link:hover {
-  background-color: #0056b3;
-}
 </style>
