@@ -73,7 +73,7 @@ def update_word_frequency():
                 word['needs_recount'] = False
                 dictionary.replace_one({'_id': word['_id']}, word)
 
-                print(f'Counted frequency for word {word["original"]} for user {user_id}: {frequency}')
+                print(f'Counted frequency for word {word["original"]}: {frequency}')
 
     except Exception as e:
         print('Error counting frequency for word: ' + str(e))

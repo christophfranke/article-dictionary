@@ -160,4 +160,19 @@ const navigateToCreateArticle = (): void => {
   margin: 70px 0;
 }
 
+.create-link {
+  display: block;
+  background-color: #007bff;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  margin: 20px auto;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.create-link:hover {
+  background-color: #0056b3;
+}
 </style>

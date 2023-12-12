@@ -32,7 +32,7 @@ def update_article(slug):
 
     if 'content' in article_data:
         article_data['words'] = extract_words(content)
-        add_text(article_data['content'], get_collection('dictionary'), ObjectId(current_user.id))
+        add_text(article_data['content'], current_user.id, get_collection('dictionary'), get_collection('users'))
 
     if 'title' in article_data:
         article_data['slug'] = slugify(title)

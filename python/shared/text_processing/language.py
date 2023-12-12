@@ -1,9 +1,6 @@
-from utils.mongo import get_collection
 from bson import ObjectId  # Import ObjectId for converting user_id
 
-def get_languages(user_id):
-    users_collection = get_collection('users')
-
+def get_languages(users_collection, user_id):
     # Find the user in the users collection
     user = users_collection.find_one({'_id': ObjectId(user_id)})
 

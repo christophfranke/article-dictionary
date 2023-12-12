@@ -48,6 +48,7 @@ const article = ref<ArticleDetail>({
   slug: '',
   status: '',
   owned: false,
+  privacy: '',
   words: [],
   dictionary: [],
 });

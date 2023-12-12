@@ -2,6 +2,7 @@
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFetchAuthorized } from '@/use/api';
+import type { ArticleDetail } from '@/types'
 
 const route = useRoute();
 const id = route.params.id;
@@ -10,7 +11,7 @@ const router = useRouter();
 
 const fetchAuthorized = useFetchAuthorized();
 const importArticle = async () => {
-	const data = await fetchAuthorized(`/api/articles/create`, {
+	const data = await fetchAuthorized<ArticleDetail>(`/api/articles/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

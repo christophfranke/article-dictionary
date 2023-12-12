@@ -7,6 +7,7 @@ import type { ArticleData } from '@/types';
 const article = ref<ArticleData>({
   title: '',
   content: '',
+  privacy: 'public',
 });
 
 const error = ref<string>('');
@@ -58,6 +59,12 @@ const submitForm = async (): Promise<void> => {
       <label for="articleContent">Content:</label>
       <textarea id="articleContent" v-model="article.content" required></textarea>
 
+      <label for="articlePrivacy">Privacy:</label>
+      <select id="articlePrivacy" v-model="article.privacy">
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </select>
+
       <button type="submit" class="submit-button">Submit</button>
 
       <p v-if="error" class="error-message">{{ error }}</p>
@@ -99,7 +106,18 @@ h1 {
   min-height: 300px;
 }
 
+.article-form select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 5px; /* Add margin for spacing */
+}
+
 .submit-button {
+  margin-top: 20px;
   background-color: #28a745;
   color: #fff;
   padding: 10px 20px;

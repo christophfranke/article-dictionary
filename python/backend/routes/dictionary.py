@@ -36,7 +36,7 @@ def reset_dictionary():
 
     for article in articles_cursor:
         content = article.get('content', '')
-        add_text(content, dictionary_collection)
+        add_text(content, get_user_id(), dictionary_collection, get_collection('users'))
 
     return jsonify({'message': 'Reset successful'})
 
@@ -111,7 +111,7 @@ def retranslate(original):
     if word is None:
         return jsonify({'error': f'Word not found: {original}'}), 404
 
-    source_language, target_language = get_languages(get_user_id())
+    source_language, target_language = get_languages(get_collection('users'), get_user_id())
     word['translations'] = translate_single_word(original, source_language, target_language)
     word['needs_retranslate'] = False
 
@@ -138,7 +138,7 @@ def add_word():
     if existing_word:
         return jsonify({'error': f'Word already exists in the dictionary: {original_word}'}), 400
 
-    add_words([original_word], dictionary_collection, get_user_id())
+    add_words([original_word], get_user_id(), dictionary_collection, get_collection('users'))
 
     added_word = dictionary_collection.find_one({'original': original_word, 'user_id': get_user_id()})
     added_word['id'] = str(added_word.pop('_id'))

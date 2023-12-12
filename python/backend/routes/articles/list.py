@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from bson import ObjectId
 
 from utils.mongo import get_collection
+from text_processing.language import get_languages
 from .helpers import create_status_map, get_word_status
 
 
@@ -10,9 +11,15 @@ from .helpers import create_status_map, get_word_status
 def list_articles():
     articles_collection = get_collection('articles')
 
+    source_language, _ = get_languages(get_collection('users'), current_user.id)
+
     own_articles = list(articles_collection.find({'user_id': ObjectId(current_user.id)}))
     own_article_titles = [article['title'] for article in own_articles]
-    public_articles = articles_collection.find({'privacy': 'public', 'title': {'$nin': own_article_titles}})
+    public_articles = articles_collection.find({
+        'privacy': 'public',
+        'language': source_language,
+        'title': {'$nin': own_article_titles}
+    })
 
     all_articles = own_articles + list(public_articles)
 

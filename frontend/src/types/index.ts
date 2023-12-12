@@ -14,6 +14,7 @@ export interface Word extends PartialWord {
 export interface ArticleData {  
   title: string;
   content: string;
+  privacy: string;
 }
 
 export interface ArticleBase extends ArticleData {

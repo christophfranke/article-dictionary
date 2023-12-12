@@ -3,14 +3,14 @@ from text_processing.extract import extract_unique_words
 from text_processing.language import get_languages
 from bson import ObjectId  # Import ObjectId for converting user_id
 
-def add_text(text, dictionary_collection, user_id):
+def add_text(text, user_id, dictionary_collection, user_collection):
     words = extract_unique_words(text)
-    add_words(words, dictionary_collection, user_id)
+    add_words(words, user_id, dictionary_collection, user_collection)
 
-def add_words(words, dictionary_collection, user_id):
+def add_words(words, user_id, dictionary_collection, user_collection):
     new_words = []  # Array to collect yet-to-be-translated words
 
-    source_language, target_language = get_languages(user_id)
+    source_language, target_language = get_languages(user_collection, user_id)
 
     for word in words:
         # Check if the word already exists in the dictionary

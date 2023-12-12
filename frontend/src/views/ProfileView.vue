@@ -79,14 +79,14 @@ const submitForm = async () => {
       </div>
 
       <div class="form-group">
-        <label for="sourceLanguage">Source Language:</label>
+        <label for="sourceLanguage">I want to learn:</label>
         <select id="sourceLanguage" v-model="form.sourceLanguage">
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="targetLanguage">Target Language:</label>
+        <label for="targetLanguage">My language:</label>
         <select id="targetLanguage" v-model="form.targetLanguage">
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
         </select>

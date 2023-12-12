@@ -9,7 +9,7 @@ interface Props {
 
 const props = defineProps({
   article: {
-    type: Object,
+    type: Object as unknown as () => ArticlePreview,
     required: true,
   }
 });

@@ -50,7 +50,7 @@ def create_article():
 
     words = extract_words(content)
 
-    source_language, _ = get_languages(current_user.id)
+    source_language, _ = get_languages(get_collection('users'), current_user.id)
 
     new_article = {
         'title': title,
@@ -68,6 +68,6 @@ def create_article():
 
     result = articles_collection.insert_one(new_article)
 
-    add_text(new_article['content'], get_collection('dictionary'), ObjectId(current_user.id))
+    add_text(new_article['content'], current_user.id, get_collection('dictionary'), get_collection('users'))
 
     return serialize(new_article, current_user.id), 201
