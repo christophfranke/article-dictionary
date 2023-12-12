@@ -28,7 +28,7 @@ const tableDisplayConfig = {
     frequency: true,
   },
   action: {
-    known: false,
+    known: true,
     ignore: true,
     add: true,
     sort: true,
@@ -114,7 +114,12 @@ onMounted(async () => {
 
     <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
 
-    <button class="rebuild-button" @click="rebuildDictionary">Rebuild Dictionary</button>
+    <button
+      v-if="false"
+      class="rebuild-button"
+      @click="rebuildDictionary"
+    >Rebuild Dictionary
+    </button>
   </div>
 </template>
 

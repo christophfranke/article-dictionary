@@ -26,7 +26,7 @@ const tableDisplayConfig = computed(() => ({
     frequency: false,
   },
   action: {
-    known: true,
+    known: false,
     ignore: true,
     add: false,
     sort: true,
@@ -46,6 +46,7 @@ const article = ref<ArticleDetail>({
   title: '',
   content: '',
   slug: '',
+  status: '',
   words: [],
   dictionary: [],
 });
@@ -88,10 +89,29 @@ const fetchArticleDetails = async () => {
   }
 };
 
-const markAllAsSeen = () => {
+const markAllAsSeen = async () => {
   const words = dictionary.words.value.filter((word) => word.status === 'new');
-  dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
+  await dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
 };
+
+const markArticleAsRead = async () => {
+  markAllAsSeen();
+
+  const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${article.value.slug}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status: 'read' }),
+  });
+
+  if (data) {
+    article.value = data;
+  } else {
+    console.error('Failed to mark article as read');
+    // Handle error as needed
+  }
+}
 
 const showDictionary = ref(true);
 const toggleShowDictionary = () => {
@@ -110,7 +130,7 @@ onMounted(() => {
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <h1>{{ article.title }}</h1>
       <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
-      <button :disabled="newWordsCount === 0" class="mark-all-seen-button" @click="markAllAsSeen">Mark All as Seen</button>
+      <button :disabled="article.status === 'read'" class="mark-as-read" @click="markArticleAsRead">Mark as read</button>
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">
       <button class="toggle-dictionary-button" @click="toggleShowDictionary">
@@ -215,26 +235,29 @@ h1 {
   transform: rotate(180deg);
 }
 
-.mark-all-seen-button {
+button {
   margin-top: 10px;
   padding: 10px;
-  background-color: #4caf50; /* Green background */
   color: white; /* White text */
   border: none; /* Remove borders */
   border-radius: 5px; /* Rounded corners */
   cursor: pointer; /* Add a pointer cursor on hover */
 }
 
-/* Add a hover effect */
-.mark-all-seen-button:hover {
+.mark-as-read {
+  background-color: #4caf50; /* Green background */
+}
+
+.mark-as-read:hover {
   background-color: #45a049;
 }
 
-.mark-all-seen-button:disabled {
+.mark-as-read:disabled {
   background-color: #b0b0b0; /* Light gray background for disabled state */
   cursor: default; /* Default cursor on disabled state */
   color: #666; /* Dim text color for disabled state */
 }
+
 
 .statistics {
   float: right;

@@ -12,9 +12,9 @@ import user
 # user.jobs()
 # articles.jobs()
 # dictionary.jobs()
-schedule.every(2).hours.do(statistics.jobs)
-schedule.every(2).seconds.do(dictionary.jobs)
-schedule.every(2).minutes.do(articles.jobs)
+schedule.every(1).hours.do(statistics.jobs)
+schedule.every(1).seconds.do(dictionary.jobs)
+schedule.every(1).minutes.do(articles.jobs)
 
 print("Scheduler is running")
 

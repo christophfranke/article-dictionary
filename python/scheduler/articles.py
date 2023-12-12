@@ -10,6 +10,7 @@ def jobs():
     add_user_id()
     add_language()
     add_dates()
+    add_status()
 
 def add_words():
     collection = get_collection('articles')
@@ -71,3 +72,17 @@ def add_dates():
         article['last_read'] = datetime.utcnow()
         collection.replace_one({'_id': article['_id']}, article)
         print('Added dates to article: ' + article['title'])
+
+def add_status():
+    collection = get_collection('articles')
+
+    query = {
+        'status': {'$exists': False}
+    }
+
+    articles = collection.find(query)
+
+    for article in articles:
+        article['status'] = 'new'
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Added status to article: ' + article['title'])

@@ -72,17 +72,20 @@ const setStatus = async (word: Word, status: string): Promise<void> => {
   await updateWord(word.original, { status });
 };
 
+
+const statusOptions: string[] = ['new', 'seen', 'known'];
+const nextStatus = (status: string): string => {
+  const currentIndex: number = statusOptions.indexOf(status);
+  const newIndex: number = (currentIndex + 1) % statusOptions.length;
+  return statusOptions[newIndex];
+};
+
 const changeStatus = async (word: Word): Promise<void> => {
   if (!props.display.action.status) {
     return
   }
 
-  const statusOptions: string[] = ['new', 'seen', 'known', 'ignore'];
-  const currentIndex: number = statusOptions.indexOf(word.status);
-  const newIndex: number = (currentIndex + 1) % statusOptions.length;
-  const newStatus: string = statusOptions[newIndex];
-
-  await updateWord(word.original, { status: newStatus });
+  await updateWord(word.original, { status: nextStatus(word.status) });
 };
 
 
@@ -109,12 +112,40 @@ const retranslateWord = props.dictionary.retranslateWord;
     <table class="word-table">
       <thead>
         <tr v-if="display.header">
-          <th @click="sortTable('number')" v-if="display.col.number">#</th>
-          <th @click="sortTable('original')" v-if="display.col.original">Original</th>
-          <th @click="sortTable('translations')" v-if="display.col.translations">Translations</th>
-          <th @click="sortTable('frequency')" v-if="display.col.frequency">Frequency</th>
-          <th @click="sortTable('status')" v-if="display.col.status">Status</th>
-          <th v-if="display.col.actions">Actions</th>
+          <th
+            @click="sortTable('number')"
+            v-if="display.col.number"
+            :title="display.action.sort ? 'Sort by appearence in text' : undefined"
+            :class="{ 'no-sort': !display.action.sort }"
+          >#
+          </th>
+          <th
+            @click="sortTable('original')"
+            v-if="display.col.original"
+            :title="display.action.sort ? 'Sort by original word' : undefined"
+            :class="{ 'no-sort': !display.action.sort }"
+          >Original
+          </th>
+          <th
+            @click="sortTable('translations')"
+            v-if="display.col.translations"
+            :title="display.action.sort ? 'Sort by translation' : undefined"
+            :class="{ 'no-sort': !display.action.sort }"
+          >Translations
+          </th>
+          <th
+            @click="sortTable('frequency')"
+            v-if="display.col.frequency"
+            :title="display.action.sort ? 'Sort by word frequency' : undefined"
+            :class="{ 'no-sort': !display.action.sort }"
+          >Frequency
+          </th>
+          <th
+            @click="sortTable('status')"
+            v-if="display.col.status"
+            title="Sort by status">Status
+          </th>
+          <th v-if="display.col.actions" class="no-sort">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -122,8 +153,12 @@ const retranslateWord = props.dictionary.retranslateWord;
           <td v-if="display.col.number">{{ word.index + 1 }}</td>
           <td v-if="display.col.original">{{ word.original }}</td>
           <template v-if="display.col.translations">
-            <td @mousedown="editTranslations(word.id)" v-if="word.id !== editingTranslationId" class="edit-column">
-              {{ word.translations.join(', ') }}
+            <td
+              @mousedown="editTranslations(word.id)"
+              v-if="word.id !== editingTranslationId"
+              :class="{ 'edit-column': display.action.edit }"
+              :title="display.action.edit ? 'Edit translations' : undefined"
+            >{{ word.translations.join(', ') }}
             </td>
             <td v-else>
               <form @submit="updateTranslation" class="edit-form">
@@ -138,13 +173,44 @@ const retranslateWord = props.dictionary.retranslateWord;
             </td>
           </template>
           <td v-if="display.col.frequency">{{ word.frequency }}</td>
-          <td v-if="display.col.status" @click="changeStatus(word)" class="status-column">{{ word.status }}</td>
+          <td
+            v-if="display.col.status"
+            @click="changeStatus(word)"
+            :title="display.action.status ? `Change status to ${nextStatus(word.status)}` : undefined"
+            :class="{ 'status-column': display.action.status }"
+          >{{ word.status }}
+          </td>
           <td v-if="display.col.actions" class="actions-column">
             <div>
-              <button v-if="display.action.known" @click="setStatus(word, 'known')"><FontAwesomeIcon icon="check-circle" /></button>
-              <button v-if="display.action.ignore" @click="setStatus(word, 'ignore')"><FontAwesomeIcon icon="times-circle" /></button>
-              <button v-if="display.action.retranslate" @click="retranslateWord(word.original)"><FontAwesomeIcon icon="rotate-left" /></button>
-              <a v-if="display.action.link" :href="dictionaryLink(word)" target="_blank"><button><FontAwesomeIcon icon="globe" /></button></a>
+              <button
+                v-if="display.action.known"
+                @click="setStatus(word, 'known')"
+                title="Mark as known"
+              >
+                <FontAwesomeIcon icon="check-circle" />
+              </button>
+              <button
+                v-if="display.action.ignore"
+                @click="setStatus(word, 'ignore')"
+                title="Ignore word"
+              >
+                <FontAwesomeIcon icon="ban" />
+              </button>
+              <button
+                v-if="display.action.retranslate"
+                @click="retranslateWord(word.original)"
+                title="Retranslate word"
+              >
+                <FontAwesomeIcon icon="rotate-left" />
+              </button>
+              <a
+                v-if="display.action.link"
+                :href="dictionaryLink(word)"
+                target="_blank"
+                title="Open Glosbe Dictionary"
+              >
+                <button><FontAwesomeIcon icon="globe" /></button>
+              </a>
             </div>
           </td>
         </tr>
@@ -176,6 +242,13 @@ th {
 
 th:hover {
   background-color: #ddd;
+}
+
+th.no-sort {
+  cursor: default;
+}
+th.no-sort:hover {
+  background-color: #f2f2f2;
 }
 
 .highlighted {
