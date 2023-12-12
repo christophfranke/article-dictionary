@@ -14,7 +14,7 @@ const props = defineProps({
   }
 });
 
-const difficultyScore = computed(() => {
+const familiarityScore = computed(() => {
   const total = props.article.statistics.seen
     + props.article.statistics.known
     + props.article.statistics.new;
@@ -22,18 +22,19 @@ const difficultyScore = computed(() => {
   return Math.round(100 * (0.2 * props.article.statistics.seen
     + props.article.statistics.known
     + 0. * props.article.statistics.new) / (total))
-})
+});
+const difficultyScore = computed(() => 100 - familiarityScore.value);
 
 const scoreDescription = computed(() => {
-  if (difficultyScore.value < 50) {
+  if (familiarityScore.value < 50) {
     return 'Very Hard';
-  } else if (difficultyScore.value < 62) {
+  } else if (familiarityScore.value < 62) {
     return 'Hard';
-  } else if (difficultyScore.value < 74) {
+  } else if (familiarityScore.value < 74) {
     return 'Medium'
-  } else if (difficultyScore.value < 86) {
+  } else if (familiarityScore.value < 86) {
     return 'Easy';
-  } else if (difficultyScore.value < 98) {
+  } else if (familiarityScore.value < 98) {
     return 'Very Easy'
   } else {
     return 'Too Easy';
@@ -66,24 +67,24 @@ const lengthDescription = computed(() => {
       <h2>{{ props.article.title }}</h2>
       <p>{{ props.article.excerpt }}...</p>
       <div class="statistics">
-        <span style="color: #666;">
+        <span style="color: #666;" :title="`${props.article.statistics.new} new words`">
           <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new }}
         </span>
-        <span style="color: #666;">
+        <span style="color: #666;" :title="`${props.article.statistics.seen} seen words`">
           <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen }}
         </span>
-        <span style="color: #666;">
+        <span style="color: #666;" :title="`${props.article.statistics.known} known words`">
           <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known }}
         </span>
       </div>
 
       <div class="difficulty">
-        <div class="left">
+        <div class="left" :title="`Estimated difficulty: ${scoreDescription} (${difficultyScore}%)`">
           <span>{{ scoreDescription }}</span>
           <span><FontAwesomeIcon icon="lightbulb" /></span>
-          <span>{{ 100 - difficultyScore }}%</span>
+          <span>{{ difficultyScore }}%</span>
         </div>
-        <div class="right">
+        <div class="right" :title="`${props.article.statistics.total} words total`">
           <span>{{ props.article.statistics.total }}</span>
           <span><FontAwesomeIcon icon="database" /></span>
           <span>{{ lengthDescription }}</span>
