@@ -1,4 +1,4 @@
-import { watchEffect, ref } from 'vue';
+import { watchEffect, ref, computed } from 'vue';
 
 export default (props: any) => {  
   const isInViewport = (element: HTMLElement) => {
@@ -11,17 +11,13 @@ export default (props: any) => {
     );
   }
 
-  const rows = ref<HTMLElement[] | null>(null);
-
   watchEffect(() => {
-    if (props.display.behaviour.scroll && props.dictionary.isVisible(props.highlight) && rows.value) {
+    if (props.display.behaviour.scroll && props.dictionary.isVisible(props.highlight)) {
       const word = props.dictionary.find(props.highlight)!;
-      const elem = rows.value.find((row) => row?.id === `word-${word.id}`);
+      const elem = document.getElementById(`word-${word.id}`);
       if (elem && !isInViewport(elem)) {
         elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   });
-
-  return { rows }
 }

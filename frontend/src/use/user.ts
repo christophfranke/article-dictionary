@@ -40,6 +40,7 @@ export const useProfile = () => {
 	onMounted(fetchProfileSettings)
 
 	return {
+		isLoggedIn,
 		email,
 		name,
 		sourceLanguage,
