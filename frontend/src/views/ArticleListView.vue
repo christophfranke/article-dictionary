@@ -16,9 +16,6 @@ const newestArticles = computed(() =>
   [...articles.value].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   );
-// const sortedArticles = computed(() => 
-//   [...articles.value].sort((a, b) => a.title.localeCompare(b.title))
-// );
 
 const fetchAuthorized = useFetchAuthorized();
 const fetchArticles = async (): Promise<void> => {

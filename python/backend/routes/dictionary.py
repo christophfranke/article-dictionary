@@ -56,6 +56,9 @@ def update_word(id):
     if not data:
         return jsonify({'error': 'No data provided for update'}), 400
 
+    if 'translations' in data:
+        word['needs_retranslate'] = False
+
     for key, value in data.items():
         word[key] = value
 
@@ -87,6 +90,8 @@ def update_many():
     words = list(dictionary_collection.find({'_id': {'$in': ids}, 'user_id': get_user_id()}))
 
     for word in words:
+        if 'translations' in data:
+            word['needs_retranslate'] = False
         for key, value in update.items():
             word[key] = value
             dictionary_collection.replace_one({'_id': word['_id']}, word)
