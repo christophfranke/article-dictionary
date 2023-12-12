@@ -108,7 +108,7 @@ const addWord = async (): Promise<void> => {
           >Translations
           </th>
           <th
-            @click="sortTable('frequency')"
+            @click="sortTable('frequency', 'desc')"
             v-if="display.col.frequency"
             :title="display.action.sort ? 'Sort by word frequency' : undefined"
             :class="{ 'no-sort': !display.action.sort }"

@@ -5,7 +5,7 @@ export default (props: any) => {
 	const sortOrder = ref<string>('asc');
 	const sortedBy = ref<string>(props.sort);
 
-	const sortTable = (column: string): void => {
+	const sortTable = (column: string, defaultSortOrder: string = 'asc'): void => {
 	  if (!props.display.action.sort) {
 	    return
 	  }
@@ -14,7 +14,7 @@ export default (props: any) => {
 	    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
 	  } else {
 	    sortedBy.value = column;
-	    sortOrder.value = 'asc';
+	    sortOrder.value = defaultSortOrder;
 	  }
 	};
 
