@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits } from 'vue';
+import { ref, computed } from 'vue';
 import type { DictionaryCollection } from '../dictionary/collection';
 
 const { content, words, dictionary } = defineProps({
