@@ -76,13 +76,16 @@ const fetchArticleDetails = async () => {
     
     dictionary.set(article.value.dictionary)
 
-    await fetchAuthorized('/api/articles/seen', {
+    const result = await fetchAuthorized('/api/articles/seen', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ id: article.value.id }),
     });
+    if (result) {
+      article.value.status = 'seen';
+    }
   } else {
     console.error('Failed to fetch article details');
     // Handle error as needed

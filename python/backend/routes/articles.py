@@ -196,12 +196,10 @@ def read_article():
     if not article:
         return jsonify({'error': 'Article not found'}), 404
 
-    new_status = 'seen' if article['status'] == 'new' else article['status']
-
     # update last read field
     collection.update_one({'_id': article['_id']}, {'$set': {
         'last_read': datetime.utcnow(),
-        'status': new_status
+        'status': 'seen'
     }})
 
     return jsonify({'message': 'Article updated successfully'}), 200

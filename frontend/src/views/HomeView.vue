@@ -12,7 +12,7 @@ import ProgresseComponent from '../components/Progress.vue';
 const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
-const continueReadingArticlesCount = ref(3)
+const continueReadingArticlesCount = ref(6)
 const continueReadingArticles = computed(() => {
   const sortedArticles = articles.value
     .filter(article => article.status === 'seen')
