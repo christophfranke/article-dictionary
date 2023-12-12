@@ -79,7 +79,7 @@ const addWord = async (): Promise<void> => {
   <div class="dictionary-table">
     <div v-if="display.action.add" class="add-word-section">
       <label for="newWord">New Entry:</label>
-      <input v-model="newWord" id="newWord" />
+      <input v-model="newWord" id="newWord" placeholder="Add word to dictionary" />
       <button @click="addWord">Add</button>
     </div>
 
@@ -161,4 +161,44 @@ th.no-sort:hover {
   background-color: #f2f2f2;
 }
 
+.add-word-section {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.add-word-section label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+  white-space: nowrap;
+  flex-grow: 0;
+}
+
+.add-word-section input {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin: 10px;
+}
+
+.add-word-section button {
+  flex-grow: 0;
+  background-color: #28a745; /* Green color */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-word-section button:hover {
+  background-color: #218838; /* Darker green color on hover */
+}
 </style>

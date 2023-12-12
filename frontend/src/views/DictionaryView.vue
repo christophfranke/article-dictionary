@@ -83,12 +83,12 @@ onMounted(async () => {
 <template>
   <div class="dictionary-view">
     <h1>Dictionary View</h1>
-    <Statistics :dictionary="dictionary" />
 
     <div class="filter-section">
       <label for="filter">Filter:</label>
-      <input v-model="filter" id="filter" />
+      <input v-model="filter" id="filter" placeholder="Search for..." />
     </div>
+    <Statistics :dictionary="dictionary" class="statistics" />
 
     <div class="status-filters">
       <label for="newCheckbox">
@@ -113,13 +113,6 @@ onMounted(async () => {
     </div>
 
     <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
-
-    <button
-      v-if="false"
-      class="rebuild-button"
-      @click="rebuildDictionary"
-    >Rebuild Dictionary
-    </button>
   </div>
 </template>
 
@@ -128,60 +121,58 @@ onMounted(async () => {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  font-family: 'Arial', sans-serif;
 }
 
 h1 {
-  color: #333;
-  font-size: 2em;
+  font-size: 24px;
   margin-bottom: 20px;
+  color: #333;
 }
 
 .filter-section {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 label {
-  margin-right: 10px;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
 }
 
-.input-field {
-  padding: 8px;
-  border: 1px solid #ddd;
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 10px;
+  box-sizing: border-box;
 }
 
 .status-filters {
   display: flex;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
 .status-filters label {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  cursor: pointer;
+  color: #555;
 }
 
 .status-filters input {
   margin-right: 5px;
 }
 
-.rebuild-button {
+.DictionaryTable {
   margin-top: 20px;
-  background-color: #dc3545; /* Red background for danger */
-  color: #fff;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.rebuild-button:hover {
-  background-color: #c82333; /* Darker red for hover effect */
 }
 
 .statistics {
   float: right;
+  margin-left: 30px;
 }
 </style>

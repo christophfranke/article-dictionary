@@ -107,7 +107,7 @@ const chartOptions = computed<any>(() => ({
 }));
 
 const hasEnoughData = computed(() => {
-  if (!chartData.value)
+  if (!chartData.value?.labels)
     return false;
 
   return chartData.value.labels.length > 1;
