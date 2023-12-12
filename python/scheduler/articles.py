@@ -6,8 +6,10 @@ from utils.mongo_external import get_collection
 
 
 def jobs():
+    pass
+
+def repair():
     add_words()
-    add_user_id()
     add_language()
     add_dates()
     add_status()
@@ -30,21 +32,6 @@ def add_words():
         article['words'] = words
         get_collection('articles').replace_one({'_id': article['_id']}, article)
         print('Added words to article: ' + article['title'] + f' ({len(words)})')
-
-krito_id = ObjectId('657488efbf4ba7afa277e164')
-def add_user_id():
-    collection = get_collection('articles')
-
-    query = {
-        'user_id': {'$exists': False}
-    }
-
-    articles = collection.find(query)
-
-    for article in articles:
-        article['user_id'] = krito_id
-        collection.replace_one({'_id': article['_id']}, article)
-        print('Added user_id to article: ' + article['title'])
 
 def add_language():
     collection = get_collection('articles')

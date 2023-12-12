@@ -8,12 +8,16 @@ from bson import ObjectId
 
 def jobs():
     retranslate_word()
-    remove_no_original()
     update_word_frequency()
-    add_user_id()
-    add_src_and_target_lang()
-    remove_duplicates()
+
+def repair():
+    fill_missing_words()
     remove_src_is_target()
+    remove_duplicates()
+    add_src_and_target_lang()
+    add_user_id()
+    remove_no_original()
+
 
 def update_word_frequency():
     try:
@@ -200,4 +204,57 @@ def remove_src_is_target():
         if word['source_language'] == word['target_language']:
             collection.delete_one({'_id': word['_id']})
             print('Removed malformat word: ' + word['original'] + ' lang: ' + word['source_language'] + ' -> ' + word['target_language'])
+
+def fill_missing_words():
+    article_collection = get_collection('articles')
+
+    users = get_collection('users').find()
+
+    for user in users:
+        user_id = user['_id']
+        pipeline = [
+            {
+                '$match': {
+                    'user_id': ObjectId(user_id),
+                    'language': user['source_language']
+                }
+            },
+            {
+                '$unwind': '$words'  # Unwind the 'words' array
+            },
+            {
+                '$group': {
+                    '_id': {'$toLower': '$words'}, # to lower does not seem to work
+                    'count': {'$sum': 1}
+                }
+            },
+            {
+                '$project': {
+                    '_id': 0,
+                    'word': '$_id',
+                    'count': 1
+                }
+            }
+        ]
+
+        result = list(article_collection.aggregate(pipeline))
+        # unique_words = [entry['word'] for entry in result]
+
+        dictionary = get_collection('dictionary')
+        for entry in result:
+            original = entry['word'].lower()
+            query = {
+                'original': original,
+                'source_language': user['source_language'],
+                'target_language': user['target_language'],
+                'user_id': ObjectId(user_id),
+            }
+
+            word = dictionary.find_one(query)
+
+            if not word:
+                # dictionary.insert_one(query)
+                print('[DRY] Inserted missing word: ' + entry['word'])
+
+
 

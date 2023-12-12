@@ -5,7 +5,6 @@ from bson import ObjectId
 
 def jobs():
     create_statistics()
-    add_user_id()
 
 
 def create_user_statistics(user_id):
@@ -40,20 +39,3 @@ def create_statistics():
         create_user_statistics(user_id)
 
     print('Statistics creation for all users complete')
-
-
-krito_id = ObjectId('657488efbf4ba7afa277e164')
-def add_user_id():
-    collection = get_collection('statistics')
-
-    query = {
-        'user_id': {'$exists': False}
-    }
-
-    statistics = collection.find(query)
-
-    for statistic in statistics:
-        statistic['user_id'] = krito_id
-        collection.replace_one({'_id': statistic['_id']}, statistic)
-        print('Added user_id to statistic: ' + str(statistic['_id']))
-

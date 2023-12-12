@@ -3,7 +3,7 @@ from datetime import datetime
 from bson import ObjectId
 
 
-def jobs():
+def repair():
     rename_languages()
 
 def rename_languages():
