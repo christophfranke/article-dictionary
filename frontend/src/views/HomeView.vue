@@ -25,9 +25,11 @@ const continueReadingArticles = computed(() => {
   return sortedArticles.slice(0, continueReadingArticlesCount.value);
 });
 
-const usefulness = (article: ArticlePreview): number => {
-  return (1.0 * article.statistics.seen - 0.5 * article.statistics.new) / article.statistics.total;
-}
+const usefulness = (article: ArticlePreview): number =>
+  (0.2 * article.statistics.known
+    + 1.0 * article.statistics.seen
+    - 0.5 * article.statistics.new)
+  / article.statistics.total;
 
 const suggestedArticlesCount = ref(6)
 const suggestedArticles = computed(() => {

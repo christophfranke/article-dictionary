@@ -13,8 +13,23 @@ const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
 
 const newestArticles = computed(() =>
-  [...articles.value].sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  articles.value
+    .filter(article => article.owned)
+    .sort((a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    );
+
+const usefulness = (article: ArticlePreview): number =>
+  (0.2 * article.statistics.known
+    + 1.0 * article.statistics.seen
+    - 0.5 * article.statistics.new)
+  / article.statistics.total;
+
+
+const publicArticles = computed(() =>
+  articles.value
+    .filter(article => !article.owned)
+    .sort((a, b) => usefulness(b) - usefulness(a))
   );
 
 const fetchAuthorized = useFetchAuthorized();
@@ -39,7 +54,7 @@ const navigateToCreateArticle = (): void => {
 <template>
   <main class="container">
     <div class="title">
-      <h2>Articles</h2>
+      <h2>Your Articles</h2>
       <router-link to="/create" class="create-link">Create New Article</router-link>
     </div>
     <div v-if="newestArticles.length > 0" class="article-list">
@@ -52,6 +67,17 @@ const navigateToCreateArticle = (): void => {
     </div>
 
     <router-link to="/create" class="create-link">Create New Article</router-link>
+
+    <template v-if="publicArticles.length > 0">
+      <div class="title">
+        <h2>Public Articles</h2>
+      </div>
+      <div class="article-list">
+        <article v-for="article in publicArticles" :key="article.id" class="article-preview">
+          <ArticlePreviewComponent :article="article" />
+        </article>
+      </div>
+    </template>
   </main>
 </template>
 
