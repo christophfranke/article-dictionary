@@ -11,6 +11,7 @@ def jobs():
     add_language()
     add_dates()
     add_status()
+    add_privacy()
 
 def add_words():
     collection = get_collection('articles')
@@ -86,3 +87,17 @@ def add_status():
         article['status'] = 'new'
         collection.replace_one({'_id': article['_id']}, article)
         print('Added status to article: ' + article['title'])
+
+def add_privacy():
+    collection = get_collection('articles')
+
+    query = {
+        'privacy': {'$exists': False}
+    }
+
+    articles = collection.find(query)
+
+    for article in articles:
+        article['privacy'] = 'public'
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Added privacy to article: ' + article['title'])

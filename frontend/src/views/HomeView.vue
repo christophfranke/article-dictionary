@@ -27,7 +27,7 @@ const usefulness = (article: ArticlePreview): number => {
   return (1.0 * article.statistics.seen - 0.5 * article.statistics.new) / article.statistics.total;
 }
 
-const suggestedArticlesCount = ref(3)
+const suggestedArticlesCount = ref(6)
 const suggestedArticles = computed(() => {
   const baseArticles = articles.value
     // .filter(article => !continueReadingArticles.value.includes(article))
