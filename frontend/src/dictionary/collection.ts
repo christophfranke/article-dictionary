@@ -33,7 +33,8 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
 
   const set = (newWords: PartialWord[]): void => {
     words.value = newWords.map((word, index) => ({ ...word, index }));
-    wordsByOriginal.value = words.value.reduce((acc, word) => ({ ...acc, [word.original]: word }), {});
+    wordsByOriginal.value ={}
+    words.value.forEach(word => wordsByOriginal.value[word.original] = word)
   };
 
   const addWord = async (original: string): Promise<void> => {

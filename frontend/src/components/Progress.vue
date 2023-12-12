@@ -115,7 +115,7 @@ onMounted(async () => {
           label: 'Seen',
           backgroundColor: 'rgb(255, 191, 128)',
           borderColor: 'rgb(255, 191, 128)',
-          data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.seen_words })),
+          data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.known_words + entry.seen_words })),
           fill: false,
         },
         {
@@ -127,9 +127,9 @@ onMounted(async () => {
         },
         // {
         //   label: 'Total Words',
-        //   backgroundColor: '#a83252',
-        //   borderColor: '#a83252',
-        //   data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.total_words })),
+        //   backgroundColor: 'rgb(51, 153, 255)',
+        //   borderColor: 'rgb(51, 153, 255)',
+        //   data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.new_words + entry.known_words + entry.seen_words })),
         //   fill: false,
         // },
       ],
@@ -141,7 +141,7 @@ onMounted(async () => {
   <div class="chart-container">
     <div class="chart-toggle">
       <button @click="toggleRelativeData" class="toggle-button">
-        {{ showRelativeData ? 'New words' : 'Total words'}}
+        {{ showRelativeData ? 'Words per Day' : 'Total words'}}
       </button>
     </div>
     <div v-if="processedChartData" class="chart">
