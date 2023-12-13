@@ -35,6 +35,7 @@ const props = defineProps({
 				status: true,
 				glosbe: true,
         detail: true,
+        link: true,
 			},
 		},
 	},
@@ -91,7 +92,17 @@ const retranslateWord = props.dictionary.retranslateWord;
   	:id="`word-${word.id}`"
   	>
     <td v-if="display.col.number">{{ word.index + 1 }}</td>
-    <td v-if="display.col.original">{{ word.original }}</td>
+    <td v-if="display.col.original" :class="{ 'original-td-link': display.action.link }">
+      <RouterLink
+        v-if="display.action.link"
+        :to="routerLink(word)"
+        title="Inspect word"
+        class="original-link"
+      >
+        {{ word.original }}
+      </RouterLink>
+      <span v-else>{{ word.original }}</span>
+    </td>
     <template v-if="display.col.translations">
       <td
         @mousedown="editTranslations(word.id)"
@@ -148,6 +159,13 @@ const retranslateWord = props.dictionary.retranslateWord;
         >
           <FontAwesomeIcon icon="rotate-left" />
         </button>
+        <RouterLink
+          v-if="display.action.detail"
+          :to="routerLink(word)"
+          title="Inspect word"
+        >
+          <button><FontAwesomeIcon icon="eye" /></button>
+        </RouterLink>
         <a
           v-if="display.action.glosbe"
           :href="dictionaryLink(word)"
@@ -156,13 +174,6 @@ const retranslateWord = props.dictionary.retranslateWord;
         >
           <button><FontAwesomeIcon icon="globe" /></button>
         </a>
-        <RouterLink
-          v-if="display.action.detail"
-          :to="routerLink(word)"
-          title="Inspect word"
-        >
-          <button><FontAwesomeIcon icon="eye" /></button>
-        </RouterLink>
       </div>
     </td>
   </tr>	
@@ -177,6 +188,24 @@ td {
 
 .highlighted {
   background-color: rgba(255, 191, 128, 0.25);
+}
+
+.original-td-link {
+  padding: 0;
+}
+
+.original-td-link:hover {
+  background-color: #f9f9f9;  
+}
+.original-link {
+  padding: 10px;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.original-link, .original-link:visited {
+  color: black;
 }
 
 

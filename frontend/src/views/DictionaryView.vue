@@ -37,6 +37,7 @@ const tableDisplayConfig = {
     retranslate: true,
     glosbe: true,
     detail: true,
+    link: true,
   },
   behaviour: {
     highlight: true,

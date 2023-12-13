@@ -36,6 +36,7 @@ const tableDisplayConfig = computed(() => ({
     status: false,
     glosbe: true,
     detail: false,
+    link: true,
   },
   behaviour: {
     highlight: showDictionary.value,
