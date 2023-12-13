@@ -30,6 +30,11 @@ const router = createRouter({
       component: () => import('@/views/CreateArticleView.vue'),
     },
     {
+      path: '/dictionary/:original',
+      name: 'word-detail',
+      component: () => import('@/views/WordDetailView.vue'),
+    },
+    {
       path: '/dictionary',
       name: 'dictionary',
       component: () => import('@/views/DictionaryView.vue'),

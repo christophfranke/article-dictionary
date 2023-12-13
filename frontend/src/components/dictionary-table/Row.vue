@@ -33,7 +33,8 @@ const props = defineProps({
 				edit: true,
 				retranslate: true,
 				status: true,
-				link: true,
+				glosbe: true,
+        detail: true,
 			},
 		},
 	},
@@ -55,7 +56,9 @@ const {
   updateTranslation
 } = useEdit(props);
 
-const dictionaryLink = (word: Word): string => `https://glosbe.com/${props.profile.sourceLanguage}/${props.profile.targetLanguage}/${word.original}`
+const dictionaryLink = (word: Word): string => `https://glosbe.com/${props.profile.sourceLanguage}/${props.profile.targetLanguage}/${word.original}`;
+
+const routerLink = (word: Word): string => `/dictionary/${word.original}`;
 
 const setStatus = async (word: Word, status: string): Promise<void> => {
   await updateWord(word.original, { status });
@@ -146,13 +149,20 @@ const retranslateWord = props.dictionary.retranslateWord;
           <FontAwesomeIcon icon="rotate-left" />
         </button>
         <a
-          v-if="display.action.link"
+          v-if="display.action.glosbe"
           :href="dictionaryLink(word)"
           target="_blank"
           title="Open Glosbe Dictionary"
         >
           <button><FontAwesomeIcon icon="globe" /></button>
         </a>
+        <RouterLink
+          v-if="display.action.detail"
+          :to="routerLink(word)"
+          title="Inspect word"
+        >
+          <button><FontAwesomeIcon icon="eye" /></button>
+        </RouterLink>
       </div>
     </td>
   </tr>	

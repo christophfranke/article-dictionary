@@ -11,6 +11,10 @@ export interface Word extends PartialWord {
   index: number;
 }
 
+export interface WordDetail extends Word {
+  sentences: string[];
+}
+
 export interface ArticleData {  
   title: string;
   content: string;

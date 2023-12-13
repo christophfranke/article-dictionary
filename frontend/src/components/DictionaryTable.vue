@@ -42,7 +42,8 @@ const props = defineProps({
         edit: true,
         retranslate: true,
         status: true,
-        link: true,
+        glosbe: true,
+        detail: true,
       },
       behaviour: {
         highlight: true,

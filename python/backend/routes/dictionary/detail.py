@@ -1,0 +1,39 @@
+from flask_login import login_required, current_user
+from flask import jsonify
+from bson import ObjectId
+from utils.mongo import get_collection
+from text_processing.extract import extract_sentences, extract_words
+
+@login_required
+def get_detail(original):
+    dictionary = get_collection('dictionary')
+    word = dictionary.find_one({
+        'user_id': ObjectId(current_user.id),
+        'original': original
+    })
+
+    if word is None:
+        return jsonify({'error': f'Word not found: {original}'}), 404
+
+    articles_collection = get_collection('articles')
+
+    articles = articles_collection.find(
+        {'user_id': ObjectId(current_user.id), 'words': {'$elemMatch': {'$eq': original.lower()}}},
+        {'content': 1}
+    )
+
+    sentences = [
+        { 'text': sentence, 'words': extract_words(sentence) }
+        for article in articles
+        for sentence in extract_sentences(article['content'])
+        if original.lower() in extract_words(sentence.lower())
+    ]
+
+    return jsonify({
+        'id': str(word['_id']),
+        'original': word['original'],
+        'translations': word['translations'],
+        'frequency': word['frequency'],
+        'status': word['status'],
+        'sentences': sentences
+    })
