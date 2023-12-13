@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, watchEffect, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import type { WordDetail } from '@/types'
 
@@ -17,16 +17,16 @@ const highlightedWord = ref('');
 const fetchAuthorized = useFetchAuthorized();
 
 const route = useRoute();
-const original = route.params.original;
+const original = computed(() => route.params.original);
 
 const dictionary = useDictionaryView()
 const toggleStatusSeen = useToggleStatusSeen(dictionary);
 
 const fetchWord = async () => {
-  const data = await fetchAuthorized<WordDetail>(`/api/dictionary/${original}`);
+  const data = await fetchAuthorized<WordDetail>(`/api/dictionary/${original.value}`);
 
   if (data) {
-	  word.value = data;
+    word.value = data;
   }
 };
 
@@ -47,26 +47,32 @@ const tooltipDisplay = {
   }
 };
 
+const router = useRouter()
+const navigate = (word: string) => {
+  router.push(`/dictionary/${word.toLowerCase()}`)
+};
 
 
-onMounted(() => {
+
+watchEffect(() => {
   fetchWord();
 });
 </script>
 
 <template>
-  <div>
-    <h2>Word Details</h2>
+  <div class="main">
     <div v-if="word">
-      <p><strong>Original:</strong> {{ word.original }}</p>
-      <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
-      <p><strong>Status:</strong> {{ word.status }}</p>
-      <p><strong>Frequency:</strong> {{ word.frequency }}</p>
-      <div v-if="word.sentences.length > 0">
-        <strong>Sentences:</strong>
+      <div class="stats">
+        <h2>{{ word?.original }}</h2>
+        <p><strong>Original:</strong> {{ word.original }}</p>
+        <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
+        <p><strong>Status:</strong> {{ word.status }}</p>
+        <p><strong>Frequency:</strong> {{ word.frequency }}</p>
+      </div>
+      <div v-if="word.sentences.length > 0" class="sentences">
         <ul>
           <li v-for="(sentence, index) in word.sentences" :key="index">
-            <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlightedWord" />
+            <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlightedWord"  @click="navigate" />
           </li>
         </ul>
       </div>
@@ -77,3 +83,51 @@ onMounted(() => {
     <Tooltip :dictionary="dictionary" :highlightedWord="highlightedWord" :display="tooltipDisplay" />
   </div>
 </template>
+
+<style scoped>
+.main {
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stats {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sentences {
+  margin-top: 20px;
+  padding: 20px;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 25px;
+}
+
+.no-sentences {
+  color: #888;
+}
+</style>
