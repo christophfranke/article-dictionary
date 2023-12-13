@@ -4,10 +4,10 @@ from bson import ObjectId
 
 from utils.mongo import get_collection
 from utils.casing import camel_to_snake
-from text_processing.extract import extract_words
+from text_processing.extract import extract_words, get_unique_words
 from text_processing.dictionary import add_text
 
-from .helpers import slugify, get_dictionary_entries, serialize
+from .helpers import slugify, serialize
 
 
 @login_required
@@ -32,6 +32,7 @@ def update_article(slug):
 
     if 'content' in article_data:
         article_data['words'] = extract_words(content)
+        article_data['unique_words'] = get_unique_words(content)
         add_text(article_data['content'], current_user.id, get_collection('dictionary'), get_collection('users'))
 
     if 'title' in article_data:

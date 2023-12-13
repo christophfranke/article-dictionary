@@ -1,7 +1,7 @@
 from datetime import datetime
 from bson import ObjectId
 
-from text_processing.extract import extract_words
+from text_processing.extract import extract_words, get_unique_words
 from utils.mongo_external import get_collection
 
 
@@ -16,6 +16,7 @@ def repair():
     add_privacy()
     add_owner()
     remove_dictionary()
+    add_unique_words()
 
 def add_words():
     collection = get_collection('articles')
@@ -118,3 +119,17 @@ def remove_dictionary():
         del article['dictionary']
         collection.replace_one({'_id': article['_id']}, article)
         print('Removed dictionary from article: ' + article['title'])
+
+def add_unique_words():
+    collection = get_collection('articles')
+
+    query = {
+        'unique_words': {'$exists': False}
+    }
+
+    articles = collection.find(query)
+
+    for article in articles:
+        article['unique_words'] = get_unique_words(article['words'])
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Added unique_words to article: ' + article['title'])

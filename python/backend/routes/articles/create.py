@@ -4,9 +4,9 @@ from bson import ObjectId
 from datetime import datetime
 
 from utils.mongo import get_collection
-from text_processing.extract import extract_words
+from text_processing.extract import extract_words, get_unique_words
 from text_processing.language import get_languages
-from text_processing.dictionary import add_text
+from text_processing.dictionary import add_words
 
 from .helpers import slugify, serialize
 
@@ -49,6 +49,7 @@ def create_article():
         return jsonify({'error': 'Title already taken'}), 409
 
     words = extract_words(content)
+    unique_words = get_unique_words(words)
 
     source_language, _ = get_languages(get_collection('users'), current_user.id)
 
@@ -59,6 +60,7 @@ def create_article():
         'owner_id': ObjectId(owner),
         'slug': slugify(title),
         'words': words,
+        'unique_words': unique_words,
         'language': source_language,
         'created_at': datetime.utcnow(),
         'last_read': datetime.utcnow(),
@@ -68,6 +70,6 @@ def create_article():
 
     result = articles_collection.insert_one(new_article)
 
-    add_text(new_article['content'], current_user.id, get_collection('dictionary'), get_collection('users'))
+    add_words(unique_words, current_user.id, get_collection('dictionary'), get_collection('users'))
 
     return serialize(new_article, current_user.id), 201

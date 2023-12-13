@@ -18,16 +18,23 @@ def get_detail(original):
     articles_collection = get_collection('articles')
 
     articles = articles_collection.find(
-        {'user_id': ObjectId(current_user.id), 'words': {'$elemMatch': {'$eq': original.lower()}}},
+        {'user_id': ObjectId(current_user.id), 'unique_words': {'$elemMatch': {'$eq': original.lower()}}},
         {'content': 1}
     )
 
-    sentences = [
-        { 'text': sentence, 'words': extract_words(sentence) }
+    raw_sentences = [
+        sentence
         for article in articles
-        for sentence in extract_sentences(article['content'])
+        for paragraph in article['content'].split('\n')
+        for sentence in extract_sentences(paragraph)
         if original.lower() in extract_words(sentence.lower())
     ]
+
+    sentences = [
+        {'text': sentence, 'words': extract_words(sentence)}
+        for sentence in list(set(raw_sentences))
+    ]
+
 
     return jsonify({
         'id': str(word['_id']),

@@ -71,7 +71,7 @@ watchEffect(() => {
       </div>
       <div v-if="word.sentences.length > 0" class="sentences">
         <ul>
-          <li v-for="(sentence, index) in word.sentences" :key="index">
+          <li v-for="(sentence, index) in word.sentences" :key="`${word.id}-${index}`">
             <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlightedWord"  @click="navigate" />
           </li>
         </ul>

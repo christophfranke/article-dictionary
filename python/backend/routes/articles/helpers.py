@@ -8,9 +8,8 @@ from utils.mongo import get_collection
 def slugify(title):
     return title.lower().replace(' ', '-')[:50]
 
-def get_dictionary_entries(words):
+def get_dictionary_entries(unique_words):
     dictionary_collection = get_collection('dictionary')
-    unique_words = list(set([word.lower() for word in words]))
     cursor = dictionary_collection.find(
         {'original': {'$in': unique_words}, 'user_id': ObjectId(current_user.id)},
         {'original': 1, 'translations': 1, 'frequency': 1, 'status': 1}
@@ -49,5 +48,5 @@ def serialize(article, user_id):
         'createdAt': article['created_at'],
         'lastRead': article['last_read'],
         'status': article['status'],
-        'dictionary': get_dictionary_entries(article['words'])
+        'dictionary': get_dictionary_entries(article['unique_words'])
     })
