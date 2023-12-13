@@ -3,16 +3,11 @@ import type { ComputedRef } from 'vue';
 import type { DictionaryApi } from './request';
 import type { Word, PartialWord } from '@/types';
 
-type FilterFunction = (x: PartialWord) => boolean;
-
 export interface DictionaryCollection {
   find: (original: string) => Word | undefined;
-  isVisible: (original: string) => boolean;
-  words: ComputedRef<Word[]>;
   allWords: ComputedRef<Word[]>;
 
   set: (newWords: PartialWord[]) => void;
-  setFilter: (filterFn: FilterFunction) => void;
 
   load: () => Promise<void>;
   updateMany: (originals: string[], data: Record<string, unknown>) => Promise<void>;
@@ -23,13 +18,11 @@ export interface DictionaryCollection {
 }
 
 
-
-export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn: FilterFunction = x => !!x): DictionaryCollection => {
+export default (request: DictionaryApi, collection: PartialWord[] = []): DictionaryCollection => {
   const words = ref<Word[]>([])
   const wordsByOriginal = ref<{
     [key: string]: Word;
   }>({})
-  const filter = ref(filterFn)
 
   const set = (newWords: PartialWord[]): void => {
     words.value = newWords.map((word, index) => ({ ...word, index }));
@@ -50,14 +43,6 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
   }
 
   const find = (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()]
-  const isVisible = (orginal: string): boolean => {
-    const word = find(orginal);
-    if (word) {
-      return filter.value(word);
-    }
-
-    return false
-  }
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
     const word = find(original.toLowerCase())
@@ -129,8 +114,6 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
 
   return {
     find,
-    isVisible,
-    words: computed(() => words.value.filter(filter.value)),
     allWords: computed(() => words.value),
     set,
     load,
@@ -139,8 +122,5 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
     updateWord,
     addWord,
     rebuild,
-    setFilter: filterFn => {
-      filter.value = filterFn
-    }
   }
 }

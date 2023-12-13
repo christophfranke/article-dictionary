@@ -12,8 +12,8 @@ const { content, words, dictionary } = defineProps({
 		required: true,
 	},
 	dictionary: {
-		type: Object as unknown as () => DictionaryCollection,
-		required: true,
+		type: Object as unknown as () => DictionaryCollection | null,
+		default: null
 	},
 	modelValue: {
 		type: String,
@@ -21,7 +21,7 @@ const { content, words, dictionary } = defineProps({
 	},
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'click']);
 
 
 interface ProcessedContentItem {
@@ -50,11 +50,6 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
   return result;
 });
 
-const toggleStatusSeen = (word: string) => {
-  const original = word.toLowerCase()
-  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status || '') ? 'known' : 'seen' });
-};
-
 
 let internalHighlightedWord = ''
 const setHighlight = (word: string) => {
@@ -81,8 +76,8 @@ const unsetHighlight = (word: string) => {
       <span
         @mouseover="setHighlight(word)"
         @mouseout="unsetHighlight(word)"
-        @click="toggleStatusSeen(word)"
-        :class="{ word: true, new: dictionary.find(word.toLowerCase())?.status === 'new', seen: dictionary.find(word.toLowerCase())?.status === 'seen' }"
+        @click="emit('click', word)"
+        :class="{ word: true, new: dictionary?.find(word.toLowerCase())?.status === 'new', seen: dictionary?.find(word.toLowerCase())?.status === 'seen' }"
       >
         {{ word }}
       </span>

@@ -12,7 +12,10 @@ export interface Word extends PartialWord {
 }
 
 export interface WordDetail extends Word {
-  sentences: string[];
+  sentences: {
+    text: string
+    words: string[]
+  }[];
 }
 
 export interface ArticleData {  

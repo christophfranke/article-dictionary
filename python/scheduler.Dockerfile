@@ -7,6 +7,9 @@ WORKDIR /app/scheduler
 COPY ./scheduler/requirements.txt .
 RUN pip3 install -r requirements.txt
 
+COPY ./setup.py /app/setup.py
+RUN python3 /app/setup.py
+
 # cache buster
 RUN date > /app/timestamp.txt
 

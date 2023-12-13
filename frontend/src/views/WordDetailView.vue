@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useFetchAuthorized } from '@/use/api';
 import type { WordDetail } from '@/types'
+import ProcessedContent from '@/components/ProcessedContent.vue';
+
 
 const word = ref<WordDetail | null>(null);
 const fetchAuthorized = useFetchAuthorized();
@@ -34,7 +36,9 @@ onMounted(() => {
       <div v-if="word.sentences.length > 0">
         <strong>Sentences:</strong>
         <ul>
-          <li v-for="(sentence, index) in word.sentences" :key="index">{{ sentence }}</li>
+          <li v-for="(sentence, index) in word.sentences" :key="index">
+            <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="null" />
+          </li>
         </ul>
       </div>
       <div v-else>

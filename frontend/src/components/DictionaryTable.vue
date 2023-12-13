@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect, reactive } from 'vue';
-import type { DictionaryCollection } from '@/dictionary/collection';
+import type { DictionaryView } from '@/dictionary/view';
 import useScroll from './dictionary-table/use-scroll';
 import useSort from './dictionary-table/use-sort';
 import type { Word } from '../types/index.ts';
@@ -10,7 +10,7 @@ import { useProfile } from '@/use/user';
 
 const props = defineProps({
   dictionary: {
-    type: Object as unknown as () => DictionaryCollection,
+    type: Object as unknown as () => DictionaryView,
     required: true,
   },
   highlight: {

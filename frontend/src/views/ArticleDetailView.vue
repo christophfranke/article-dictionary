@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import type { Word, ArticleDetail } from '../types';
 
-import useDictionary from '@/use/dictionary';
+import { useCustomDictionary } from '@/use/dictionary';
 import { useFetchAuthorized } from '@/use/api';
 
-import DictionaryTable from '../components/DictionaryTable.vue';
-import Statistics from '../components/Statistics.vue';
-import Tooltip from '../components/Tooltip.vue';
-import ArticleContent from '../components/ArticleContent.vue';
+import DictionaryTable from '@/components/DictionaryTable.vue';
+import Statistics from '@/components/Statistics.vue';
+import Tooltip from '@/components/Tooltip.vue';
+import ProcessedContent from '@/components/ProcessedContent.vue';
 
 
 const tableDisplayConfig = computed(() => ({
@@ -60,7 +60,7 @@ const highlightedWord = ref<string>('');
 const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
-const dictionary = useDictionary([], displayFilter);
+const dictionary = useCustomDictionary([], displayFilter);
 
 const fetchAuthorized = useFetchAuthorized();
 
@@ -133,6 +133,11 @@ const toggleShowDictionary = () => {
   showDictionary.value = !showDictionary.value;
 };
 
+const toggleStatusSeen = (word: string) => {
+  const original = word.toLowerCase()
+  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status || '') ? 'known' : 'seen' });
+};
+
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 const SECOND: number = 1000
@@ -158,7 +163,7 @@ onBeforeUnmount(() => {
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <h1>{{ article.title }}</h1>
-      <ArticleContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" />
+      <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" />
       <button :disabled="article.status === 'read'" class="mark-as-read" @click="markArticleAsRead">Mark as read</button>
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">

@@ -6,7 +6,7 @@ import type { Word } from '../types';
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
 
-import useDictionary from '@/use/dictionary';
+import { useDictionaryView } from '@/use/dictionary';
 
 
 interface StatusFilters {
@@ -61,7 +61,7 @@ const filterFn = (word: Word) => {
 };
 
 
-const dictionary = useDictionary([], filterFn);
+const dictionary = useDictionaryView(filterFn);
 const filter = ref<string>('');
 const statusFilters = ref({
   new: true,
@@ -74,11 +74,6 @@ const statusFilters = ref({
 const rebuildDictionary = async (): Promise<void> => {
   await dictionary.rebuild();
 };
-
-onMounted(async () => {
-  await dictionary.load();
-});
-
 </script>
 
 <template>
