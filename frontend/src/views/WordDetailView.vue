@@ -1,16 +1,26 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useFetchAuthorized } from '@/use/api';
+
 import type { WordDetail } from '@/types'
+
+import { useFetchAuthorized } from '@/use/api';
+import { useDictionaryView } from '@/use/dictionary'
+import { useToggleStatusSeen } from '@/use/toggle-status-seen';
+
 import ProcessedContent from '@/components/ProcessedContent.vue';
+import Tooltip from '@/components/Tooltip.vue';
 
 
 const word = ref<WordDetail | null>(null);
+const highlightedWord = ref('');
 const fetchAuthorized = useFetchAuthorized();
 
 const route = useRoute();
 const original = route.params.original;
+
+const dictionary = useDictionaryView()
+const toggleStatusSeen = useToggleStatusSeen(dictionary);
 
 const fetchWord = async () => {
   const data = await fetchAuthorized<WordDetail>(`/api/dictionary/${original}`);
@@ -19,6 +29,25 @@ const fetchWord = async () => {
 	  word.value = data;
   }
 };
+
+const contentDisplay = {
+  highlight: {
+    new: false,
+    seen: false,
+    mark: true,
+  }
+};
+
+const tooltipDisplay = {
+  new: true,
+  seen: true,
+  known: true,
+  update: {
+    seen: false
+  }
+};
+
+
 
 onMounted(() => {
   fetchWord();
@@ -37,7 +66,7 @@ onMounted(() => {
         <strong>Sentences:</strong>
         <ul>
           <li v-for="(sentence, index) in word.sentences" :key="index">
-            <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="null" />
+            <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlightedWord" />
           </li>
         </ul>
       </div>
@@ -45,8 +74,6 @@ onMounted(() => {
         <p>No sentences available.</p>
       </div>
     </div>
-    <div v-else>
-      <p>Loading...</p>
-    </div>
+    <Tooltip :dictionary="dictionary" :highlightedWord="highlightedWord" :display="tooltipDisplay" />
   </div>
 </template>

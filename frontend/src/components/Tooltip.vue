@@ -11,11 +11,22 @@ const props = defineProps({
 		type: String,
 		required: true
 	},
+  display: {
+    type: Object,
+    default: {
+      new: true,
+      seen: true,
+      known: false,
+      update: {
+        seen: true
+      }
+    }
+  }
 });
 
-
+const showStatus = computed<string[]>(() => ['new', 'seen', 'known'].filter(status => props.display[status]));
 const isVisible = computed(() => !!props.highlightedWord
-    && ['new', 'seen'].includes(props.dictionary.find(props.highlightedWord?.toLowerCase() || '')?.status || '')
+    && showStatus.value.includes(props.dictionary.find(props.highlightedWord?.toLowerCase() || '')?.status || '')
 );
 
 const content = computed(() => isVisible.value
@@ -43,7 +54,7 @@ watch(isVisible, (newValue, oldValue) => {
     original = props.highlightedWord;
     timer = Date.now();
     timeoutId = setTimeout(() => {
-      if (props.dictionary.find(original)?.status === 'new') {
+      if (props.display.update.seen && props.dictionary.find(original)?.status === 'new') {
         props.dictionary.updateWord(original, { status: 'seen' });
       }
     }, UPDATE_TIME);

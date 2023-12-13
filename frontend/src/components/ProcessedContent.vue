@@ -19,6 +19,19 @@ const { content, words, dictionary } = defineProps({
 		type: String,
 		default: '',
 	},
+  mark: {
+    type: String,
+    default: '',
+  },
+  display: {
+    default: {      
+      highlight: {
+        new: true,
+        seen: true,
+        mark: true,
+      }
+    }
+  }
 });
 
 const emit = defineEmits(['update:modelValue', 'click']);
@@ -77,7 +90,12 @@ const unsetHighlight = (word: string) => {
         @mouseover="setHighlight(word)"
         @mouseout="unsetHighlight(word)"
         @click="emit('click', word)"
-        :class="{ word: true, new: dictionary?.find(word.toLowerCase())?.status === 'new', seen: dictionary?.find(word.toLowerCase())?.status === 'seen' }"
+        :class="{
+          word: true,
+          new: display.highlight.new && dictionary?.find(word.toLowerCase())?.status === 'new',
+          seen: display.highlight.seen && dictionary?.find(word.toLowerCase())?.status === 'seen',
+          mark: display.highlight.mark && word.toLowerCase() === mark.toLowerCase(),
+        }"
       >
         {{ word }}
       </span>
@@ -107,5 +125,9 @@ span.new {
 
 span.seen {
   background-color: rgba(255, 191, 128, 0.25);
+}
+
+span.mark {
+  background-color: rgba(204, 22, 22, 0.5);
 }
 </style>	

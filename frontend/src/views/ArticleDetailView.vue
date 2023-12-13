@@ -7,6 +7,7 @@ import type { Word, ArticleDetail } from '../types';
 
 import { useCustomDictionary } from '@/use/dictionary';
 import { useFetchAuthorized } from '@/use/api';
+import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 
 import DictionaryTable from '@/components/DictionaryTable.vue';
 import Statistics from '@/components/Statistics.vue';
@@ -133,10 +134,7 @@ const toggleShowDictionary = () => {
   showDictionary.value = !showDictionary.value;
 };
 
-const toggleStatusSeen = (word: string) => {
-  const original = word.toLowerCase()
-  dictionary.updateWord(original, { status: ['new', 'seen'].includes(dictionary.find(original)?.status || '') ? 'known' : 'seen' });
-};
+const toggleStatusSeen = useToggleStatusSeen(dictionary)
 
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null
