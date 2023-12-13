@@ -60,11 +60,19 @@ export default (request: DictionaryApi, collection: PartialWord[] = [], filterFn
   }
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-    const id = find(original.toLowerCase())?.id;
-    if (id) {      
-      const updatedWord = await request.updateWord(id, data);
-      if (updatedWord) {
-        updateLocalCollection([updatedWord]);
+    const word = find(original.toLowerCase())
+    if (word) {
+      // update local collection
+      Object.assign(word, data)
+
+      // update remote collection
+      const id = word.id;
+      if (id) {      
+        const updatedWord = await request.updateWord(id, data);
+        if (updatedWord) {
+          // keep in sync with remote collection
+          updateLocalCollection([updatedWord]);
+        }
       }
     }
   };

@@ -33,14 +33,22 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     });
   };
 
+  // make sure only one request per id is active
+  const updateRequestMap: { [key: string]: Promise<PartialWord | null> | undefined } = {}
   const updateWord = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
-    return await apiRequest(`/api/dictionary/update/${id}`, {
+    if (updateRequestMap[id]) {
+      await updateRequestMap[id];
+    }
+
+    updateRequestMap[id] = apiRequest(`/api/dictionary/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
+
+    return await updateRequestMap[id]!;
   };
 
   const updateMany = async (ids: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {

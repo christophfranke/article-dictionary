@@ -6,7 +6,7 @@ export const useFetchAuthorized = (): FetchFn => {
   
   // this is the adjusted fetch function
   return async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
-
+    // await new Promise(resolve => setTimeout(resolve, 2000 * Math.random()));
     try {
       const response = await fetch(...args);
 
