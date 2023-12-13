@@ -1,11 +1,10 @@
 import { ref } from 'vue';
 import type { Word } from '@/types';
 
-export default (props: any) => {
-	const editingTranslationId = ref<string>('');
-	const editTranslationsValue = ref<string>('');
-	const editTranslationsInput = ref<HTMLInputElement[] | null>(null);
+const editingTranslationId = ref<string>('');
+const editTranslationsValue = ref<string>('');
 
+export default (props: any) => {
 	const editTranslations = async (id: string): Promise<void> => {
 	  if (props.display.action.edit) {
 	    editingTranslationId.value = id;
@@ -17,17 +16,17 @@ export default (props: any) => {
 
 	        await new Promise((resolve) => setTimeout(resolve, 0));
 
-	        // Focus the input field for editing translations
-	        if (editTranslationsInput.value && editTranslationsInput.value.length > 0) {
-	          editTranslationsInput.value[0].focus();
-	          editTranslationsInput.value[0].select();
+	        const input: any = document.getElementById('edit-translations');
+	        if (input) {	        	
+	          input.focus();
+	          input.select();
 	        }
 	      }
 	    }
 	  }
 	};
 
-	const stopEditTranslations = async (id: string): Promise<void> => {
+	const cancelEditTranslations = async (id: string): Promise<void> => {
 	  await new Promise(resolve => setTimeout(resolve, 0));
 
 	  if (editingTranslationId.value === id) {
@@ -37,8 +36,7 @@ export default (props: any) => {
 
 
 	const isUpdating = ref(false)
-	const updateTranslation = async (e: Event): Promise<void> => {
-	  e.preventDefault();
+	const updateTranslation = async (): Promise<void> => {
 	  if (isUpdating.value) {
 	    return
 	  }
@@ -58,9 +56,8 @@ export default (props: any) => {
 	return {
 		editingTranslationId,
 		editTranslationsValue,
-		editTranslationsInput,
 		editTranslations,
-		stopEditTranslations,
+		cancelEditTranslations,
 		updateTranslation
 	}
 }

@@ -50,9 +50,8 @@ const props = defineProps({
 const {
   editingTranslationId,
   editTranslationsValue,
-  editTranslationsInput,
   editTranslations,
-  stopEditTranslations,
+  cancelEditTranslations,
   updateTranslation
 } = useEdit(props);
 
@@ -99,14 +98,19 @@ const retranslateWord = props.dictionary.retranslateWord;
       >{{ word.translations.join(', ') }}
       </td>
       <td v-else>
-        <form @submit="updateTranslation" class="edit-form">
-          <button @click="stopEditTranslations(word.id)" class="cancel-button">x</button>
+        <form @submit.prevent="updateTranslation" class="edit-form">
+          <input type="submit" style="display: none;" />
+          <button @click.prevent="cancelEditTranslations(word.id)" class="cancel-button">
+            <FontAwesomeIcon icon="times" />
+          </button>
           <input
-            ref="editTranslationsInput"
+            id="edit-translations"
             v-model="editTranslationsValue"
-            @blur="stopEditTranslations(word.id)"
+            @blur="cancelEditTranslations(word.id)"
           />
-          <button @mousedown="updateTranslation">ok</button>
+          <button @mousedown="updateTranslation">
+            <FontAwesomeIcon icon="check" />
+          </button>
         </form>
       </td>
     </template>
