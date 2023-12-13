@@ -60,6 +60,11 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
     currentIndex += separator.length + word.length;
   });
 
+  if (currentIndex < content.length) {
+    const separator = content.substring(currentIndex).split('\n');
+    result.push({ word: '', separator });
+  }
+
   return result;
 });
 
