@@ -15,7 +15,7 @@ const form = ref({
 
 const languages = useSupportedLanguages()
 const profile = useProfile();
-const updateProfile = useUpdateProfile();
+const { updateProfile, errorMessage, isLoading } = useUpdateProfile();
 
 watchEffect(() => {
   form.value.email = profile.email.value;
@@ -29,16 +29,8 @@ const submitForm = async () => {
     Object.entries(form.value).filter(([key, value]) => value !== '')
   );
 
-  if (formData.newPassword !== formData.confirmPassword) {
-    delete formData.newPassword;
-    console.error('Passwords do not match');
-  }
-  delete formData.confirmPassword;
-
-  if (formData.newPassword) {
-    formData.password = formData.newPassword;
-    delete formData.newPassword;
-  }
+  delete formData.sourceLanguage;
+  delete formData.targetLanguage;
 
   if (await updateProfile(formData)) {
     form.value.newPassword = '';
@@ -86,8 +78,9 @@ const submitForm = async () => {
         </select>
       </div>
 
-      <button type="submit" class="save-button">Save Changes</button>
+      <button type="submit" class="save-button" :disabled="isLoading">Save Changes</button>
     </form>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -140,5 +133,14 @@ button:hover {
 
 .save-button {
   background-color: #28a745;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 </style>

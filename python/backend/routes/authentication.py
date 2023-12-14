@@ -16,13 +16,13 @@ def register():
     password = data.get('password')
 
     if not email or not password or not source_language or not target_language:
-        return jsonify({'message': 'Email and password are required'}), 400
+        return jsonify({'error': 'Email and password are required'}), 400
 
     users = get_collection('users')
 
     existing_user = users.find_one({'email': email})
     if existing_user:
-        return jsonify({'message': 'User already exists'}), 400
+        return jsonify({'error': 'User already exists'}), 400
 
     # Hash the password before storing it in the database
     hashed_password = generate_password_hash(password)
@@ -55,7 +55,7 @@ def login():
         login_user(user_obj)
         return jsonify({'message': 'Login successful'}), 200
     else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({'error': 'Invalid credentials'}), 403
 
 @auth.route('/logout')
 @login_required

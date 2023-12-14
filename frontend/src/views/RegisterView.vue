@@ -4,7 +4,15 @@ import { useRouter } from 'vue-router';
 import { useRegister } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language'
 
-const { email, name, password, sourceLanguage, targetLanguage, register } = useRegister();
+const { email,
+  name,
+  password,
+  sourceLanguage,
+  targetLanguage,
+  register,
+  errorMessage,
+  isLoading,
+} = useRegister();
 const router = useRouter();
 
 const registerAndRedirect = async () => {
@@ -47,8 +55,9 @@ const languages = useSupportedLanguages();
     </div>
 
     <div class="form-group">
-      <button type="submit">Register</button>
+      <button type="submit" :disabled="isLoading">Register</button>
     </div>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </form>
 </template>
 
@@ -110,5 +119,14 @@ button:hover {
 .register-link:hover {
   text-decoration: underline; /* Underline on hover */
   background-color: transparent;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 </style>

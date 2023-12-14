@@ -26,4 +26,6 @@ def read_article():
         'status': 'seen'
     }})
 
-    return jsonify({'message': 'Article updated successfully'}), 200
+    article['status'] = 'seen'
+    article['last_read'] = datetime.utcnow()
+    return serialize(article), 200

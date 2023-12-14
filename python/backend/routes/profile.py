@@ -44,11 +44,15 @@ def update():
     new_data = {camel_to_snake(key): data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage']}
 
     if 'source_language' in new_data or 'target_language' in new_data:
-        return jsonify({'message': 'Source and target language cannot be updated'}), 400
+        return jsonify({'error': 'Source and target language cannot be updated at this moment'}), 400
 
     # Hash the password if provided in the data
-    if 'password' in data:
-        new_data['password'] = generate_password_hash(data['password'])
+    if 'newPassword' in data:
+        if not 'confirmPassword' in data:
+            return jsonify({'error': 'Confirm password not provided'}), 400
+        if data['newPassword'] != data['confirmPassword']:
+            return jsonify({'error': 'Passwords do not match'}), 400
+        new_data['password'] = generate_password_hash(data['newPassword'])
 
     users.update_one({'email': user.email}, {'$set': new_data})
     updated_user = users.find_one({'email': user.email})
@@ -71,7 +75,7 @@ def settings():
     user_data = users.find_one({'email': user.email})
 
     if not user_data:
-        return jsonify({'message': 'User not found'}), 404
+        return jsonify({'error': 'User not found'}), 404
 
     settings_data = {
         'email': user_data['email'],

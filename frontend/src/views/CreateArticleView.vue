@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import useApi from '@/use/api';
 
-import type { ArticleData } from '@/types';
+import type { ArticleData, ArticleBase } from '@/types';
 
 const article = ref<ArticleData>({
   title: '',
@@ -10,41 +11,20 @@ const article = ref<ArticleData>({
   privacy: 'public',
 });
 
-const error = ref<string>('');
 const router = useRouter();
 
+const { fetchAuthorized, errorMessage, isLoading } = useApi();
 const submitForm = async (): Promise<void> => {
-  try {
-    const response = await fetch('/api/articles/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(article.value),
-    });
+  const data = await fetchAuthorized<ArticleBase>('/api/articles/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(article.value),
+  });
 
-    const responseData = await response.json();
-
-    if (response.ok) {
-      // If there's a 'url' field in the response, redirect to that URL
-      if (responseData.slug) {
-        router.push(`/articles/${responseData.slug}`);
-      } else {
-        console.error('Invalid response format: missing "slug" field.');
-        // Handle error as needed
-      }
-    } else {
-      // If there's an 'error' field in the response, display the error
-      if (responseData.error) {
-        error.value = responseData.error;
-      } else {
-        console.error('Invalid response format: missing "error" field.');
-        // Handle error as needed
-      }
-    }
-  } catch (error) {
-    console.error('Error creating article:', error);
-    // Handle error as needed
+  if (data) {
+    router.push(`/articles/${data.slug}`);
   }
 };
 </script>
@@ -65,9 +45,9 @@ const submitForm = async (): Promise<void> => {
         <option value="private">Private</option>
       </select>
 
-      <button type="submit" class="submit-button">Submit</button>
+      <button type="submit" class="submit-button" :disabled="!isLoading">Submit</button>
 
-      <p v-if="error" class="error-message">{{ error }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </form>
   </div>
 </template>

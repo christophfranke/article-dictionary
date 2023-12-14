@@ -1,16 +1,15 @@
 import { ref, onMounted } from 'vue';
-import { useFetchAuthorized } from '@/use/api';
-import type { User, UserPreview } from '@/types';
+import useApi from '@/use/api';
+import type { User, UserPreview, FetchFn } from '@/types';
 
 const name = ref('');
 const isLoggedIn = ref(false);
 const email = ref('');
 const sourceLanguage = ref('');
 const targetLanguage = ref('');
-const fetchAuthorized = useFetchAuthorized();
 
 
-const fetchPreview = async () => {
+const fetchPreview = (fetchAuthorized: FetchFn) => async  () => {
   const data = await fetchAuthorized<UserPreview>('/api/profile/preview');
 
   if (data) {  	
@@ -20,7 +19,7 @@ const fetchPreview = async () => {
   }
 };
 
-const fetchProfileSettings = async () => {
+const fetchProfileSettings = (fetchAuthorized: FetchFn) => async () => {
   const data = await fetchAuthorized<User>('/api/profile/settings');
 
   if (data) {
@@ -32,12 +31,14 @@ const fetchProfileSettings = async () => {
 };
 
 export const useUser = () => {
-	onMounted(fetchPreview)
+	const { fetchAuthorized } = useApi();
+	onMounted(fetchPreview(fetchAuthorized))
 	return { name, email, isLoggedIn }
 };
 
 export const useProfile = () => {
-	onMounted(fetchProfileSettings)
+	const { fetchAuthorized } = useApi();
+	onMounted(fetchProfileSettings(fetchAuthorized))
 
 	return {
 		isLoggedIn,
@@ -49,18 +50,16 @@ export const useProfile = () => {
 }
 
 export const useUpdateProfile = () => {
-	return async (formData: any) => {
+	const { fetchAuthorized, errorMessage, isLoading } = useApi();
+
+	const updateProfile = async (formData: any) => {
 	  const data = await fetchAuthorized<User>('/api/profile/update', {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
 	    },
 			// remove sourceLanguage and targetLanguage, because not yet supported
-	    body: JSON.stringify({
-	    	name: formData['name'] as string,
-	    	email: formData['email'] as string,
-	    	password: formData['password'] as string,
-	    }),
+	    body: JSON.stringify(formData),
 	  });
 
 	  if (data) {
@@ -74,10 +73,17 @@ export const useUpdateProfile = () => {
 
 	  return false;
 	}
+
+	return {
+		updateProfile,
+		errorMessage,
+		isLoading,
+	}
 }
 
 
 export const useLogin = () => {
+	const { fetchAuthorized, errorMessage, isLoading } = useApi();
 	const localEmail = ref('')
 	const localPassword = ref('')
 
@@ -93,7 +99,7 @@ export const useLogin = () => {
     if (data) {
     	isLoggedIn.value = true;
     	email.value = localEmail.value;
-    	fetchPreview();
+    	fetchPreview(fetchAuthorized)();
 
     	return true;
     }
@@ -101,10 +107,17 @@ export const useLogin = () => {
     return false;
 	}
 
-	return { login, email: localEmail, password: localPassword }
+	return {
+		login,
+		email: localEmail,
+		password: localPassword,
+		errorMessage,
+		isLoading,
+	}
 };
 
 export const useRegister = () => {
+	const { fetchAuthorized, errorMessage, isLoading } = useApi();
 	const localEmail = ref('')
 	const localName = ref('')
 	const localPassword = ref('')
@@ -130,7 +143,7 @@ export const useRegister = () => {
     	isLoggedIn.value = true;
     	email.value = localEmail.value;
     	name.value = localName.value;
-    	fetchPreview();
+    	fetchPreview(fetchAuthorized)();
 
     	return true;
     }
@@ -145,10 +158,13 @@ export const useRegister = () => {
 		password: localPassword,
 		sourceLanguage: localSourceLanguage,
 		targetLanguage: localTargetLanguage,
+		errorMessage,
+		isLoading,
 	}
 };
 
 export const useLogout = () => {
+	const { fetchAuthorized } = useApi();
 	return async (): Promise<boolean> => {
     const data = await fetchAuthorized('/api/auth/logout');
 

@@ -5,7 +5,7 @@ import { useLogin, useUser } from '@/use/user';
 
 const router = useRouter();
 
-const { login, email, password } = useLogin();
+const { login, email, password, errorMessage, isLoading } = useLogin();
 
 const loginAndRedirect = async () => {
   if (await login()) {    
@@ -29,9 +29,10 @@ const loginAndRedirect = async () => {
       <input type="password" id="password" v-model="password" required />
     </div>
     <div class="form-group">
-      <button type="submit">Login</button>
+      <button type="submit" :disabled="isLoading">Login</button>
       <router-link to="/register" class="register-link">Don't have an account? Register here</router-link>
     </div>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </form>
 </template>
 
@@ -93,5 +94,14 @@ button:hover {
 .register-link:hover {
   text-decoration: underline; /* Underline on hover */
   background-color: transparent;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 </style>
