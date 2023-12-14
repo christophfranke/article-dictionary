@@ -165,6 +165,7 @@ onBeforeUnmount(() => {
 
 </script>
 
+
 <template>
   <div class="article-page" v-if="article.title">
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
