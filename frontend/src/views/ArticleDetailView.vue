@@ -44,6 +44,14 @@ const tableDisplayConfig = computed(() => ({
   }
 }));
 
+const contentDisplayConfig = {
+  highlight: {
+    new: true,
+    seen: true,
+    mark: false,
+  }  
+}
+
 const article = ref<ArticleDetail>({
   id: '',
   title: '',
@@ -162,7 +170,7 @@ onBeforeUnmount(() => {
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <h1>{{ article.title }}</h1>
-      <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" />
+      <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" :display="contentDisplayConfig" />
       <button :disabled="article.status === 'read'" class="mark-as-read" @click="markArticleAsRead">Mark as read</button>
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">

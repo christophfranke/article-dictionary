@@ -21,7 +21,7 @@ const familiarityScore = computed(() => {
 
   return Math.round(100 * (0.2 * props.article.statistics.seen
     + props.article.statistics.known
-    + 0. * props.article.statistics.new) / (total))
+    + 0.05 * props.article.statistics.new) / total)
 });
 const difficultyScore = computed(() => 100 - familiarityScore.value);
 
@@ -82,7 +82,7 @@ const link = (article: ArticlePreview): string => article.owned
       </div>
 
       <div class="difficulty">
-        <div class="left" :title="`Estimated difficulty: ${scoreDescription} (${difficultyScore}%)`">
+        <div class="left" :title="`Estimated difficulty: ${scoreDescription} (${difficultyScore}% unknown words)`">
           <span>{{ scoreDescription }}</span>
           <span><FontAwesomeIcon icon="lightbulb" /></span>
           <span>{{ difficultyScore }}%</span>
