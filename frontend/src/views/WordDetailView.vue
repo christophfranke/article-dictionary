@@ -53,7 +53,6 @@ const navigate = (word: string) => {
 };
 
 
-
 watchEffect(() => {
   fetchWord();
 });
@@ -71,6 +70,7 @@ watchEffect(() => {
       </div>
       <div v-if="word.sentences.length > 0" class="sentences">
         <ul>
+          <li><strong>Sentences:</strong></li>
           <li v-for="(sentence, index) in word.sentences" :key="`${word.id}-${index}`">
             <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlightedWord"  @click="navigate" />
           </li>
@@ -99,7 +99,6 @@ watchEffect(() => {
 }
 
 .sentences {
-  margin-top: 20px;
   padding: 20px;
 }
 
