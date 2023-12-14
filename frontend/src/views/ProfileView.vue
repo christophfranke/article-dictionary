@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from 'vue';
-import { useRouter } from 'vue-router';
 import { useProfile, useUpdateProfile } from '@/use/user';
+import { useSupportedLanguages } from '@/use/language';
+
 
 const form = ref({
   email: '',
@@ -12,14 +13,7 @@ const form = ref({
   targetLanguage: '',
 });
 
-const languages = {
-  es: 'Spanish',
-  en: 'English',
-  el: 'Greek',
-  de: 'German',
-};
-
-const router = useRouter();
+const languages = useSupportedLanguages()
 const profile = useProfile();
 const updateProfile = useUpdateProfile();
 
