@@ -53,9 +53,13 @@ def update():
     users.update_one({'email': user.email}, {'$set': new_data})
     updated_user = users.find_one({'email': user.email})
 
-    updated_user.pop('_id')
-    updated_user.pop('password')
-    return jsonify(updated_user), 200
+    response_data = {
+        'email': updated_user['email'],
+        'name': updated_user.get('name', ''),
+        'sourceLanguage': updated_user.get('source_language', ''),
+        'targetLanguage': updated_user.get('target_language', ''),
+    }
+    return jsonify(response_data), 200
 
 
 @profile.route('/settings')
@@ -74,7 +78,6 @@ def settings():
         'name': user_data.get('name', ''),
         'sourceLanguage': user_data.get('source_language', ''),
         'targetLanguage': user_data.get('target_language', ''),
-        # Add more settings as needed
     }
 
     return jsonify(settings_data), 200
