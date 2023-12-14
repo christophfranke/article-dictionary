@@ -53,6 +53,7 @@ const navigate = (word: string) => {
 };
 
 
+
 watchEffect(() => {
   fetchWord();
 });
