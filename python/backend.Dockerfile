@@ -10,11 +10,13 @@ RUN pip3 install -r requirements.txt
 COPY ./setup.py /app/setup.py
 RUN python3 /app/setup.py
 
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH="${PYTHONPATH}:/app/shared"
+
 # cache buster
 RUN date > /app/timestamp.txt
 
+COPY ./shared /app/shared
+
 # Copy the current directory contents into the container at /app/backend
 COPY ./backend /app/backend
-
-ENV PYTHONPATH="${PYTHONPATH}:/app/shared"
-COPY ./shared /app/shared

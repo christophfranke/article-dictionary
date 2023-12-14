@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from 'vue';
-import { useRouter } from 'vue-router';
 import { useProfile, useUpdateProfile } from '@/use/user';
+import { useSupportedLanguages } from '@/use/language';
+
 
 const form = ref({
   email: '',
@@ -12,14 +13,7 @@ const form = ref({
   targetLanguage: '',
 });
 
-const languages = {
-  es: 'Spanish',
-  en: 'English',
-  el: 'Greek',
-  de: 'German',
-};
-
-const router = useRouter();
+const languages = useSupportedLanguages()
 const profile = useProfile();
 const updateProfile = useUpdateProfile();
 
@@ -80,14 +74,14 @@ const submitForm = async () => {
 
       <div class="form-group">
         <label for="sourceLanguage">I want to learn:</label>
-        <select id="sourceLanguage" v-model="form.sourceLanguage">
+        <select id="sourceLanguage" v-model="form.sourceLanguage" disabled>
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="targetLanguage">My language:</label>
-        <select id="targetLanguage" v-model="form.targetLanguage">
+        <label for="targetLanguage">My language is:</label>
+        <select id="targetLanguage" v-model="form.targetLanguage" disabled>
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
         </select>
       </div>

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRegister } from '@/use/user';
+import { useSupportedLanguages } from '@/use/language'
 
 const { email, name, password, sourceLanguage, targetLanguage, register } = useRegister();
 const router = useRouter();
@@ -13,12 +14,7 @@ const registerAndRedirect = async () => {
   }
 };
 
-const languages = {
-  es: 'Spanish',
-  en: 'English',
-  el: 'Greek',
-  de: 'German',
-};
+const languages = useSupportedLanguages();
 </script>
 
 <template>

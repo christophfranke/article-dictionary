@@ -1,8 +1,9 @@
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import type { FetchFn } from '@/types';
 
 export const useFetchAuthorized = (): FetchFn => {  
   const router = useRouter();
+  const route = useRoute();
   
   // this is the adjusted fetch function
   return async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
@@ -12,9 +13,13 @@ export const useFetchAuthorized = (): FetchFn => {
 
       if (response.status === 401) {
         // Redirect to login with the current path as the 'next' parameter using Vue Router
-        const currentPath = router.currentRoute.value.fullPath;
-        if (!currentPath.startsWith('/login')) {
-          router.push(`/login?next=${encodeURIComponent(currentPath)}`);
+        const currentPath = route?.fullPath;
+        if (router) {          
+          if (currentPath && !currentPath.startsWith('/login')) {
+            router.push(`/login?next=${encodeURIComponent(currentPath)}`);
+          } else {
+            router.push('/login');
+          }
         }
       }
 

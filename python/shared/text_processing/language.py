@@ -1,5 +1,17 @@
 from bson import ObjectId  # Import ObjectId for converting user_id
 
+def supported_languages():
+    return {
+        'en': 'English',
+        'de': 'German',
+        'fr': 'French',
+        'es': 'Spanish',
+        'pt': 'Portuguese',
+        'el': 'Greek',
+        'pl': 'Polish',
+        'ru': 'Russian',
+    }
+
 def get_languages(users_collection, user_id):
     # Find the user in the users collection
     user = users_collection.find_one({'_id': ObjectId(user_id)})
