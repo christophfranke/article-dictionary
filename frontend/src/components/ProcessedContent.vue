@@ -94,7 +94,7 @@ const unsetHighlight = (word: string) => {
       <span
         @mouseover="setHighlight(word)"
         @mouseout="unsetHighlight(word)"
-        @click="emit('click', word)"
+        @click="event => emit('click', word, event)"
         :class="{
           word: true,
           new: display.highlight.new && dictionary?.find(word.toLowerCase())?.status === 'new',

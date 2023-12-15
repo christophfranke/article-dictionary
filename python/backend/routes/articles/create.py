@@ -52,14 +52,14 @@ def create_article():
     words = extract_words(content)
     unique_words = get_unique_words(words)
 
-    source_language, _ = get_languages(get_collection('users'), current_user.id)
+    source_language, target_language = get_languages(get_collection('users'), current_user.id)
 
     new_article = {
         'title': title,
         'content': content,
         'privacy': privacy,
         'owner_id': ObjectId(owner),
-        'slug': slugify(title),
+        'slug': slugify(title, source_language, target_language),
         'words': words,
         'unique_words': unique_words,
         'language': source_language,

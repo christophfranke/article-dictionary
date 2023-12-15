@@ -150,13 +150,13 @@ onMounted(async () => {
           data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.known_words })),
           fill: false,
         },
-        // {
-        //   label: 'Total Words',
-        //   backgroundColor: 'rgb(51, 153, 255)',
-        //   borderColor: 'rgb(51, 153, 255)',
-        //   data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.new_words + entry.known_words + entry.seen_words })),
-        //   fill: false,
-        // },
+        {
+          label: 'Total Words',
+          backgroundColor: 'rgb(51, 153, 255)',
+          borderColor: 'rgb(51, 153, 255)',
+          data: data.map(entry => ({ x: Date.parse(entry.date), y: entry.new_words + entry.known_words + entry.seen_words })),
+          fill: false,
+        },
       ],
     };
   }
