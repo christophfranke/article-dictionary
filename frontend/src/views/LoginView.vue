@@ -3,6 +3,14 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLogin, useUser } from '@/use/user';
 
+import Form from '@/elements/Form.vue';
+import FormGroup from '@/elements/FormGroup.vue';
+import Label from '@/elements/Label.vue';
+import Input from '@/elements/Input.vue';
+import Button from '@/elements/Button.vue';
+import ErrorMessage from '@/elements/ErrorMessage.vue';
+
+
 const router = useRouter();
 
 const { login, email, password, errorMessage, isLoading } = useLogin();
@@ -19,69 +27,33 @@ const loginAndRedirect = async () => {
 
 
 <template>
-  <form @submit.prevent="loginAndRedirect" class="login-form">
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" v-model="email" required />
-    </div>
-    <div class="form-group">
-      <label for="password">Password:</label>
-      <input type="password" id="password" v-model="password" required />
-    </div>
-    <div class="form-group">
-      <button type="submit" :disabled="isLoading">Login</button>
+  <Form @submit.prevent="loginAndRedirect" class="login-form">
+    <FormGroup>
+      <Label for="email">Email:</Label>
+      <Input type="email" id="email" v-model="email" required />
+    </FormGroup>
+    <FormGroup>
+      <Label for="password">Password:</Label>
+      <Input type="password" id="password" v-model="password" required />
+    </FormGroup>
+    <FormGroup>
+      <Button type="submit" :disabled="isLoading">Login</Button>
       <router-link to="/register" class="register-link">Don't have an account? Register here</router-link>
-    </div>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-  </form>
+    </FormGroup>
+    <ErrorMessage :message="errorMessage" />
+  </Form>
 </template>
 
 <style scoped>
 .login-form {
   max-width: 400px;
-  margin: 0 auto;
-  margin-top: 100px;
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 100px auto 0;
 }
 
 .form-group {
   margin-bottom: 20px;
 }
 
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
 
 .register-link {
   color: #007bff; /* Link color */
@@ -97,11 +69,6 @@ button:hover {
 }
 
 .error-message {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  padding: 10px;
-  border-radius: 4px;
   margin-top: 10px;
 }
 </style>

@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRegister } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language'
+
+import Form from '@/elements/Form.vue';
+import FormGroup from '@/elements/FormGroup.vue';
+import Label from '@/elements/Label.vue';
+import Input from '@/elements/Input.vue';
+import Select from '@/elements/Select.vue';
+import Button from '@/elements/Button.vue';
+import ErrorMessage from '@/elements/ErrorMessage.vue';
+
 
 const { email,
   name,
@@ -23,110 +32,60 @@ const registerAndRedirect = async () => {
 };
 
 const languages = useSupportedLanguages();
+const otherLanguages = computed(() => {
+  const result = { ...languages.value };
+  delete result[sourceLanguage.value];
+
+  return result;
+});
+
+
 </script>
 
 <template>
-  <form @submit.prevent="registerAndRedirect" class="register-form">
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" v-model="email" required />
-    </div>
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" id="name" v-model="name" />
-    </div>
-    <div class="form-group">
-      <label for="password">Password:</label>
-      <input type="password" id="password" v-model="password" required />
-    </div>
+  <Form @submit.prevent="registerAndRedirect" class="register-form">
+    <FormGroup>
+      <Label for="email">Email:</Label>
+      <Input type="email" id="email" v-model="email" required />
+    </FormGroup>
+    <FormGroup>
+      <Label for="name">Name:</Label>
+      <Input type="text" id="name" v-model="name" />
+    </FormGroup>
+    <FormGroup>
+      <Label for="password">Password:</Label>
+      <Input type="password" id="password" v-model="password" required />
+    </FormGroup>
 
-    <div class="form-group">
-      <label for="sourceLanguage">I want to learn:</label>
-      <select id="sourceLanguage" v-model="sourceLanguage" required>
-        <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
-      </select>
-    </div>
+    <FormGroup>
+      <Label for="sourceLanguage">I want to learn:</Label>
+      <Select id="sourceLanguage" v-model="sourceLanguage" :options="languages" required />
+    </FormGroup>
 
-    <div class="form-group">
-      <label for="targetLanguage">My language is:</label>
-      <select id="targetLanguage" v-model="targetLanguage" required>
-        <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
-      </select>
-    </div>
+    <FormGroup>
+      <Label for="targetLanguage">My language is:</Label>
+      <Select id="targetLanguage" v-model="targetLanguage" :options="languages" required />
+    </FormGroup>
 
-    <div class="form-group">
-      <button type="submit" :disabled="isLoading">Register</button>
-    </div>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-  </form>
+    <FormGroup>
+      <Button type="submit" :disabled="isLoading">Register</Button>
+    </FormGroup>
+
+    <ErrorMessage :message="errorMessage" />
+  </Form>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .register-form {
   max-width: 400px;
-  margin: 0 auto;
-  margin-top: 100px;
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+  margin: 100px auto 0;
 
-.form-group {
-  margin-bottom: 20px;
-}
+  .form-group {
+    margin-bottom: 20px;
+  }
 
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-input, select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.register-link {
-  color: #007bff; /* Link color */
-  text-decoration: none; /* Remove default underline */
-  display: block;
-  margin-top: 10px; /* Adjust the spacing */
-  font-size: 14px;
-}
-
-.register-link:hover {
-  text-decoration: underline; /* Underline on hover */
-  background-color: transparent;
-}
-
-.error-message {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 10px;
+  .error-message {
+    margin-top: 10px;    
+  }
 }
 </style>
