@@ -30,4 +30,4 @@ def read_article():
 
     article['status'] = 'seen'
     article['last_read'] = datetime.utcnow()
-    return serialize(article), 200
+    return serialize(article, current_user.id), 200

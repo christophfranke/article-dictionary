@@ -81,7 +81,7 @@ const statusDescription = computed(() => {
   if (article.value.status === 'read') {
     return 'You have read this article.';
   } else if (article.value.status === 'seen') {
-    return 'You have started reading this article.';
+    return 'You have been reading this article.';
   } else {
     return 'New article';
   }

@@ -71,8 +71,30 @@ const highlightedWord = computed(() => {
   return (props.display.behaviour.highlight || props.display.behaviour.highlight)
     ? props.highlight.toLowerCase()
     : ''
-}
-);
+});
+
+const isWordHighlighted = ref<{ [key: string]: boolean }>({});
+const lastHighlightedWord = ref<string>('');
+watchEffect(() => {
+  if (props.display.behaviour.highlight) {
+    const word = props.dictionary.find(highlightedWord.value);
+    if (word) {
+      if (lastHighlightedWord.value) {
+        isWordHighlighted.value[lastHighlightedWord.value] = false;
+      }
+      isWordHighlighted.value[word.original] = true;
+      lastHighlightedWord.value = word.original;
+    } else {
+      isWordHighlighted.value[lastHighlightedWord.value] = false;
+      lastHighlightedWord.value = '';
+    }
+  } else {
+    if (lastHighlightedWord.value) {
+      isWordHighlighted.value[lastHighlightedWord.value] = false;
+      lastHighlightedWord.value = '';    
+    }
+  }
+});
 
 
 
@@ -133,7 +155,7 @@ const addWord = async (): Promise<void> => {
         </tr>
       </thead>
       <tbody>
-        <Row v-for="(word) in sortedWords" :key="word.id" :word="word" :highlightedWord="highlightedWord" :display="props.display" :dictionary="props.dictionary" :profile="profile" />
+        <Row v-for="(word) in sortedWords" :key="word.id" :word="word" :isHighlighed="isWordHighlighted[word.original]" :display="props.display" :dictionary="props.dictionary" :profile="profile" />
       </tbody>
     </table>
   </div>

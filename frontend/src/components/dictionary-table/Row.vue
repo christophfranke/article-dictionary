@@ -10,9 +10,9 @@ const props = defineProps({
 		type: Object as unknown as () => Word,
 		required: true,
 	},
-	highlightedWord: {
-		type: String,
-		default: '',
+	isHighlighed: {
+		type: Boolean,
+		default: false,
 	},
 	display: {
 		type: Object,
@@ -88,7 +88,7 @@ const retranslateWord = props.dictionary.retranslateWord;
 
 <template>
   <tr
-  	:class="{ highlighted: word.original === highlightedWord }"
+  	:class="{ highlighted: isHighlighed }"
   	:id="`word-${word.id}`"
   	>
     <td v-if="display.col.number">{{ word.index + 1 }}</td>
