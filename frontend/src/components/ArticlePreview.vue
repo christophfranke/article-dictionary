@@ -3,6 +3,8 @@ import { computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { ArticlePreview } from '@/types';
 
+import Headline from '@/elements/Headline.vue';
+
 interface Props {
   article: ArticlePreview
 }
@@ -68,7 +70,7 @@ const link = (article: ArticlePreview): string => article.owned
   <div class="outer-container">
     <div class="article-preview">
       <router-link :to="link(props.article)">
-        <h2>{{ props.article.title }}</h2>
+        <Headline type="h3" class="title">{{ props.article.title }}</Headline>
         <p>{{ props.article.excerpt }}...</p>
         <div class="statistics">
           <span style="color: #666;" :title="`${props.article.statistics.new} new words`">
@@ -128,9 +130,7 @@ const link = (article: ArticlePreview): string => article.owned
   flex-direction: column;
 }
 
-h2 {
-  color: #333; /* Dark font color */
-  margin-top: 0;
+.title {
   margin-bottom: 10px;
 }
 

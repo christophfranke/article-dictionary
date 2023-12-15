@@ -5,26 +5,29 @@ const { type } = defineProps({
 		default: 'h1',
 	},
 });
+
+const allowedTypes = ['h1', 'h2', 'h3'];
 </script>
 
 <template>
-	<h1 v-if="type === 'h1'">
+	<component :is="type" v-if="allowedTypes.includes(type)">
 		<slot />
-	</h1>
-	<h2 v-else>
-		<slot />
-	</h2>
+	</component>
 </template>
 
 <style scoped lang="scss">
-h1 {
+h1, h2, h3 {
 	margin: 0;
   color: #333;
+}
+
+h1 {
   font-size: 32px;
 }
 h2 {
-	margin: 0;
-  color: #333;
   font-size: 24px;
+}
+h3 {
+  font-size: 18px;
 }
 </style>
