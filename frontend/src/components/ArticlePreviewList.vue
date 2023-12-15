@@ -2,6 +2,10 @@
 import type { ArticlePreview } from '@/types';
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 
+import Subheadline from '@/elements/Subheadline.vue';
+import ButtonLink from '@/elements/ButtonLink.vue';
+
+
 const props = defineProps({
   title: {
     type: String,
@@ -20,14 +24,12 @@ const props = defineProps({
 
 <template>
   <template v-if="props.articleList.length > 0">
-    <h2>{{ props.title }}</h2>
+    <Subheadline class="title">{{ props.title }}</Subheadline>
     <div class="article-list">
-      <article v-for="article in props.articleList" :key="article.id" class="article-preview">
-        <ArticlePreviewComponent :article="article" />
-      </article>
+      <ArticlePreviewComponent v-for="article in props.articleList" :key="article.id" :article="article" />
     </div>
 
-    <router-link v-if="props.showCreateButton" to="/create" class="create-link">Create New Article</router-link>
+    <ButtonLink v-if="props.showCreateButton" to="/create" class="create-link">Create New Article</ButtonLink>
   </template>
 </template>
 
@@ -38,26 +40,12 @@ const props = defineProps({
   gap: 20px;
 }
 
-.article-preview {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
+.title {
+  margin-bottom: 20px;
 }
 
 .create-link {
   display: block;
-  background-color: #007bff;
-  color: #fff;
-  text-align: center;
-  padding: 10px;
   margin: 20px auto;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.create-link:hover {
-  background-color: #0056b3;
 }
 </style>

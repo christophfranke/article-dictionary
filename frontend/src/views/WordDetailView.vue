@@ -11,6 +11,8 @@ import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 import ProcessedContent from '@/components/ProcessedContent.vue';
 import Tooltip from '@/components/Tooltip.vue';
 
+import Subheadline from '@/elements/Subheadline.vue';
+
 
 const word = ref<WordDetail | null>(null);
 const highlightedWord = ref('');
@@ -62,7 +64,7 @@ watchEffect(() => {
   <div class="main">
     <div v-if="word">
       <div class="stats">
-        <h2>{{ word?.original }}</h2>
+        <Subheadline class="headline">{{ word?.original }}</Subheadline>
         <p><strong>Original:</strong> {{ word.original }}</p>
         <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
         <p><strong>Status:</strong> {{ word.status }}</p>
@@ -86,11 +88,15 @@ watchEffect(() => {
 
 <style scoped>
 .main {
-  font-family: 'Arial', sans-serif;
   font-size: 18px;
   max-width: 1000px;
   margin: 0 auto;
 }
+
+.headline {
+  margin-bottom: 20px;
+}
+
 
 .stats {
   max-width: 600px;
@@ -100,12 +106,6 @@ watchEffect(() => {
 
 .sentences {
   padding: 20px;
-}
-
-h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
 }
 
 p {

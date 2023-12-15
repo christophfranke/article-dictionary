@@ -3,6 +3,15 @@ import { ref, onMounted, watchEffect } from 'vue';
 import { useProfile, useUpdateProfile } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language';
 
+import Headline from '@/elements/Headline.vue';
+import Form from '@/elements/Form.vue';
+import FormGroup from '@/elements/FormGroup.vue';
+import Label from '@/elements/Label.vue';
+import Input from '@/elements/Input.vue';
+import Button from '@/elements/Button.vue';
+import Select from '@/elements/Select.vue';
+import ErrorMessage from '@/elements/ErrorMessage.vue';
+
 
 const form = ref({
   email: '',
@@ -41,46 +50,46 @@ const submitForm = async () => {
 
 <template>
   <div class="profile-settings">
-    <h2>Profile Settings</h2>
+    <Headline>Profile Settings</Headline>
 
-    <form @submit.prevent="submitForm" class="settings-form">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="form.email" required />
-      </div>
+    <Form @submit.prevent="submitForm" class="settings-form">
+      <FormGroup>
+        <Label for="email">Email:</Label>
+        <Input type="email" id="email" v-model="form.email" required />
+      </FormGroup>
 
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" id="name" v-model="form.name" />
-      </div>
+      <FormGroup>
+        <Label for="name">Name:</Label>
+        <Input type="text" id="name" v-model="form.name" />
+      </FormGroup>
 
-      <div class="form-group">
-        <label for="newPassword">New Password:</label>
-        <input type="password" id="newPassword" v-model="form.newPassword" />
-      </div>
+      <FormGroup>
+        <Label for="newPassword">New Password:</Label>
+        <Input type="password" id="newPassword" v-model="form.newPassword" />
+      </FormGroup>
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirm New Password:</label>
-        <input type="password" id="confirmPassword" v-model="form.confirmPassword" />
-      </div>
+      <FormGroup>
+        <Label for="confirmPassword">Confirm New Password:</Label>
+        <Input type="password" id="confirmPassword" v-model="form.confirmPassword" />
+      </FormGroup>
 
-      <div class="form-group">
-        <label for="sourceLanguage">I want to learn:</label>
-        <select id="sourceLanguage" v-model="form.sourceLanguage" disabled>
+      <FormGroup>
+        <Label for="sourceLanguage">I want to learn:</Label>
+        <Select id="sourceLanguage" v-model="form.sourceLanguage" disabled>
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
-        </select>
-      </div>
+        </Select>
+      </FormGroup>
 
-      <div class="form-group">
-        <label for="targetLanguage">My language is:</label>
-        <select id="targetLanguage" v-model="form.targetLanguage" disabled>
+      <FormGroup>
+        <Label for="targetLanguage">My language is:</Label>
+        <Select id="targetLanguage" v-model="form.targetLanguage" disabled>
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
-        </select>
-      </div>
+        </Select>
+      </FormGroup>
 
-      <button type="submit" class="save-button" :disabled="isLoading">Save Changes</button>
-    </form>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <Button type="submit" class="save-button" :disabled="isLoading">Save Changes</Button>
+    </Form>
+    <ErrorMessage :message="errorMessage" />
   </div>
 </template>
 
@@ -92,6 +101,7 @@ const submitForm = async () => {
 }
 
 .settings-form {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
 }
@@ -101,46 +111,6 @@ const submitForm = async () => {
 }
 
 label {
-  font-weight: bold;
   margin-bottom: 5px;
-  color: #333;
-}
-
-input,
-select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.save-button {
-  background-color: #28a745;
-}
-
-.error-message {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 10px;
 }
 </style>

@@ -45,7 +45,7 @@ const loginAndRedirect = async () => {
   </Form>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .login-form {
   max-width: 400px;
   margin: 100px auto 0;

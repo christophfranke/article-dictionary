@@ -5,6 +5,8 @@ import useApi from '@/use/api';
 import type { ArticleDetail } from '@/types'
 
 import ErrorMessage from '@/elements/ErrorMessage.vue';
+import Headline from '@/elements/Headline.vue';
+
 
 const route = useRoute();
 const id = route.params.id;
@@ -31,12 +33,12 @@ onMounted(importArticle)
 </script>
 
 <template>
-	<h3>Importing article...</h3>
+	<Headline class="title">Importing article...</Headline>
   <ErrorMessage :message="errorMessage" />
 </template>
 
 <style scoped>
-h3 {
+.title {
 	margin: 80px auto;
 	text-align: center;
 }

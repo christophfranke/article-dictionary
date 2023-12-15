@@ -9,6 +9,8 @@ import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import ArticlePreviewList from '@/components/ArticlePreviewList.vue';
 import ProgresseComponent from '@/components/Progress.vue';
 
+import Headline from '@/elements/Headline.vue';
+import ButtonLink from '@/elements/ButtonLink.vue';
 
 const articles = ref<ArticlePreview[]>([]);
 const router = useRouter();
@@ -111,8 +113,8 @@ const navigateToCreateArticle = (): void => {
     <ProgresseComponent />
 
     <div v-if="articles.length === 0" class="no-articles">
-      <h3>You have no articles yet.</h3>
-      <router-link to="/create" class="create-link">Create New Article</router-link>
+      <Headline class="title">You have no articles yet.</Headline>
+      <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
     </div>
 
     <ArticlePreviewList
@@ -142,7 +144,7 @@ const navigateToCreateArticle = (): void => {
   </main>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .container {
   max-width: 950px;
   margin: 0 auto;
@@ -152,26 +154,15 @@ const navigateToCreateArticle = (): void => {
 
 .no-articles {
   text-align: center;
-  margin: 50px 0;
+  margin: 100px 0;
+
+  .title {
+    margin: 50px 0;
+  }
 }
 
-.no-articles h3{
-  margin: 70px 0;
-}
 
 .create-link {
-  display: block;
-  background-color: #007bff;
-  color: #fff;
-  text-align: center;
-  padding: 10px;
   margin: 20px auto;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.create-link:hover {
-  background-color: #0056b3;
 }
 </style>

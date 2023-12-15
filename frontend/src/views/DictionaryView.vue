@@ -8,6 +8,11 @@ import Statistics from '../components/Statistics.vue';
 
 import { useDictionaryView } from '@/use/dictionary';
 
+import Headline from '@/elements/Headline.vue';
+import Label from '@/elements/Label.vue';
+import Input from '@/elements/Input.vue';
+
+
 
 interface StatusFilters {
   new: boolean;
@@ -79,52 +84,49 @@ const rebuildDictionary = async (): Promise<void> => {
 
 <template>
   <div class="dictionary-view">
-    <h1>Dictionary View</h1>
+    <Headline>Dictionary View</Headline>
 
     <div class="filter-section">
-      <label for="filter">Filter:</label>
-      <input v-model="filter" id="filter" placeholder="Search for..." />
+      <Label for="filter">Filter:</Label>
+      <Input v-model="filter" id="filter" placeholder="Search for..." />
     </div>
     <Statistics :dictionary="dictionary" class="statistics" />
 
     <div class="status-filters">
-      <label for="newCheckbox">
-        <input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
+      <Label for="newCheckbox">
+        <Input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
         New
-      </label>
+      </Label>
 
-      <label for="seenCheckbox">
-        <input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
+      <Label for="seenCheckbox">
+        <Input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
         Seen
-      </label>
+      </Label>
 
-      <label for="knownCheckbox">
-        <input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
+      <Label for="knownCheckbox">
+        <Input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
         Known
-      </label>
+      </Label>
 
-      <label for="ignoreCheckbox">
-        <input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
+      <Label for="ignoreCheckbox">
+        <Input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
         Ignore
-      </label>
+      </Label>
     </div>
 
     <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .dictionary-view {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Arial', sans-serif;
 }
 
 h1 {
-  font-size: 24px;
   margin-bottom: 20px;
-  color: #333;
 }
 
 .filter-section {
@@ -132,40 +134,23 @@ h1 {
 }
 
 label {
-  display: block;
   margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
 }
 
 .status-filters {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-}
 
-.status-filters label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #555;
-}
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
 
-.status-filters input {
-  margin-right: 5px;
-}
-
-.DictionaryTable {
-  margin-top: 20px;
+  input {
+    margin-right: 5px;
+  }
 }
 
 .statistics {

@@ -65,39 +65,49 @@ const link = (article: ArticlePreview): string => article.owned
 </script>
 
 <template>
-  <div class="article-preview">
-    <router-link :to="link(props.article)">
-      <h2>{{ props.article.title }}</h2>
-      <p>{{ props.article.excerpt }}...</p>
-      <div class="statistics">
-        <span style="color: #666;" :title="`${props.article.statistics.new} new words`">
-          <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new }}
-        </span>
-        <span style="color: #666;" :title="`${props.article.statistics.seen} seen words`">
-          <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen }}
-        </span>
-        <span style="color: #666;" :title="`${props.article.statistics.known} known words`">
-          <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known }}
-        </span>
-      </div>
+  <div class="outer-container">
+    <div class="article-preview">
+      <router-link :to="link(props.article)">
+        <h2>{{ props.article.title }}</h2>
+        <p>{{ props.article.excerpt }}...</p>
+        <div class="statistics">
+          <span style="color: #666;" :title="`${props.article.statistics.new} new words`">
+            <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new }}
+          </span>
+          <span style="color: #666;" :title="`${props.article.statistics.seen} seen words`">
+            <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen }}
+          </span>
+          <span style="color: #666;" :title="`${props.article.statistics.known} known words`">
+            <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known }}
+          </span>
+        </div>
 
-      <div class="difficulty">
-        <div class="left" :title="`Estimated difficulty: ${scoreDescription} (${difficultyScore}% unknown words)`">
-          <span>{{ scoreDescription }}</span>
-          <span><FontAwesomeIcon icon="lightbulb" /></span>
-          <span>{{ difficultyScore }}%</span>
+        <div class="difficulty">
+          <div class="left" :title="`Estimated difficulty: ${scoreDescription} (${difficultyScore}% unknown words)`">
+            <span>{{ scoreDescription }}</span>
+            <span><FontAwesomeIcon icon="lightbulb" /></span>
+            <span>{{ difficultyScore }}%</span>
+          </div>
+          <div class="right" :title="`${props.article.statistics.total} words total`">
+            <span>{{ props.article.statistics.total }}</span>
+            <span><FontAwesomeIcon icon="database" /></span>
+            <span>{{ lengthDescription }}</span>
+          </div>
         </div>
-        <div class="right" :title="`${props.article.statistics.total} words total`">
-          <span>{{ props.article.statistics.total }}</span>
-          <span><FontAwesomeIcon icon="database" /></span>
-          <span>{{ lengthDescription }}</span>
-        </div>
-      </div>
-    </router-link>
+      </router-link>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.outer-container {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 15px;
+  padding-bottom: 27px;
+  border-radius: 8px;
+}
+
 .article-preview {
   background-color: #fff; /* Bright background color */
   border: 1px solid #ddd;
@@ -105,6 +115,7 @@ const link = (article: ArticlePreview): string => article.owned
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   height: calc(100% - 30px);
+  padding: 20px;
 }
 
 .article-preview:hover {

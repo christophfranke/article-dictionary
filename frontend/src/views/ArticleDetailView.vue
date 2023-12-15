@@ -14,6 +14,9 @@ import Statistics from '@/components/Statistics.vue';
 import Tooltip from '@/components/Tooltip.vue';
 import ProcessedContent from '@/components/ProcessedContent.vue';
 
+import Headline from '@/elements/Headline.vue';
+import Button from '@/elements/Button.vue';
+
 
 const tableDisplayConfig = computed(() => ({
   header: true,
@@ -170,14 +173,14 @@ onBeforeUnmount(() => {
   <div class="article-page" v-if="article.title">
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
-      <h1>{{ article.title }}</h1>
+      <Headline class="title">{{ article.title }}</Headline>
       <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" :display="contentDisplayConfig" />
-      <button :disabled="article.status === 'read'" class="mark-as-read" @click="markArticleAsRead">Mark as read</button>
+      <Button :disabled="article.status === 'read'" class="mark-as-read" @click="markArticleAsRead">Mark as read</Button>
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">
-      <button class="toggle-dictionary-button" @click="toggleShowDictionary">
+      <Button class="toggle-dictionary-button" @click="toggleShowDictionary">
         <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
-      </button>
+      </Button>
       <div class="dictionary-scoller">
         <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
       </div>
@@ -186,7 +189,7 @@ onBeforeUnmount(() => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .article-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -197,22 +200,21 @@ onBeforeUnmount(() => {
   max-width: 800px;
   width: calc(10px + 50vw);
   margin-right: 20px;
-}
 
-.content.no-dictionary {
-  max-width: 1000px;
-  margin: 0 auto;
-  width: 100vw;
+  &.no-dictionary {
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100vw;
+  }
 }
 
 @media (max-width: 1240px) {
   .content {
     width: calc(100vw - 610px);
-  }
-
-  .content.no-dictionary {
-    margin: 0 auto;
-    width: calc(100vw - 70px);
+    &.no-dictionary {
+      margin: 0 auto;
+      width: calc(100vw - 70px);
+    }
   }
 }
 
@@ -223,9 +225,7 @@ onBeforeUnmount(() => {
 }
 
 
-h1 {
-  color: #333;
-  font-size: 2em;
+.title {
   margin-bottom: 20px;
 }
 
@@ -258,48 +258,15 @@ h1 {
   left: -10px;
   transform: translateX(-100%);
   padding: 10px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
-.toggle-dictionary-button:hover {
-  background-color: #2980b9;
-}
-
-.toggle-dictionary-button svg {
-  transition: transform 0.3s ease;
+  svg {
+    transition: transform 0.3s ease;
+  }
 }
 
 .rotate {
   transform: rotate(180deg);
 }
-
-button {
-  margin-top: 10px;
-  padding: 10px;
-  color: white; /* White text */
-  border: none; /* Remove borders */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Add a pointer cursor on hover */
-}
-
-.mark-as-read {
-  background-color: #4caf50; /* Green background */
-}
-
-.mark-as-read:hover {
-  background-color: #45a049;
-}
-
-.mark-as-read:disabled {
-  background-color: #b0b0b0; /* Light gray background for disabled state */
-  cursor: default; /* Default cursor on disabled state */
-  color: #666; /* Dim text color for disabled state */
-}
-
 
 .statistics {
   float: right;

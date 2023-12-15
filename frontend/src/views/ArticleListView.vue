@@ -5,8 +5,11 @@ import { useRouter } from 'vue-router';
 import type { ArticlePreview } from '@/types';
 import { useFetchAuthorized } from '@/use/api';
 
-import ArticlePreviewComponent from '../components/ArticlePreview.vue';
-import ProgresseComponent from '../components/Progress.vue';
+import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
+import ProgresseComponent from '@/components/Progress.vue';
+
+import Headline from '@/elements/Headline.vue';
+import ButtonLink from '@/elements/ButtonLink.vue';
 
 
 const articles = ref<ArticlePreview[]>([]);
@@ -54,28 +57,23 @@ const navigateToCreateArticle = (): void => {
 <template>
   <main class="container">
     <div class="title">
-      <h2>Your Articles</h2>
-      <router-link to="/create" class="create-link">Create New Article</router-link>
+      <Headline>Your Articles</Headline>
+      <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
     </div>
     <div v-if="newestArticles.length > 0" class="article-list">
-      <article v-for="article in newestArticles" :key="article.id" class="article-preview">
-        <ArticlePreviewComponent :article="article" />
-      </article>
+      <ArticlePreviewComponent v-for="article in newestArticles" :key="article.id" :article="article" />
     </div>
+
     <div v-else class="no-articles">
       <p>No articles available.</p>
     </div>
 
-    <router-link to="/create" class="create-link">Create New Article</router-link>
-
     <template v-if="publicArticles.length > 0">
       <div class="title">
-        <h2>Public Articles</h2>
+        <Headline>Public Articles</Headline>
       </div>
       <div class="article-list">
-        <article v-for="article in publicArticles" :key="article.id" class="article-preview">
-          <ArticlePreviewComponent :article="article" />
-        </article>
+        <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id"  :article="article" />
       </div>
     </template>
   </main>
@@ -93,6 +91,8 @@ const navigateToCreateArticle = (): void => {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  margin-bottom: 20px;
+  margin-top: 40px;
 }
 
 .article-list {
@@ -101,31 +101,9 @@ const navigateToCreateArticle = (): void => {
   gap: 20px;
 }
 
-.article-preview {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-}
-
 .no-articles {
+  font-size: 20px;
   text-align: center;
   margin: 20px 0;
-}
-
-.create-link {
-  display: block;
-  background-color: #007bff;
-  color: #fff;
-  text-align: center;
-  padding: 10px;
-  margin-top: 20px;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.create-link:hover {
-  background-color: #0056b3;
 }
 </style>

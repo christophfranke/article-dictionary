@@ -5,6 +5,17 @@ import useApi from '@/use/api';
 
 import type { ArticleData, ArticleBase } from '@/types';
 
+import Headline from '@/elements/Headline.vue';
+import Form from '@/elements/Form.vue';
+import FormGroup from '@/elements/FormGroup.vue';
+import Label from '@/elements/Label.vue';
+import Button from '@/elements/Button.vue';
+import Input from '@/elements/Input.vue';
+import Select from '@/elements/Select.vue';
+import Textarea from '@/elements/Textarea.vue';
+import ErrorMessage from '@/elements/ErrorMessage.vue';
+
+
 const article = ref<ArticleData>({
   title: '',
   content: '',
@@ -31,92 +42,52 @@ const submitForm = async (): Promise<void> => {
 
 <template>
   <div class="create-article">
-    <h1>Create Article</h1>
-    <form @submit.prevent="submitForm" class="article-form">
-      <label for="articleName">Title:</label>
-      <input id="articleName" v-model="article.title" type="text" required />
+    <Headline>Create Article</Headline>
+    <Form @submit.prevent="submitForm" class="article-form">
+      <Label for="articleName">Title:</Label>
+      <Input id="articleName" v-model="article.title" type="text" required />
 
-      <label for="articleContent">Content:</label>
-      <textarea id="articleContent" v-model="article.content" required></textarea>
+      <Label for="articleContent">Content:</Label>
+      <Textarea id="articleContent" v-model="article.content" required />
 
-      <label for="articlePrivacy">Privacy:</label>
-      <select id="articlePrivacy" v-model="article.privacy">
+      <Label for="articlePrivacy">Privacy:</Label>
+      <Select id="articlePrivacy" v-model="article.privacy">
         <option value="public">Public</option>
         <option value="private">Private</option>
-      </select>
+      </Select>
 
-      <button type="submit" class="submit-button" :disabled="!isLoading">Submit</button>
+      <Button type="submit" class="submit-button" :disabled="isLoading">Submit</Button>
 
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <ErrorMessage :message="errorMessage" />
     </form>
   </div>
 </template>
 
 <style scoped>
 .create-article {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
 
 h1 {
-  color: #333;
-  font-size: 2em;
   margin-bottom: 20px;
 }
 
 .article-form label {
-  display: block;
   margin-bottom: 8px;
-  color: #555;
 }
 
 .article-form input,
 .article-form textarea {
-  width: 100%;
-  padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.article-form textarea {
-  resize: vertical;
-  min-height: 300px;
 }
 
 .article-form select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  margin-top: 5px; /* Add margin for spacing */
+  margin-top: 5px;
 }
 
 .submit-button {
   margin-top: 20px;
-  background-color: #28a745;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.submit-button:hover {
-  background-color: #218838;
-}
-
-.error-message {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 10px;
 }
 </style>
