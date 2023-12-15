@@ -1,16 +1,28 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import type { PropType } from 'vue';
 
-const { options } = defineProps({
+const { options, modelValue } = defineProps({
 	options: {
 		type: Object as PropType<{ [key: string]: string } | null>,
 		default: {},
 	},
+	modelValue: {
+		type: String,
+		default: '',
+	},
 })
+
+const emit = defineEmits(['update:modelValue']);
+
+const valueRef = ref(modelValue);
+watch(valueRef, (newValue) => {
+  emit('update:modelValue', newValue);
+});
 
 </script>
 <template>
-	<select v-if="options">
+	<select v-if="options" v-model="valueRef">
 		<option v-for="(label, value) in options" :key="value" :value="value">{{ label }}</option>
 		<slot />
 	</select>

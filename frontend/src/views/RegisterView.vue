@@ -64,7 +64,7 @@ const otherLanguages = computed(() => {
 
     <FormGroup>
       <Label for="targetLanguage">My language is:</Label>
-      <Select id="targetLanguage" v-model="targetLanguage" :options="languages" required />
+      <Select id="targetLanguage" v-model="targetLanguage" :options="otherLanguages" required />
     </FormGroup>
 
     <FormGroup>
