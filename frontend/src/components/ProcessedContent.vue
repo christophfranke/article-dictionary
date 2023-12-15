@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { DictionaryCollection } from '../dictionary/collection';
+import type { DictionaryView } from '../dictionary/view';
 
 const { content, words, dictionary } = defineProps({
 	content: {
@@ -12,7 +12,7 @@ const { content, words, dictionary } = defineProps({
 		required: true,
 	},
 	dictionary: {
-		type: Object as unknown as () => DictionaryCollection | null,
+		type: Object as unknown as () => DictionaryView | null,
 		default: null
 	},
 	modelValue: {

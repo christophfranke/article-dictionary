@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 
 import type { ArticleDetail } from '../types'
-import type { DictionaryCollection } from '../dictionary/collection';
+import type { DictionaryView } from '../dictionary/view';
 
 import useStatistics from '../use/statistics';
 
 const { dictionary, article, showPercentage } = defineProps({
   dictionary: {
-    type: Object as () => DictionaryCollection,
+    type: Object as () => DictionaryView,
     required: true,
   },
   article: {

@@ -1,7 +1,8 @@
 import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
-import type { DictionaryCollection } from './collection';
+
 import type { Word, PartialWord } from '@/types';
+import type { DictionaryCollection } from './collection';
 
 
 type FilterFunction = (x: PartialWord) => boolean;
@@ -14,6 +15,7 @@ export interface DictionaryView {
 
   set: (newWords: PartialWord[]) => void;
   setFilter: (filterFn: FilterFunction) => void;
+  discard: () => void;
 
   load: () => Promise<void>;
   updateMany: (originals: string[], data: Record<string, unknown>) => Promise<void>;
@@ -42,6 +44,7 @@ export default (collection: DictionaryCollection, filterFn: FilterFunction = x =
     words: computed(() => collection.allWords.value.filter(filter.value)),
     allWords: collection.allWords,
     set: collection.set,
+    discard: collection.discard,
     setFilter: filterFn => {
       filter.value = filterFn
     },

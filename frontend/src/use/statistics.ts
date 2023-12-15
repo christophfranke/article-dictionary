@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
 
 import type { Word, ArticleDetail } from '../types';
-import type { DictionaryCollection } from '../dictionary/collection';
+import type { DictionaryView } from '../dictionary/view';
 
 interface StatisticsResult {
   newWordsPercentage: number;
@@ -16,11 +16,11 @@ interface StatisticsResult {
 }
 
 interface UseStatisticsParams {
-  dictionary: DictionaryCollection;
+  dictionary: DictionaryView;
   article?: Ref<ArticleDetail>;
 }
 
-const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<ArticleDetail>): StatisticsResult => {
+const statisticsForArticle = (dictionary: DictionaryView, article: Ref<ArticleDetail>): StatisticsResult => {
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;
@@ -55,7 +55,7 @@ const statisticsForArticle = (dictionary: DictionaryCollection, article: Ref<Art
   };
 }
 
-const statisticsForDictionary = (dictionary: DictionaryCollection): StatisticsResult => {
+const statisticsForDictionary = (dictionary: DictionaryView): StatisticsResult => {
   let newWords = 0;
   let seenWords = 0;
   let knownWords = 0;

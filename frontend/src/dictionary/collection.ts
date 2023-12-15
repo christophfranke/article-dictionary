@@ -8,6 +8,7 @@ export interface DictionaryCollection {
   allWords: ComputedRef<Word[]>;
 
   set: (newWords: PartialWord[]) => void;
+  discard: () => void;
 
   load: () => Promise<void>;
   updateMany: (originals: string[], data: Record<string, unknown>) => Promise<void>;
@@ -116,6 +117,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
     find,
     allWords: computed(() => words.value),
     set,
+    discard: () => set([]),
     load,
     updateMany,
     retranslateWord,

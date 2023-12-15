@@ -1,6 +1,6 @@
-import type { DictionaryCollection } from '@/dictionary/collection';
+import type { DictionaryView } from '@/dictionary/view';
 
-export const useToggleStatusSeen = (dictionary: DictionaryCollection) => {
+export const useToggleStatusSeen = (dictionary: DictionaryView) => {
 	const toggleStatusSeen = (word: string, event: MouseEvent) => {
 		const shiftKey = event.shiftKey || event.metaKey || event.ctrlKey;
 	  const original = word.toLowerCase();

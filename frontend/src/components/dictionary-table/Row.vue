@@ -2,7 +2,7 @@
 import { ref, watchEffect } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Word, User } from '@/types';
-import type { DictionaryCollection } from '@/dictionary/collection';
+import type { DictionaryView } from '@/dictionary/view';
 import useEdit from './use-edit';
 
 import Button from '@/elements/Button.vue';
@@ -44,7 +44,7 @@ const props = defineProps({
 		},
 	},
 	dictionary: {
-		type: Object as unknown as () => DictionaryCollection,
+		type: Object as unknown as () => DictionaryView,
 		required: true,
 	},
 	profile: {

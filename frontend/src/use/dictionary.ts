@@ -1,10 +1,15 @@
-import { useFetchAuthorized } from './api';
-import createDictionaryRequest from '@/dictionary/request';
-import createDictionaryCollection from '@/dictionary/collection';
-import createDictionaryView from '@/dictionary/view';
+import { watch } from 'vue';
+
 import type { PartialWord } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
 import type { DictionaryCollection } from '@/dictionary/collection';
+
+import createDictionaryRequest from '@/dictionary/request';
+import createDictionaryView from '@/dictionary/view';
+import createDictionaryCollection from '@/dictionary/collection';
+
+import { useFetchAuthorized } from './api';
+
 
 type FilterFunction = (x: PartialWord) => boolean;
 
@@ -22,8 +27,8 @@ export const useDictionaryView = (filter: FilterFunction = x => !!x): Dictionary
 		const fetchAuthorized = useFetchAuthorized()
 		const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
 		
-		dictionary = createDictionaryCollection(dictionaryRequest, [])
-		dictionary.load()
+		dictionary = createDictionaryCollection(dictionaryRequest, []);
+		dictionary.load();
 	}
 
 	return createDictionaryView(dictionary, filter)

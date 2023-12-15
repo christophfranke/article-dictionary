@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
-import type { DictionaryCollection } from '../dictionary/collection';
+import type { DictionaryView } from '../dictionary/view';
 
 const props = defineProps({
 	dictionary: {
-		type: Object as unknown as () => DictionaryCollection,
+		type: Object as unknown as () => DictionaryView,
 		required: true,
 	},
 	highlightedWord: {
