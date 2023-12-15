@@ -38,7 +38,7 @@ const loginAndRedirect = async () => {
       <Input type="password" id="password" v-model="password" required />
     </FormGroup>
     <FormGroup>
-      <Button type="submit" :disabled="isLoading">Login</Button>
+      <Button type="submit" :disabled="isLoading" role="view">Login</Button>
       <InternalLink to="/register" class="register-link">Don't have an account? Register here</InternalLink>
     </FormGroup>
     <ErrorMessage :message="errorMessage" />

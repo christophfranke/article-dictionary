@@ -5,6 +5,10 @@ import type { Word, User } from '@/types';
 import type { DictionaryCollection } from '@/dictionary/collection';
 import useEdit from './use-edit';
 
+import Button from '@/elements/Button.vue';
+import ButtonLink from '@/elements/ButtonLink.vue';
+
+
 const props = defineProps({
 	word: {
 		type: Object as unknown as () => Word,
@@ -114,17 +118,17 @@ const retranslateWord = props.dictionary.retranslateWord;
       <td v-else>
         <form @submit.prevent="updateTranslation" class="edit-form">
           <input type="submit" style="display: none;" />
-          <button @click.prevent="cancelEditTranslations(word.id)" class="cancel-button">
+          <Button @click.prevent="cancelEditTranslations(word.id)" role="view">
             <FontAwesomeIcon icon="times" />
-          </button>
+          </Button>
           <input
             id="edit-translations"
             v-model="editTranslationsValue"
             @blur="cancelEditTranslations(word.id)"
           />
-          <button @mousedown="updateTranslation">
+          <Button @mousedown="updateTranslation">
             <FontAwesomeIcon icon="check" />
-          </button>
+          </Button>
         </form>
       </td>
     </template>
@@ -138,48 +142,53 @@ const retranslateWord = props.dictionary.retranslateWord;
     </td>
     <td v-if="display.col.actions" class="actions-column">
       <div>
-        <button
+        <Button
           v-if="display.action.known"
           @click="setStatus(word, 'known')"
           title="Mark as known"
+          size="small"
         >
           <FontAwesomeIcon icon="check-circle" />
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="display.action.ignore"
           @click="setStatus(word, 'ignore')"
           title="Ignore word"
+          size="small"
         >
           <FontAwesomeIcon icon="ban" />
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="display.action.retranslate"
           @click="retranslateWord(word.original)"
           title="Retranslate word"
+          size="small"
         >
           <FontAwesomeIcon icon="rotate-left" />
-        </button>
-        <RouterLink
+        </Button>
+        <ButtonLink
           v-if="display.action.detail"
           :to="routerLink(word)"
           title="Inspect word"
+          size="small"
+          class="inspect-word-action"
         >
-          <button><FontAwesomeIcon icon="eye" /></button>
-        </RouterLink>
+          <FontAwesomeIcon icon="eye" />
+        </ButtonLink>
         <a
           v-if="display.action.glosbe"
           :href="dictionaryLink(word)"
           target="_blank"
           title="Open Glosbe Dictionary"
         >
-          <button><FontAwesomeIcon icon="globe" /></button>
+          <Button role="view" size="small"><FontAwesomeIcon icon="globe" /></Button>
         </a>
       </div>
     </td>
   </tr>	
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 td {
   border: 1px solid #ddd;
   padding: 10px;
@@ -192,11 +201,12 @@ td {
 
 .original-td-link {
   padding: 0;
+
+  &:hover {
+    background-color: #f9f9f9;  
+  }
 }
 
-.original-td-link:hover {
-  background-color: #f9f9f9;  
-}
 .original-link {
   padding: 10px;
   display: block;
@@ -211,87 +221,46 @@ td {
 
 .status-column {
   cursor: pointer;
-}
 
-.status-column:hover {
-  background-color: #f9f9f9;
+  &:hover {
+    background-color: #f9f9f9;
+  }
 }
 
 .edit-column {
   cursor: pointer;
-}
-
-.edit-column:hover {
-  background-color: #f9f9f9;
+  
+  &:hover {
+    background-color: #f9f9f9;
+  }
 }
 
 .edit-form {
   display: flex;
   align-items: center;
-}
 
-.edit-form button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: background-color 0.3s ease;
-}
+  button {    
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-left: 5px;
+  }
 
-
-.edit-form button:hover {
-  background-color: #0056b3;
+  input {
+    flex: 1;
+    padding: 2px 5px;
+  }
 }
-
-.edit-form button.cancel-button {
-  background-color: #b0c4de;
-}
-.edit-form button.cancel-button:hover {
-  background-color: #a9a9a9;
-}
-
-.edit-form input {
-  flex: 1;
-  padding: 2px 5px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-/*  outline: none;*/
-}
-
 
 .actions-column div {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: stretch;
 }
 
-.actions-column button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.actions-column button:hover {
-  background-color: #0056b3;
-}
-
-.edit-form {
-  display: flex;
-  align-items: center;
-}
-
-.edit-form input {
-  margin-right: 5px;
+.actions-column {
+  button, .inspect-word-action {
+    margin: 0 2px;
+  }
 }
 
 </style>

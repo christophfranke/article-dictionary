@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
       <ErroMessage :message="errorMessage" />
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">
-      <Button class="toggle-dictionary-button" @click="toggleShowDictionary">
+      <Button class="toggle-dictionary-button" @click="toggleShowDictionary" role="view">
         <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
       </Button>
       <div class="dictionary-scoller">

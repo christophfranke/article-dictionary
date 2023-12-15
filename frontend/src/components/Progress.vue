@@ -5,6 +5,9 @@ import type { ChartData, Point, ChartOptions } from 'chart.js';
 import type { Progress } from '@/types';
 import { useFetchAuthorized } from '@/use/api';
 
+import Button from '@/elements/Button.vue';
+import Headline from '@/elements/Headline.vue';
+
 
 import 'chartjs-adapter-moment';
 import {
@@ -162,10 +165,10 @@ onMounted(async () => {
 <template>
   <div class="chart-container" v-if="hasEnoughData">
     <div class="chart-toggle">
-      <h2>Progress</h2>
-      <button @click="toggleRelativeData" class="toggle-button">
+      <Headline type="h2">Progress</Headline>
+      <Button @click="toggleRelativeData" role="view">
         {{ showRelativeData ? 'Words per Day' : 'Total words'}}
-      </button>
+      </Button>
     </div>
     <div v-if="processedChartData" class="chart">
       <Line :data="processedChartData" :options="chartOptions" />
@@ -187,21 +190,4 @@ onMounted(async () => {
   align-items: baseline;
 }
 
-.toggle-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.toggle-button:hover {
-  background-color: #0056b3;
-}
-
-.chart {
-}
 </style>
