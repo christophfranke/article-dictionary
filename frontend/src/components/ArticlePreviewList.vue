@@ -2,7 +2,7 @@
 import type { ArticlePreview } from '@/types';
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 
-import Subheadline from '@/elements/Subheadline.vue';
+import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 
 
@@ -24,7 +24,7 @@ const props = defineProps({
 
 <template>
   <template v-if="props.articleList.length > 0">
-    <Subheadline class="title">{{ props.title }}</Subheadline>
+    <Headline type="h2" class="title">{{ props.title }}</Headline>
     <div class="article-list">
       <ArticlePreviewComponent v-for="article in props.articleList" :key="article.id" :article="article" />
     </div>

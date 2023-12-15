@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 
+const { to } = defineProps({
+  to: {
+    type: String,
+    required: true,
+  },
+});
+
 </script>
 
 <template>
-	<RouterLink to="/register">
+	<RouterLink :to="to">
 		<slot />
 	</RouterLink>
 </template>

@@ -11,7 +11,7 @@ import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 import ProcessedContent from '@/components/ProcessedContent.vue';
 import Tooltip from '@/components/Tooltip.vue';
 
-import Subheadline from '@/elements/Subheadline.vue';
+import Headline from '@/elements/Headline.vue';
 
 
 const word = ref<WordDetail | null>(null);
@@ -64,7 +64,7 @@ watchEffect(() => {
   <div class="main">
     <div v-if="word">
       <div class="stats">
-        <Subheadline class="headline">{{ word?.original }}</Subheadline>
+        <Headline type="h2" class="headline">{{ word?.original }}</Headline>
         <p><strong>Original:</strong> {{ word.original }}</p>
         <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
         <p><strong>Status:</strong> {{ word.status }}</p>

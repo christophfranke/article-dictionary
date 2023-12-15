@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect, reactive } from 'vue';
+
 import type { DictionaryView } from '@/dictionary/view';
+import type { Word } from '@/types';
+
+import { useProfile } from '@/use/user';
+
 import useScroll from './dictionary-table/use-scroll';
 import useSort from './dictionary-table/use-sort';
-import type { Word } from '../types/index.ts';
+
 import Row from './dictionary-table/Row.vue'
-import { useProfile } from '@/use/user';
+
+import Label from '@/elements/Label.vue';
+import Input from '@/elements/Input.vue';
+import Button from '@/elements/Button.vue';
+
 
 
 const props = defineProps({
@@ -79,9 +88,9 @@ const addWord = async (): Promise<void> => {
 <template>
   <div class="dictionary-table">
     <div v-if="display.action.add" class="add-word-section">
-      <label for="newWord">New Entry:</label>
-      <input v-model="newWord" id="newWord" placeholder="Add word to dictionary" />
-      <button @click="addWord">Add</button>
+      <Label for="newWord">New Entry:</Label>
+      <Input v-model="newWord" id="newWord" placeholder="Add word to dictionary" />
+      <Button @click="addWord">Add</Button>
     </div>
 
     <table class="word-table">
@@ -170,36 +179,16 @@ th.no-sort:hover {
 }
 
 .add-word-section label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
   white-space: nowrap;
   flex-grow: 0;
 }
 
 .add-word-section input {
   flex-grow: 1;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
   margin: 10px;
 }
 
 .add-word-section button {
   flex-grow: 0;
-  background-color: #28a745; /* Green color */
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.add-word-section button:hover {
-  background-color: #218838; /* Darker green color on hover */
 }
 </style>
