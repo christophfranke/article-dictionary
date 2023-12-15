@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Word, ArticleDetail } from '../types';
 
 import { useCustomDictionary } from '@/use/dictionary';
-import { useFetchAuthorized } from '@/use/api';
+import useApi from '@/use/api';
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 
 import DictionaryTable from '@/components/DictionaryTable.vue';
@@ -68,14 +68,25 @@ const article = ref<ArticleDetail>({
 });
 
 const route = useRoute();
-
-const highlightedWord = ref<string>('');
-const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
+const { fetchAuthorized, errorMessage, isLoading } = useApi();
 
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = useCustomDictionary([], displayFilter);
 
-const fetchAuthorized = useFetchAuthorized();
+const highlightedWord = ref<string>('');
+const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
+
+
+const statusDescription = computed(() => {
+  if (article.value.status === 'read') {
+    return 'You have read this article.';
+  } else if (article.value.status === 'seen') {
+    return 'You have started reading this article.';
+  } else {
+    return 'New article';
+  }
+
+})
 
 const markArticleAsSeen = async () => {
   const result = await fetchAuthorized('/api/articles/seen', {
@@ -88,8 +99,6 @@ const markArticleAsSeen = async () => {
   
   if (result) {
     article.value.status = 'seen';
-  } else {
-    console.error('Failed to mark article as seen');
   }
 }
 
@@ -115,6 +124,7 @@ const fetchArticleDetails = async () => {
   }
 };
 
+// this function is currently unused, but may be useful in the future
 const markAllAsSeen = async () => {
   const words = dictionary.words.value.filter((word) => word.status === 'new');
   if (words.length > 0) {
@@ -123,8 +133,6 @@ const markAllAsSeen = async () => {
 };
 
 const markArticleAsRead = async () => {
-  markAllAsSeen();
-
   const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${article.value.slug}`, {
     method: 'PUT',
     headers: {
@@ -135,9 +143,6 @@ const markArticleAsRead = async () => {
 
   if (data) {
     article.value = data;
-  } else {
-    console.error('Failed to mark article as read');
-    // Handle error as needed
   }
 }
 
@@ -173,9 +178,16 @@ onBeforeUnmount(() => {
   <div class="article-page" v-if="article.title">
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
+      <p class="status-description">{{ statusDescription }}</p>
       <Headline class="title">{{ article.title }}</Headline>
       <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" :display="contentDisplayConfig" />
-      <Button :disabled="article.status === 'read'" class="mark-as-read" @click="markArticleAsRead">Mark as read</Button>
+      <Button
+        v-if="article.status !== 'read'"
+        :disabled="isLoading"
+        class="mark-as-read"
+        @click="markArticleAsRead"
+      >Mark as read</Button>
+      <ErroMessage :message="errorMessage" />
     </div>
     <div class="dictionary-container" :class="{ hidden: !showDictionary}">
       <Button class="toggle-dictionary-button" @click="toggleShowDictionary">
@@ -222,6 +234,11 @@ onBeforeUnmount(() => {
   .content {
     width: calc(100vw - 40px);
   }
+}
+
+.status-description {
+  margin-bottom: 40px;
+  font-size: 14px;
 }
 
 .title {

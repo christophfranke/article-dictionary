@@ -16,7 +16,7 @@ body {
   font-family: 'Helvetica Neue', 'Arial', sans-serif;
   font-size: 16px;
   margin: 0;
-  padding: 0;
+  padding: 0 0 50px 0;
   box-sizing: border-box;
 }
 a, a:visited {
