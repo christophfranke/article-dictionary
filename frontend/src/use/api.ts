@@ -60,7 +60,6 @@ export default (): UseApi => {
       isLoading.value = true;
       errorMessage.value = null;
 
-      await new Promise(resolve => setTimeout(resolve, 2000 * Math.random()));
       const response = await fetch(...args);
 
       if (response.status === 401) {
