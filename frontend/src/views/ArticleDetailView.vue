@@ -224,10 +224,14 @@ onBeforeUnmount(() => {
   }
 }
 
-
 .title {
   margin-bottom: 20px;
 }
+
+.mark-as-read {
+  margin-top: 30px;
+}
+
 
 .dictionary-container {
   background-color: white;
@@ -262,11 +266,11 @@ onBeforeUnmount(() => {
   svg {
     transition: transform 0.3s ease;
   }
+  .rotate {
+    transform: rotate(180deg);
+  }
 }
 
-.rotate {
-  transform: rotate(180deg);
-}
 
 .statistics {
   float: right;
