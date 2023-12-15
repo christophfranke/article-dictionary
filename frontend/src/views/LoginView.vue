@@ -9,6 +9,7 @@ import Label from '@/elements/Label.vue';
 import Input from '@/elements/Input.vue';
 import Button from '@/elements/Button.vue';
 import ErrorMessage from '@/elements/ErrorMessage.vue';
+import InternalLink from '@/elements/InternalLink.vue';
 
 
 const router = useRouter();
@@ -38,7 +39,7 @@ const loginAndRedirect = async () => {
     </FormGroup>
     <FormGroup>
       <Button type="submit" :disabled="isLoading">Login</Button>
-      <router-link to="/register" class="register-link">Don't have an account? Register here</router-link>
+      <InternalLink to="/register" class="register-link">Don't have an account? Register here</InternalLink>
     </FormGroup>
     <ErrorMessage :message="errorMessage" />
   </Form>
@@ -54,18 +55,10 @@ const loginAndRedirect = async () => {
   margin-bottom: 20px;
 }
 
-
 .register-link {
-  color: #007bff; /* Link color */
-  text-decoration: none; /* Remove default underline */
   display: block;
   margin-top: 10px; /* Adjust the spacing */
   font-size: 14px;
-}
-
-.register-link:hover {
-  text-decoration: underline; /* Underline on hover */
-  background-color: transparent;
 }
 
 .error-message {
