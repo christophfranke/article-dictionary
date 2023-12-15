@@ -6,8 +6,9 @@ from utils.mongo import get_collection
 from utils.casing import camel_to_snake
 from text_processing.extract import extract_words, get_unique_words
 from text_processing.dictionary import add_text
+from text_processing.characters import slugify
 
-from .helpers import slugify, serialize
+from .helpers import serialize
 
 
 @login_required

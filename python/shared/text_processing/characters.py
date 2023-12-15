@@ -1,3 +1,5 @@
+import re
+
 greek_mapping = {
     'α': 'a', 'ά': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'έ': 'e', 'ζ': 'z',
     'η': 'i', 'ή': 'i', 'θ': 'th', 'ι': 'i', 'ί': 'i', 'ϊ': 'i', 'ΐ': 'i', 'κ': 'k',
@@ -82,3 +84,17 @@ def replace_characters(text, language):
         for original, replacement in mapping[language].items():
             text = text.replace(original, replacement)
     return text
+
+allowed_characters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+                        'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+                        'v', 'w', 'x', 'y', 'z', '-', '0', '1', '2', '3',
+                        '4', '5', '6', '7', '8', '9']
+
+def slugify(original_title, language_one, language_two):
+    title = replace_characters(replace_characters(original_title.lower(), language_one), language_two)
+    for character in title:
+        if character not in allowed_characters:
+            title = title.replace(character, '-')
+    title = re.sub(r'-+', '-', title)[:60]
+    return title
+

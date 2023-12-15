@@ -16,6 +16,7 @@ import ProcessedContent from '@/components/ProcessedContent.vue';
 
 import Headline from '@/elements/Headline.vue';
 import Button from '@/elements/Button.vue';
+import ErroMessage from '@/elements/ErrorMessage.vue';
 
 
 const tableDisplayConfig = computed(() => ({

@@ -5,9 +5,6 @@ from bson import ObjectId
 from utils.mongo import get_collection
 
 
-def slugify(title):
-    return title.lower().replace(' ', '-')[:50]
-
 def get_dictionary_entries(unique_words):
     dictionary_collection = get_collection('dictionary')
     cursor = dictionary_collection.find(

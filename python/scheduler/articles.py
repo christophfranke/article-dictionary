@@ -2,6 +2,7 @@ from datetime import datetime
 from bson import ObjectId
 
 from text_processing.extract import extract_words, get_unique_words
+from text_processing.characters import slugify
 from utils.mongo_external import get_collection
 
 
@@ -9,6 +10,7 @@ def jobs():
     pass
 
 def repair():
+    # update_slug()
     add_words()
     add_language()
     add_dates()
@@ -133,3 +135,18 @@ def add_unique_words():
         article['unique_words'] = get_unique_words(article['words'])
         collection.replace_one({'_id': article['_id']}, article)
         print('Added unique_words to article: ' + article['title'])
+
+def update_slug():
+    collection = get_collection('articles')
+    users = get_collection('users')
+
+    query = {}
+
+    articles = collection.find(query)
+
+    for article in articles:
+        user = users.find_one({'_id': ObjectId(article['user_id'])})
+        if user is not None:
+            article['slug'] = slugify(article['title'], user['source_language'], user['target_language'])
+            collection.replace_one({'_id': article['_id']}, article)
+            print('Change slug of article: ' + article['title'] + ' (' + article['slug'] + ')')
