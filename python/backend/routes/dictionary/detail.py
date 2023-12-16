@@ -35,6 +35,11 @@ def get_detail(original):
         for sentence in list(set(raw_sentences))
     ]
 
+    similar = dictionary.find({
+        'user_id': ObjectId(current_user.id),
+        'cluster_id': word['cluster_id']
+    }, { 'original': 1 })
+
 
     return jsonify({
         'id': str(word['_id']),
@@ -42,5 +47,6 @@ def get_detail(original):
         'translations': word['translations'],
         'frequency': word['frequency'],
         'status': word['status'],
-        'sentences': sentences
+        'sentences': sentences,
+        'similar': [word['original'] for word in similar if word['original'] != original]
     })

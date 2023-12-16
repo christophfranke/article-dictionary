@@ -21,6 +21,7 @@ def update_word(id):
 
     if 'translations' in data:
         word['needs_retranslate'] = False
+        word['needs_clustering'] = True
 
     for key, value in data.items():
         word[key] = value

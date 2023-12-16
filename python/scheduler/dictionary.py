@@ -3,12 +3,14 @@ from collections import Counter
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 from text_processing.extract import extract_words
+from text_processing.dictionary import add_to_cluster
 from bson import ObjectId
 
 
 def jobs():
     retranslate_word()
     update_word_frequency()
+    update_clusters()
 
 def repair():
     fill_missing_words()
@@ -17,6 +19,7 @@ def repair():
     add_src_and_target_lang()
     add_user_id()
     remove_no_original()
+    add_cluster_id()
 
 
 def update_word_frequency():
@@ -256,5 +259,61 @@ def fill_missing_words():
                 # dictionary.insert_one(query)
                 print('[DRY] Inserted missing word: ' + entry['word'])
 
+def add_cluster_id():
+    dictionary = get_collection('dictionary')
 
+    query = {
+        '$and': [
+            {
+                '$or': [
+                    {'needs_clustering': {'$exists': False}},
+                    {'needs_clustering': True}
+                ]
+            },
+            {
+                '$or': [
+                    {'cluster_id': {'$exists': False}},
+                    {'cluster_id': None}
+                ]
+            }
+        ]
+    }
+
+    words = dictionary.find(query)
+
+    for word in words:
+        word['cluster_id'] = word['_id']
+        word['needs_clustering'] = True
+        dictionary.replace_one({'_id': word['_id']}, word)
+        print('Added cluster_id to word: ' + word['original'])
+
+def reset_clusters():
+    dictionary = get_collection('dictionary')
+    words = dictionary.find()
+
+    for word in words:
+        dictionary.update_one({'_id': word['_id']}, {
+            '$set': {
+                'needs_clustering': True,
+                'cluster_id': word['_id']
+            }
+        })
+    print('Reset clusters')
+
+def update_clusters():
+    dictionary = get_collection('dictionary')
+
+    query = {
+        'needs_clustering': True,
+        'needs_retranslate': False,
+    }
+
+    word = dictionary.find_one(query)
+
+    word['needs_clustering'] = False
+    add_to_cluster(dictionary, word)
+    dictionary.update_one({'_id': word['_id']}, {'$set': {'needs_clustering': False }})
+    updated_word = dictionary.find_one({'_id': word['_id']})
+    leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
+    print('Updated cluster for word: ' + updated_word['original'] + ' -> ' + leader_word['original'])
 

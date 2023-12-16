@@ -18,6 +18,7 @@ def retranslate(original):
     source_language, target_language = get_languages(get_collection('users'), ObjectId(current_user.id))
     word['translations'] = translate_single_word(original, source_language, target_language)
     word['needs_retranslate'] = False
+    word['needs_clustering'] = True
 
     dictionary_collection.replace_one({'original': original, 'user_id': ObjectId(current_user.id)}, word)
 

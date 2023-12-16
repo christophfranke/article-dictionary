@@ -51,6 +51,8 @@ def add_words(words, user_id, dictionary_collection, user_collection):
             'status': status,
             'needs_retranslate': True,
             'needs_recount': True,
+            'needs_clustering': True,
+            'cluster_id': None,
             'frequency': 1,
             'source_language': source_language,
             'target_language': target_language,

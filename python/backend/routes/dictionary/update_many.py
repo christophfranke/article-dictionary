@@ -26,6 +26,7 @@ def update_many():
     for word in words:
         if 'translations' in data:
             word['needs_retranslate'] = False
+            word['needs_clustering'] = True
         for key, value in update.items():
             word[key] = value
             dictionary_collection.replace_one({'_id': word['_id']}, word)

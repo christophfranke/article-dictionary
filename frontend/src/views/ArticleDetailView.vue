@@ -17,6 +17,7 @@ import ProcessedContent from '@/components/ProcessedContent.vue';
 import Headline from '@/elements/Headline.vue';
 import Button from '@/elements/Button.vue';
 import ErroMessage from '@/elements/ErrorMessage.vue';
+import Paragraph from '@/elements/Paragraph.vue';
 
 
 const tableDisplayConfig = computed(() => ({
@@ -49,6 +50,8 @@ const tableDisplayConfig = computed(() => ({
 }));
 
 const contentDisplayConfig = {
+  padding: true,
+  click: true,
   highlight: {
     new: true,
     seen: true,
@@ -181,7 +184,9 @@ onBeforeUnmount(() => {
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <p class="status-description">{{ statusDescription }}</p>
       <Headline class="title">{{ article.title }}</Headline>
-      <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" :display="contentDisplayConfig" />
+      <Paragraph>
+        <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" :display="contentDisplayConfig" />
+      </Paragraph>
       <Button
         v-if="article.status !== 'read'"
         :disabled="isLoading"

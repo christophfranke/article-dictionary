@@ -7,11 +7,21 @@ import dictionary
 import articles
 import user
 
+# wait until the database is up
+time.sleep(5)
+
+# dictionary.reset_clusters()
 
 # statistics.jobs()
 # user.jobs()
-# articles.repair()
+# articles.jobs()
 # dictionary.jobs()
+
+# statistics.repair()
+# user.repair()
+# articles.repair()
+# dictionary.repair()
+
 schedule.every(1).hours.do(statistics.jobs)
 schedule.every(1).seconds.do(dictionary.jobs)
 schedule.every(1).minutes.do(articles.jobs)
