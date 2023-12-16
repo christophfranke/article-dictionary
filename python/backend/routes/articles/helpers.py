@@ -17,20 +17,49 @@ def get_dictionary_entries(unique_words):
     ]
     return dictionary_entries
 
+def is_status_higher(old_status, new_status):
+    if new_status == 'ignore':
+        return False
+
+    # new_status is at least new
+    if old_status == 'new' or old_status == 'ignore':
+        return True
+
+    # old_status is at least seen
+    if old_status == 'seen' and new_status == 'known':
+        return True
+
+    # old_status is known
+    return False
+
 def create_status_map(words):
     dictionary_collection = get_collection('dictionary')
-    unique_words = list(set(words))
-    cursor = dictionary_collection.find(
-        {'original': {'$in': unique_words}, 'user_id': ObjectId(current_user.id)},
-        {'original': 1, 'status': 1}
-    )
+    words = list(dictionary_collection.find(
+        {'user_id': ObjectId(current_user.id)},
+        {'original': 1, 'status': 1, '_id': 1, 'cluster_id': 1}
+    ))
     status_map = {
-        entry['original']: entry['status'] for entry in cursor
+        entry['_id']: {
+            'original': entry['original'],
+            'status': entry['status'],
+        } for entry in words
     }
+
     return status_map
 
 def get_word_status(original, status_map):
-    return status_map.get(original, None)
+    word = status_map.get(original, None)
+    if word:
+        return word['status']
+
+    return None
+
+def get_cluster_status(original, status_map):
+    word = status_map.get(original, None)
+    if word:
+        return word['cluster_status']
+
+    return None
 
 
 def serialize(article, user_id):

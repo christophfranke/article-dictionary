@@ -18,7 +18,7 @@ def get_detail(original):
     articles_collection = get_collection('articles')
 
     articles = articles_collection.find(
-        {'user_id': ObjectId(current_user.id), 'unique_words': {'$elemMatch': {'$eq': original.lower()}}},
+        {'user_id': ObjectId(current_user.id), 'unique_words': {'$elemMatch': {'$eq': original}}},
         {'content': 1}
     )
 
@@ -27,7 +27,7 @@ def get_detail(original):
         for article in articles
         for paragraph in article['content'].split('\n')
         for sentence in extract_sentences(paragraph)
-        if original.lower() in extract_words(sentence.lower())
+        if original in extract_words(sentence)
     ]
 
     sentences = [

@@ -4,7 +4,7 @@ from bson import ObjectId
 
 from utils.mongo import get_collection
 from text_processing.language import get_languages
-from .helpers import create_status_map, get_word_status
+from .helpers import create_status_map, get_word_status, get_cluster_status
 
 
 @login_required
@@ -23,14 +23,33 @@ def list_articles():
 
     all_articles = own_articles + list(public_articles)
 
+    clusters = get_collection('dictionary').find({
+        'user_id': ObjectId(current_user.id),
+        'language': source_language,
+        '$expr': {'$eq': ['$_id', '$cluster_id']}
+    }, { 'status': 1})
+
+    cluster_status_map = {}
+    for cluster in clusters:
+        cluster_status_map[cluster['_id']] = cluster['status']
+
     formatted_articles = []
     for article in all_articles:
         status_map = create_status_map(article['words'])
         statistics = {
             'total': len(article['words']),
-            'new': len([word for word in article['words'] if not get_word_status(word, status_map) or get_word_status(word, status_map) == 'new']),
-            'seen': len([word for word in article['words'] if get_word_status(word, status_map) == 'seen']),
-            'known': len([word for word in article['words'] if get_word_status(word, status_map) == 'known']),
+            'new': {
+                'words': len([word for word in article['words'] if not get_word_status(word, status_map) or get_word_status(word, status_map) == 'new']),
+                'cluster': len([word for word in article['words'] if not get_cluster_status(word, status_map) or get_cluster_status(word, status_map) == 'new']),
+            },
+            'seen': {
+                'words': len([word for word in article['words'] if get_word_status(word, status_map) == 'seen']),
+                'cluster': len([word for word in article['words'] if get_cluster_status(word, status_map) == 'seen']),
+            },
+            'known': {
+                'words': len([word for word in article['words'] if get_word_status(word, status_map) == 'known']),
+                'cluster': len([word for word in article['words'] if get_cluster_status(word, status_map) == 'known']),
+            }
         }
 
         is_owned = article['user_id'] == ObjectId(current_user.id)

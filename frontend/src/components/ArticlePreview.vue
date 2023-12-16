@@ -5,9 +5,6 @@ import type { ArticlePreview } from '@/types';
 
 import Headline from '@/elements/Headline.vue';
 
-interface Props {
-  article: ArticlePreview
-}
 
 const props = defineProps({
   article: {
@@ -16,15 +13,17 @@ const props = defineProps({
   }
 });
 
-const familiarityScore = computed(() => {
-  const total = props.article.statistics.seen
-    + props.article.statistics.known
-    + props.article.statistics.new;
+const familiarityScore = computed<number>(() => {
+  return 0
+  // const total = props.article.statistics.seen.cluster
+  //   + props.article.statistics.known.cluster
+  //   + props.article.statistics.new.cluster;
 
-  return Math.round(100 * (0.2 * props.article.statistics.seen
-    + props.article.statistics.known
-    + 0.05 * props.article.statistics.new) / total)
+  // return Math.round(100 * (0.2 * props.article.statistics.seen.cluster
+  //   + props.article.statistics.known.cluster
+  //   + 0.05 * props.article.statistics.new.cluster) / total)
 });
+
 const difficultyScore = computed(() => 100 - familiarityScore.value);
 
 const scoreDescription = computed(() => {
@@ -73,14 +72,14 @@ const link = (article: ArticlePreview): string => article.owned
         <Headline type="h3" class="title">{{ props.article.title }}</Headline>
         <p>{{ props.article.excerpt }}...</p>
         <div class="statistics">
-          <span style="color: #666;" :title="`${props.article.statistics.new} new words`">
-            <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new }}
+          <span style="color: #666;" :title="`${props.article.statistics.new.words} new words`">
+            <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
           </span>
-          <span style="color: #666;" :title="`${props.article.statistics.seen} seen words`">
-            <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen }}
+          <span style="color: #666;" :title="`${props.article.statistics.seen.words} seen words`">
+            <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen.words }}
           </span>
-          <span style="color: #666;" :title="`${props.article.statistics.known} known words`">
-            <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known }}
+          <span style="color: #666;" :title="`${props.article.statistics.known.words} known words`">
+            <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known.words }}
           </span>
         </div>
 

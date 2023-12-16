@@ -249,6 +249,9 @@ def add_cluster_id():
 
 def reset_clusters():
     dictionary = get_collection('dictionary')
+    cluster = get_collection('cluster')
+    cluster.delete_many({})
+
     words = dictionary.find()
 
     for word in words:
@@ -268,15 +271,16 @@ def update_clusters():
         'needs_retranslate': False,
     }
 
-    word = dictionary.find_one(query)
+    words = dictionary.find(query).limit(25)
 
-    word['needs_clustering'] = False
-    add_to_cluster(dictionary, word)
-    dictionary.update_one({'_id': word['_id']}, {'$set': {'needs_clustering': False }})
-    updated_word = dictionary.find_one({'_id': word['_id']})
-    leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
-    cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
-    print(f'Updated cluster for word: {updated_word['original']} -> {leader_word['original']} ({cluster_size})')
+    for word in words:
+        word['needs_clustering'] = False
+        add_to_cluster(get_collection, word)
+        dictionary.update_one({'_id': word['_id']}, {'$set': {'needs_clustering': False }})
+        updated_word = dictionary.find_one({'_id': word['_id']})
+        leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
+        cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
+        print(f'Updated cluster: {updated_word['original']} -> {leader_word['original']} ({cluster_size})')
 
 
 def add_missing_words():

@@ -5,6 +5,7 @@ from datetime import datetime
 import statistics
 import dictionary
 import articles
+import cluster
 import user
 
 # wait until the database is up
@@ -23,9 +24,11 @@ time.sleep(5)
 # user.repair()
 # articles.repair()
 # dictionary.repair()
+cluster.update_aggregate_attributes()
 
 schedule.every(1).hours.do(statistics.jobs)
 schedule.every(1).seconds.do(dictionary.jobs)
+schedule.every(1).seconds.do(cluster.jobs)
 schedule.every(1).minutes.do(articles.jobs)
 
 schedule.every(0.7).hours.do(dictionary.repair)

@@ -28,9 +28,9 @@ const continueReadingArticles = computed(() => {
 });
 
 const usefulness = (article: ArticlePreview): number =>
-  (0.2 * article.statistics.known
-    + 1.0 * article.statistics.seen
-    - 0.5 * article.statistics.new)
+  (0.2 * article.statistics.known.words
+    + 1.0 * article.statistics.seen.words
+    - 0.5 * article.statistics.new.words)
   / article.statistics.total;
 
 const suggestedArticlesCount = ref(6)

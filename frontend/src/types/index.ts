@@ -37,9 +37,18 @@ export interface ArticlePreview extends ArticleBase {
   createdAt: string;
   statistics: {
     total: number;
-    new: number;
-    seen: number;
-    known: number;
+    new: {
+      words: number;
+      cluster: number;
+    }
+    seen: {
+      words: number;
+      cluster: number;
+    }
+    known: {
+      words: number;
+      cluster: number;
+    }
   }
 }
 
