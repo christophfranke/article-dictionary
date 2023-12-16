@@ -14,14 +14,13 @@ const props = defineProps({
 });
 
 const familiarityScore = computed<number>(() => {
-  return 0
-  // const total = props.article.statistics.seen.cluster
-  //   + props.article.statistics.known.cluster
-  //   + props.article.statistics.new.cluster;
+  const total = props.article.statistics.seen.cluster
+    + props.article.statistics.known.cluster
+    + props.article.statistics.new.cluster;
 
-  // return Math.round(100 * (0.2 * props.article.statistics.seen.cluster
-  //   + props.article.statistics.known.cluster
-  //   + 0.05 * props.article.statistics.new.cluster) / total)
+  return Math.round(100 * (0.2 * props.article.statistics.seen.cluster
+    + props.article.statistics.known.cluster
+    + 0.05 * props.article.statistics.new.cluster) / total)
 });
 
 const difficultyScore = computed(() => 100 - familiarityScore.value);

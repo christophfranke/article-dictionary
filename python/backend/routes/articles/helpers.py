@@ -33,15 +33,35 @@ def is_status_higher(old_status, new_status):
     return False
 
 def create_status_map(words):
-    dictionary_collection = get_collection('dictionary')
-    words = list(dictionary_collection.find(
-        {'user_id': ObjectId(current_user.id)},
-        {'original': 1, 'status': 1, '_id': 1, 'cluster_id': 1}
-    ))
+    dictionary = get_collection('dictionary')
+    pipeline = [
+        {
+            '$match': {
+                'user_id': ObjectId(current_user.id)
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'cluster',  # The collection to join
+                'localField': 'cluster_id',  # The field from the `dictionary` collection
+                'foreignField': '_id',  # The field from the `cluster` collection
+                'as': 'cluster_data'  # The output array field
+            }
+        },
+        {
+            '$project': {
+                'original': 1,
+                'status': 1,
+                'cluster_data': 1  # Include the joined data in the projection
+            }
+        }
+    ]
+
+    words = list(dictionary.aggregate(pipeline))
     status_map = {
-        entry['_id']: {
-            'original': entry['original'],
+        entry['original']: {
             'status': entry['status'],
+            'cluster_status': entry['cluster_data'][0]['status'] if len(entry['cluster_data']) > 0 else entry['status']
         } for entry in words
     }
 

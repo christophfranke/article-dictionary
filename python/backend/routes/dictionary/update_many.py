@@ -31,5 +31,6 @@ def update_many():
         for key, value in update.items():
             word[key] = value
             dictionary_collection.replace_one({'_id': word['_id']}, word)
+        get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
 
     return serialize_many(words)
