@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { PropType } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { ArticlePreview } from '@/types';
 
@@ -8,7 +9,7 @@ import Headline from '@/elements/Headline.vue';
 
 const props = defineProps({
   article: {
-    type: Object as unknown as () => ArticlePreview,
+    type: Object as PropType<ArticlePreview>,
     required: true,
   }
 });
@@ -18,8 +19,9 @@ const familiarityScore = computed<number>(() => {
     + props.article.statistics.known.cluster
     + props.article.statistics.new.cluster;
 
-  return Math.round(100 * (0.2 * props.article.statistics.seen.cluster
-    + props.article.statistics.known.cluster
+  return Math.round(100 * (
+    0.2 * props.article.statistics.seen.cluster
+    + 1.0 * props.article.statistics.known.cluster
     + 0.05 * props.article.statistics.new.cluster) / total)
 });
 
