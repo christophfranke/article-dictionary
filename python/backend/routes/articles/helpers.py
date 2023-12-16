@@ -19,7 +19,7 @@ def get_dictionary_entries(unique_words):
 
 def create_status_map(words):
     dictionary_collection = get_collection('dictionary')
-    unique_words = list(set([word.lower() for word in words]))
+    unique_words = list(set(words))
     cursor = dictionary_collection.find(
         {'original': {'$in': unique_words}, 'user_id': ObjectId(current_user.id)},
         {'original': 1, 'status': 1}
@@ -30,7 +30,7 @@ def create_status_map(words):
     return status_map
 
 def get_word_status(original, status_map):
-    return status_map.get(original.lower(), None)
+    return status_map.get(original, None)
 
 
 def serialize(article, user_id):

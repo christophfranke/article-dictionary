@@ -5,7 +5,7 @@ import type { Word, PartialWord } from '@/types';
 import type { DictionaryCollection } from './collection';
 
 
-type FilterFunction = (x: PartialWord) => boolean;
+export type FilterFunction = (x: Word) => boolean;
 
 export interface DictionaryView {
   find: (original: string) => Word | undefined;

@@ -3,7 +3,7 @@ from collections import Counter
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 from text_processing.extract import extract_words
-from text_processing.dictionary import add_to_cluster
+from text_processing.dictionary import add_to_cluster, add_text
 from bson import ObjectId
 
 
@@ -13,13 +13,26 @@ def jobs():
     update_clusters()
 
 def repair():
-    fill_missing_words()
+    add_missing_words()
     remove_src_is_target()
     remove_duplicates()
     add_src_and_target_lang()
-    add_user_id()
     remove_no_original()
     add_cluster_id()
+    remove_zero_frequency()
+
+
+def reset_word_frequency():
+    dictionary = get_collection('dictionary')
+    words = dictionary.find()
+
+    for word in words:
+        dictionary.update_one({'_id': word['_id']}, {
+            '$set': {
+                'needs_recount': True
+            }
+        })
+    print('Reset word frequency')
 
 
 def update_word_frequency():
@@ -67,7 +80,7 @@ def update_word_frequency():
             # Calculate word frequencies for the user
             for article_content in articles:
                 base_words = extract_words(article_content)
-                user_word_frequencies.update([base_word.lower() for base_word in base_words])
+                user_word_frequencies.update(base_words)
 
             # Update word frequencies for each word in the user's dictionary
             words_to_update = dictionary.find({'user_id': user_id, 'needs_recount': True})
@@ -111,12 +124,26 @@ def retranslate_word():
             # Update entry with translations
             word['translations'] = translations
             word['needs_retranslate'] = False
+            if word['original'] in translations:
+                word['status'] = 'ignore'
             dictionary.replace_one({'_id': word['_id']}, word)
 
             print(f'Retranslated word {word["original"]}: {", ".join(map(str, translations))}')
     except Exception as e:
         print('Error retranslating word: ' + str(e))
 
+def remove_zero_frequency():
+    dictionary = get_collection('dictionary')
+
+    # Find word that meets the specified criteria
+    query = {
+        'frequency': 0,  # Document must have the 'frequency' field
+    }
+    words = dictionary.find(query)
+
+    for word in words:
+        dictionary.delete_one({'_id': word['_id']})
+        print(f'Removed word: {word['original']} ({word['frequency']})')
 
 def remove_no_original():
     dictionary = get_collection('dictionary')
@@ -130,22 +157,6 @@ def remove_no_original():
     if word:
         dictionary.delete_one({'_id': word['_id']})
         print('Removed word: ' + word)
-
-
-krito_id = ObjectId('657488efbf4ba7afa277e164')
-def add_user_id():
-    collection = get_collection('dictionary')
-
-    query = {
-        'user_id': {'$exists': False}
-    }
-
-    words = collection.find(query)
-
-    for word in words:
-        word['user_id'] = krito_id
-        collection.replace_one({'_id': word['_id']}, word)
-        print('Added user_id to word: ' + word['original'])
 
 
 def add_src_and_target_lang():
@@ -208,57 +219,6 @@ def remove_src_is_target():
             collection.delete_one({'_id': word['_id']})
             print('Removed malformat word: ' + word['original'] + ' lang: ' + word['source_language'] + ' -> ' + word['target_language'])
 
-def fill_missing_words():
-    article_collection = get_collection('articles')
-
-    users = get_collection('users').find()
-
-    for user in users:
-        user_id = user['_id']
-        pipeline = [
-            {
-                '$match': {
-                    'user_id': ObjectId(user_id),
-                    'language': user['source_language']
-                }
-            },
-            {
-                '$unwind': '$words'  # Unwind the 'words' array
-            },
-            {
-                '$group': {
-                    '_id': {'$toLower': '$words'}, # to lower does not seem to work
-                    'count': {'$sum': 1}
-                }
-            },
-            {
-                '$project': {
-                    '_id': 0,
-                    'word': '$_id',
-                    'count': 1
-                }
-            }
-        ]
-
-        result = list(article_collection.aggregate(pipeline))
-        # unique_words = [entry['word'] for entry in result]
-
-        dictionary = get_collection('dictionary')
-        for entry in result:
-            original = entry['word'].lower()
-            query = {
-                'original': original,
-                'source_language': user['source_language'],
-                'target_language': user['target_language'],
-                'user_id': ObjectId(user_id),
-            }
-
-            word = dictionary.find_one(query)
-
-            if not word:
-                # dictionary.insert_one(query)
-                print('[DRY] Inserted missing word: ' + entry['word'])
-
 def add_cluster_id():
     dictionary = get_collection('dictionary')
 
@@ -315,5 +275,14 @@ def update_clusters():
     dictionary.update_one({'_id': word['_id']}, {'$set': {'needs_clustering': False }})
     updated_word = dictionary.find_one({'_id': word['_id']})
     leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
-    print('Updated cluster for word: ' + updated_word['original'] + ' -> ' + leader_word['original'])
+    cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
+    print(f'Updated cluster for word: {updated_word['original']} -> {leader_word['original']} ({cluster_size})')
 
+
+def add_missing_words():
+    articles = get_collection('articles').find()
+    for article in articles:
+        user_id = article['user_id']
+        language = article['language']
+        add_text(article['content'], user_id, get_collection('dictionary'), get_collection('users'))
+        print('Added missing words for article: ' + article['title'])

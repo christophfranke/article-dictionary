@@ -9,11 +9,11 @@ def extract_words(text):
     return filter_words(words)
 
 def get_unique_words(words):
-    return list(set([word.lower() for word in words]))
+    return list(set(words))
 
 def extract_unique_words(text):
     words = extract_words(text)
-    return list(set([word.lower() for word in words]))
+    return list(set(words))
 
 def extract_sentences(text):
     return sent_tokenize(text)

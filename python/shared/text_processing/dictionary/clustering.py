@@ -14,7 +14,7 @@ def penalty(word, other):
 
 
 def single_distance(word, other):
-    return levenshtein_distance(word, other, score_cutoff=threshold) + penalty(word, other)
+    return levenshtein_distance(word.lower(), other.lower(), score_cutoff=threshold) + penalty(word, other)
 
 # find the smallest single distance in two arrays
 def min_single_distance(words, others):
@@ -53,7 +53,45 @@ def update_leader(collection, new_word):
         if new_word_max_dist < current_leader_max_dist:
             collection.update_many({'cluster_id': leader_word}, {'$set': {'cluster_id': new_word['_id']}})
 
+def remove_from_cluster(collection, word):
+    # Check if the word being removed is the current leader
+    if word['_id'] == word['cluster_id']:
+        cluster_words = list(collection.find({'cluster_id': word['_id']}))
+
+        # If there are other words in the cluster
+        if len(cluster_words) > 1:
+            # Remove the current leader from the list
+            cluster_words = [w for w in cluster_words if w['_id'] != word['_id']]
+
+            if len(cluster_words) == 1:
+                # If there is only one word left in the cluster, make it the leader
+                last_word = cluster_words[0]
+                collection.update_one({'_id': last_word['_id']}, {'$set': {'cluster_id': last_word['_id']}})
+
+            else:
+                # Find the new leader based on the specified criteria (e.g., minimum average distance)
+                min_max_dist = float('inf')
+                new_leader = None
+                for candidate in cluster_words:
+                    max_distance = max(distance(candidate, other) for other in cluster_words if other['_id'] != candidate['_id'])
+                    if max_distance < min_max_dist:
+                        min_max_dist = max_distance
+                        new_leader = candidate
+
+                # Update the cluster_id for the cluster
+                if new_leader:
+                    collection.update_many({'cluster_id': word['_id']}, {'$set': {'cluster_id': new_leader['_id']}})
+                else:
+                    # If no new leader was found, dissolve the cluster
+                    for cluster_word in cluster_words:
+                        collection.update_one({'_id': cluster_word['_id']}, {'$set': {
+                            'cluster_id': cluster_word['_id'],
+                            'needs_clustering': True
+                        }})
+
+
 def add_to_cluster(collection, word):
+    remove_from_cluster(collection, word)
     closest_leader_id = find_cluster(collection, word)
     if closest_leader_id is None:
         collection.update_one({'_id': word['_id']}, {'$set': {'cluster_id': word['_id']}})

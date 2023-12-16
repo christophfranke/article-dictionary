@@ -32,7 +32,10 @@ def add_words(words, user_id, dictionary_collection, user_collection):
 
     # Assuming translate function returns a dictionary
     try:
-        translations = translate_words(new_words, source_language, target_language)
+        if len(new_words) > 0:
+            translations = translate_words(new_words, source_language, target_language)
+        else:
+            translations = {}
     except Exception as e:
         print(f'Error translating words: {e}')
         translations = {}

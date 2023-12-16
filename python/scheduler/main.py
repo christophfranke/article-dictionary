@@ -11,6 +11,8 @@ import user
 time.sleep(5)
 
 # dictionary.reset_clusters()
+# dictionary.add_missing_words()
+# dictionary.reset_word_frequency()
 
 # statistics.jobs()
 # user.jobs()

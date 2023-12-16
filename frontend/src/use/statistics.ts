@@ -26,7 +26,7 @@ const statisticsForArticle = (dictionary: DictionaryView, article: Ref<ArticleDe
   let knownWords = 0;
 
   article.value.words.forEach((original: string) => {
-    const word = dictionary.find(original.toLowerCase());
+    const word = dictionary.find(original);
     if (word) {
       if (word.status === 'new') {
         newWords++;

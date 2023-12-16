@@ -4,6 +4,8 @@ from text_processing.dictionary import add_words
 from flask_login import login_required, current_user
 from bson import ObjectId
 
+from .helpers import serialize
+
 
 @login_required
 def add_word():
@@ -23,6 +25,4 @@ def add_word():
     add_words([original_word], current_user.id, dictionary_collection, get_collection('users'))
 
     added_word = dictionary_collection.find_one({'original': original_word, 'user_id': ObjectId(current_user.id)})
-    added_word['id'] = str(added_word.pop('_id'))
-    added_word.pop('user_id')
-    return jsonify(added_word)
+    return serialize(added_word)

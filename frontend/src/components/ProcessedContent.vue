@@ -100,9 +100,9 @@ const unsetHighlight = (word: string) => {
       :class="{
         padding: display.padding,
         clickable: display.click,
-        new: display.highlight.new && dictionary?.find(word.toLowerCase())?.status === 'new',
-        seen: display.highlight.seen && dictionary?.find(word.toLowerCase())?.status === 'seen',
-        mark: display.highlight.mark && word.toLowerCase() === mark.toLowerCase(),
+        new: display.highlight.new && dictionary?.find(word)?.status === 'new',
+        seen: display.highlight.seen && dictionary?.find(word)?.status === 'seen',
+        mark: display.highlight.mark && word === mark,
       }"
     >
       {{ word }}

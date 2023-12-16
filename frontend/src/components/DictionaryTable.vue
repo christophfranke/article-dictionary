@@ -69,7 +69,7 @@ const profile = reactive(useProfile());
 
 const highlightedWord = computed(() => {
   return (props.display.behaviour.highlight || props.display.behaviour.highlight)
-    ? props.highlight.toLowerCase()
+    ? props.highlight
     : ''
 });
 

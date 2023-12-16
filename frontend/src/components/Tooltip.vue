@@ -26,11 +26,11 @@ const props = defineProps({
 
 const showStatus = computed<string[]>(() => ['new', 'seen', 'known'].filter(status => props.display[status]));
 const isVisible = computed(() => !!props.highlightedWord
-    && showStatus.value.includes(props.dictionary.find(props.highlightedWord?.toLowerCase() || '')?.status || '')
+    && showStatus.value.includes(props.dictionary.find(props.highlightedWord || '')?.status || '')
 );
 
 const content = computed(() => isVisible.value
-  ? (props.dictionary.find(props.highlightedWord?.toLowerCase() || '')?.translations.join(', ') || '')
+  ? (props.dictionary.find(props.highlightedWord || '')?.translations.join(', ') || '')
   : ''
 );
 

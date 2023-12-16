@@ -1,6 +1,5 @@
 export interface PartialWord {
   id: string;
-  index: number;
   original: string;
   translations: string[];
   status: string;
@@ -16,6 +15,7 @@ export interface WordDetail extends Word {
     text: string
     words: string[]
   }[];
+  similar: string[];
 }
 
 export interface ArticleData {  

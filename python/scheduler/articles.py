@@ -18,14 +18,27 @@ def repair():
     add_privacy()
     add_owner()
     remove_dictionary()
-    add_unique_words()
+
+def remove_words():
+    collection = get_collection('articles')
+    articles = collection.find()
+
+    for article in articles:
+        del article['words']
+        del article['unique_words']
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Removed words from article: ' + article['title'])
+
 
 def add_words():
     collection = get_collection('articles')
 
     query = {
         'content': {'$exists': True},
-        'words': {'$exists': False}
+        '$or': [
+            {'words': {'$exists': False}},
+            {'unique_words': {'$exists': False}}
+        ]
     }
 
     articles = collection.find(query)
@@ -33,6 +46,7 @@ def add_words():
     for article in articles:
         words = extract_words(article['content'])
         article['words'] = words
+        article['unique_words'] = get_unique_words(words)
         get_collection('articles').replace_one({'_id': article['_id']}, article)
         print('Added words to article: ' + article['title'] + f' ({len(words)})')
 
@@ -121,20 +135,6 @@ def remove_dictionary():
         del article['dictionary']
         collection.replace_one({'_id': article['_id']}, article)
         print('Removed dictionary from article: ' + article['title'])
-
-def add_unique_words():
-    collection = get_collection('articles')
-
-    query = {
-        'unique_words': {'$exists': False}
-    }
-
-    articles = collection.find(query)
-
-    for article in articles:
-        article['unique_words'] = get_unique_words(article['words'])
-        collection.replace_one({'_id': article['_id']}, article)
-        print('Added unique_words to article: ' + article['title'])
 
 def update_slug():
     collection = get_collection('articles')

@@ -32,8 +32,13 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
   };
 
   const addWord = async (original: string): Promise<void> => {
-    const addedWord = await request.addWord(original.toLowerCase());
-    if (addedWord) {
+    const addedPartialWord = await request.addWord(original);
+    if (addedPartialWord) {
+      const addedWord: Word = {
+        ...addedPartialWord,
+        index: words.value.length
+      };
+
       words.value = [...words.value, addedWord];
       wordsByOriginal.value[addedWord.original] = addedWord;
     }
@@ -43,10 +48,10 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
     set(await request.loadAll());
   }
 
-  const find = (original: string): Word | undefined => wordsByOriginal.value[original.toLowerCase()]
+  const find = (original: string): Word | undefined => wordsByOriginal.value[original]
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-    const word = find(original.toLowerCase())
+    const word = find(original)
     if (word) {
       // update local collection
       Object.assign(word, data)
@@ -64,14 +69,14 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
   };
 
   const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
-    const ids = originals.map(original => find(original.toLowerCase())?.id!).filter(id => id);
+    const ids = originals.map(original => find(original)?.id!).filter(id => id);
     const updatedWords = await request.updateMany(ids, data);
     if (updatedWords) {
       updateLocalCollection(updatedWords);
     }
   };
 
-  const updateLocalCollection = (updatedWords: Word[]): void => {
+  const updateLocalCollection = (updatedWords: PartialWord[]): void => {
     words.value = [...words.value.map(word => updatedWords.find(updatedWord => updatedWord.original === word.original)
       ? {
         ...word,
@@ -85,9 +90,9 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
   }
 
   const retranslateWord = async (original: string): Promise<void> => {
-    const id = find(original.toLowerCase())?.id;
+    const id = find(original)?.id;
     if (id) {
-      const retranslatedWord = await request.retranslate(original.toLowerCase());
+      const retranslatedWord = await request.retranslate(original);
       if (retranslatedWord) {
         words.value = [...words.value.map(word => word.original === retranslatedWord.original
           ? {

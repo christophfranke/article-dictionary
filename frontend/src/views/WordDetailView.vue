@@ -64,7 +64,7 @@ const tooltipDisplay = {
 
 const router = useRouter()
 const navigate = (word: string) => {
-  router.push(`/dictionary/${word.toLowerCase()}`)
+  router.push(`/dictionary/${word}`)
 };
 
 

@@ -3,6 +3,7 @@ from utils.mongo import get_collection
 from flask_login import login_required, current_user
 from bson import ObjectId
 
+from .helpers import serialize
 
 @login_required
 def update_word(id):
@@ -29,6 +30,4 @@ def update_word(id):
     dictionary_collection.replace_one({'_id': _id}, word)
 
     updated_word = dictionary_collection.find_one({'_id': _id})
-    updated_word['id'] = str(updated_word.pop('_id'))
-    updated_word.pop('user_id')
-    return jsonify(updated_word)
+    return serialize(updated_word)

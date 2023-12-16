@@ -117,9 +117,8 @@ const fetchArticleDetails = async () => {
     article.value = data;
 
     // Sort dictionary based on position in article
-    const lowerCaseWords = article.value.words.map((word) => word.toLowerCase());
     article.value.dictionary.sort(
-      (a, b) => lowerCaseWords.indexOf(a.original) - lowerCaseWords.indexOf(b.original)
+      (a, b) => article.value.words.indexOf(a.original) - article.value.words.indexOf(b.original)
     );
     
     dictionary.set(article.value.dictionary)
