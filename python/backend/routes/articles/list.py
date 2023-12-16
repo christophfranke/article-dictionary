@@ -22,20 +22,10 @@ def list_articles():
     })
 
     all_articles = own_articles + list(public_articles)
-
-    clusters = get_collection('dictionary').find({
-        'user_id': ObjectId(current_user.id),
-        'language': source_language,
-        '$expr': {'$eq': ['$_id', '$cluster_id']}
-    }, { 'status': 1})
-
-    cluster_status_map = {}
-    for cluster in clusters:
-        cluster_status_map[cluster['_id']] = cluster['status']
+    status_map = create_status_map()
 
     formatted_articles = []
     for article in all_articles:
-        status_map = create_status_map(article['words'])
         statistics = {
             'total': len(article['words']),
             'new': {

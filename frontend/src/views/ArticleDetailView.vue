@@ -146,6 +146,7 @@ const markArticleAsRead = async () => {
 
   if (data) {
     article.value = data;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 

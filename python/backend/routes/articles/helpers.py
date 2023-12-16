@@ -32,7 +32,7 @@ def is_status_higher(old_status, new_status):
     # old_status is known
     return False
 
-def create_status_map(words):
+def create_status_map():
     dictionary = get_collection('dictionary')
     pipeline = [
         {
