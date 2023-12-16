@@ -13,7 +13,12 @@ def create_user_statistics(user_id):
     new_count = dictionary.count_documents({'status': 'new', 'user_id': user_id})
     seen_count = dictionary.count_documents({'status': 'seen', 'user_id': user_id})
     known_count = dictionary.count_documents({'status': 'known', 'user_id': user_id})
-    ignore_count = dictionary.count_documents({'status': 'ignore', 'user_id': user_id})
+    total_count = dictionary.count_documents({'user_id': user_id})
+
+    new_cluster = cluster.count_documents({'status': 'new', 'user_id': user_id})
+    seen_cluster = cluster.count_documents({'status': 'seen', 'user_id': user_id})
+    known_cluster = cluster.count_documents({'status': 'known', 'user_id': user_id})
+    total_cluster = cluster.count_documents({'user_id': user_id})
 
     statistics = get_collection('statistics')
 
@@ -23,7 +28,11 @@ def create_user_statistics(user_id):
         'new_words': new_count,
         'seen_words': seen_count,
         'known_words': known_count,
-        'ignore_words': ignore_count
+        'total_words': total_count,
+        'new_cluster': new_cluster,
+        'seen_cluster': seen_cluster,
+        'known_cluster': known_cluster,
+        'total_cluster': total_cluster
     })
 
     print(f'Added statistics for user {user_id}')

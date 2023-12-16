@@ -61,7 +61,7 @@ def create_status_map():
     status_map = {
         entry['original']: {
             'status': entry['status'],
-            'cluster_status': entry['cluster_data'][0]['status'] if len(entry['cluster_data']) > 0 else entry['status']
+            'cluster_status': entry['cluster_data'][0].get('status') if len(entry['cluster_data']) > 0 else entry['status']
         } for entry in words
     }
 

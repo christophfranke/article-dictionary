@@ -13,7 +13,6 @@ def jobs():
     update_clusters()
 
 def repair():
-    add_missing_words()
     remove_src_is_target()
     remove_duplicates()
     add_src_and_target_lang()
@@ -286,12 +285,3 @@ def update_clusters():
         leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
         cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
         print(f'Updated cluster: {updated_word['original']} -> {leader_word['original']} ({cluster_size})')
-
-
-def add_missing_words():
-    articles = get_collection('articles').find()
-    for article in articles:
-        user_id = article['user_id']
-        language = article['language']
-        add_text(article['content'], user_id, get_collection('dictionary'), get_collection('users'))
-        print('Added missing words for article: ' + article['title'])

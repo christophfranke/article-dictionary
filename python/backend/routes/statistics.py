@@ -44,7 +44,11 @@ def get_statistics():
                 'new_words': {'$first': '$new_words'},
                 'seen_words': {'$first': '$seen_words'},
                 'known_words': {'$first': '$known_words'},
-                'ignore_words': {'$first': '$ignore_words'}
+                'total_words': {'$first': '$total_words'},
+                'new_cluster': {'$first': '$new_cluster'},
+                'seen_cluster': {'$first': '$seen_cluster'},
+                'known_cluster': {'$first': '$known_cluster'},
+                'total_cluster': {'$first': '$total_cluster'}
             }
         },
         {
@@ -55,7 +59,11 @@ def get_statistics():
                 'new_words': 1,
                 'seen_words': 1,
                 'known_words': 1,
-                'ignore_words': 1
+                'total_words': 1,
+                'new_cluster': 1,
+                'seen_cluster': 1,
+                'known_cluster': 1,
+                'total_cluster': 1
             }
         },
         {
@@ -68,21 +76,21 @@ def get_statistics():
     # Execute the aggregation pipeline
     result = list(statistics_collection.aggregate(pipeline))
 
-    # Modify the result to add 'total_words' and remove 'ignore_words'
-    for entry in result:
-        entry['total_words'] = entry['new_words'] + entry['seen_words'] + entry['known_words']
-        del entry['ignore_words']
-
     # Calculate today's statistics fresh
     today_date = datetime.utcnow().strftime('%Y-%m-%d')
     dictionary = get_collection('dictionary')
+    cluster = get_collection('cluster')
     today_statistics = {
         'date': today_date,
         'latest_timestamp': None,  # Update this if needed based on your requirements
         'new_words': dictionary.count_documents({'status': 'new', 'user_id': ObjectId(current_user.id)}),
         'seen_words': dictionary.count_documents({'status': 'seen', 'user_id': ObjectId(current_user.id)}),
         'known_words': dictionary.count_documents({'status': 'known', 'user_id': ObjectId(current_user.id)}),
-        'ignore_words': dictionary.count_documents({'status': 'ignore', 'user_id': ObjectId(current_user.id)})
+        'total_words': dictionary.count_documents({'user_id': ObjectId(current_user.id)}),
+        'new_cluster': cluster.count_documents({'status': 'new', 'user_id': ObjectId(current_user.id)}),
+        'seen_cluster': cluster.count_documents({'status': 'seen', 'user_id': ObjectId(current_user.id)}),
+        'known_cluster': cluster.count_documents({'status': 'known', 'user_id': ObjectId(current_user.id)}),
+        'total_cluster': cluster.count_documents({'user_id': ObjectId(current_user.id)}),
     }
 
     # Add today's statistics to the result

@@ -59,11 +59,15 @@ export interface ArticleDetail extends ArticleBase {
 
 export interface Progress {
     date: string;
-    known_words: number;
     latest_timestamp: string;
+    known_words: number;
     new_words: number;
     seen_words: number;
     total_words: number;
+    known_cluster: number;
+    new_cluster: number;
+    seen_cluster: number;
+    total_cluster: number;
 }
 
 export interface UserPreview {
