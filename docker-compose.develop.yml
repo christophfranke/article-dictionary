@@ -69,5 +69,18 @@ services:
     depends_on:
       - mongodb
 
+  backup:
+    build:
+      context: ./database
+      dockerfile: backup.Dockerfile
+    volumes:
+      - ./database/scripts:/scripts
+      - ./database/backups:/backups  # Local directory to store backups
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    depends_on:
+      - mongodb
+
 volumes:
   node_modules:

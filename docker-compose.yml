@@ -18,6 +18,18 @@ services:
     command: gunicorn --capture-output --enable-stdio-inheritance -c /app/backend/gunicorn_config.py main:app
     restart: always
 
+  backup:
+    build:
+      context: ./database
+      dockerfile: backup.Dockerfile
+    volumes:
+      - ./database/backups:/backups
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    depends_on:
+      - mongodb
+
   mongodb:
     image: mongo:latest
     environment:
