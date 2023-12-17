@@ -97,7 +97,6 @@ watchEffect(() => {
 });
 
 
-
 const newWord = ref<string>('');
 const addWord = async (): Promise<void> => {
   if (newWord.value) {

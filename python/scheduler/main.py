@@ -1,12 +1,10 @@
-import schedule
-import sys
-import time
-from datetime import datetime
+from apscheduler.schedulers.blocking import BlockingScheduler
 import statistics
 import dictionary
 import articles
 import cluster
 import user
+import time
 
 # wait until the database is up
 time.sleep(5)
@@ -26,18 +24,19 @@ time.sleep(5)
 # articles.repair()
 # dictionary.repair()
 
-schedule.every(1).hours.do(statistics.jobs)
-schedule.every(1).seconds.do(dictionary.jobs)
-schedule.every(1).seconds.do(cluster.jobs)
-schedule.every(1).minutes.do(articles.jobs)
+# Initialize the scheduler
+scheduler = BlockingScheduler()
 
-schedule.every(0.7).hours.do(dictionary.repair)
-schedule.every(1.1).hours.do(articles.repair)
-schedule.every(5.3).hours.do(user.repair)
+# Schedule your tasks with more readable intervals
+scheduler.add_job(statistics.jobs, 'interval', hours=1, id='statistics_jobs')
+scheduler.add_job(dictionary.jobs, 'interval', seconds=1, id='dictionary_jobs')
+scheduler.add_job(cluster.jobs, 'interval', seconds=1, id='cluster_jobs')
+scheduler.add_job(articles.jobs, 'interval', minutes=1, id='articles_jobs')
 
+scheduler.add_job(dictionary.repair, 'interval', hours=0.7, id='dictionary_repair')
+scheduler.add_job(articles.repair, 'interval', hours=1.1, id='articles_repair')
+scheduler.add_job(user.repair, 'interval', hours=5.3, id='user_repair')
+
+# Start the scheduler
 print("Scheduler is running")
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-    sys.stdout.flush()
+scheduler.start()

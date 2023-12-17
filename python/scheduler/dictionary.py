@@ -92,7 +92,8 @@ def update_word_frequency():
                 word['needs_recount'] = False
                 dictionary.replace_one({'_id': word['_id']}, word)
 
-                get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+                if word['cluster_id'] is not None:
+                    get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
                 print(f'Counted frequency for word {word["original"]}: {frequency}')
 
     except Exception as e:
@@ -128,7 +129,8 @@ def retranslate_word():
             if word['original'] in translations:
                 word['status'] = 'ignore'
             dictionary.replace_one({'_id': word['_id']}, word)
-            get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+            if word['cluster_id'] is not None:
+                get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
 
             print(f'Retranslated word {word["original"]}: {", ".join(map(str, translations))}')
     except Exception as e:
@@ -145,7 +147,8 @@ def remove_zero_frequency():
 
     for word in words:
         dictionary.delete_one({'_id': word['_id']})
-        get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+        if word['cluster_id'] is not None:
+            get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
         print(f'Removed word: {word['original']} ({word['frequency']})')
 
 def remove_no_original():
@@ -159,7 +162,8 @@ def remove_no_original():
 
     if word:
         dictionary.delete_one({'_id': word['_id']})
-        get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+        if word['cluster_id'] is not None:
+            get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
         print('Removed word: ' + word)
 
 

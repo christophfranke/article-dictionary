@@ -33,7 +33,8 @@ def update_aggregate_attributes():
 	for entry in cluster.find(query).limit(25):
 		lead_word = dictionary.find_one({'_id': entry['_id']})
 		if not lead_word:
-			print(f'Error: Could not find lead word for cluster: {entry["_id"]}')
+			cluster.delete_one({'_id': entry['_id']})
+			print(f'Deleted cluster, because it has no lead word: id = {entry["_id"]}.')
 			continue
 
 		if lead_word['cluster_id'] != lead_word['_id']:

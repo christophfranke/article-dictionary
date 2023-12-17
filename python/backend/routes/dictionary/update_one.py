@@ -28,7 +28,8 @@ def update_word(id):
         word[key] = value
 
     dictionary_collection.replace_one({'_id': _id}, word)
-    get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+    if word['cluster_id'] is not None:
+        get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
 
     updated_word = dictionary_collection.find_one({'_id': _id})
     return serialize(updated_word)

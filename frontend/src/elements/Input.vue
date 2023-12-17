@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-const { modelValue } = defineProps(['modelValue']);
+const props = defineProps({
+  modelValue: [String, Boolean]
+});
+
 const emit = defineEmits(['update:modelValue']);
 
-const valueRef = ref(modelValue);
+// Reactive reference for the input value
+const valueRef = ref(props.modelValue);
+
+// Watch for external changes to modelValue and update valueRef accordingly
+watch(() => props.modelValue, (newVal) => {
+  valueRef.value = newVal;
+});
+
+// Watch for changes in valueRef and emit update event
 watch(valueRef, (newValue) => {
   emit('update:modelValue', newValue);
 });

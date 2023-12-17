@@ -94,15 +94,20 @@ def remove_from_cluster(get_collection, word):
 
 def add_to_cluster(get_collection, word):
     cluster = get_collection('cluster')
-    cluster.update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
-    remove_from_cluster(get_collection, word)
+    if word['cluster_id'] is not None:
+        cluster.update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+        remove_from_cluster(get_collection, word)
+
     closest_leader_id = find_cluster(get_collection, word)
 
     dictionary = get_collection('dictionary')
     if closest_leader_id is None:
+        if word['_id'] is None:
+            raise Exception(f'Cannot add to cluster: Word has no _id {word['original']}')
         dictionary.update_one({'_id': word['_id']}, {'$set': {'cluster_id': word['_id']}})
         cluster.update_one({'_id': word['_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
     else:
         dictionary.update_one({'_id': word['_id']}, {'$set': {'cluster_id': closest_leader_id}})
+        word['cluster_id'] = closest_leader_id
         update_leader(get_collection, word)
         cluster.update_one({'_id': closest_leader_id}, {'$set': {'needs_recalculation': True}}, upsert=True)

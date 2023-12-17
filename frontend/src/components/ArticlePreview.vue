@@ -44,15 +44,15 @@ const scoreDescription = computed(() => {
 });
 
 const lengthDescription = computed(() => {
-  if (props.article.statistics.total < 100) {
+  if (props.article.statistics.total < 150) {
     return 'Very Short';
-  } else if (props.article.statistics.total < 400) {
+  } else if (props.article.statistics.total < 500) {
     return 'Short';
-  } else if (props.article.statistics.total < 1000) {
-    return 'Medium'
   } else if (props.article.statistics.total < 2000) {
-    return 'Long';
+    return 'Medium'
   } else if (props.article.statistics.total < 5000) {
+    return 'Long';
+  } else if (props.article.statistics.total < 10000) {
     return 'Very Long'
   } else {
     return 'Epic';

@@ -135,6 +135,7 @@ const markAllAsSeen = async () => {
   }
 };
 
+
 const markArticleAsRead = async () => {
   const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${article.value.slug}`, {
     method: 'PUT',
