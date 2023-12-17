@@ -24,6 +24,7 @@ services:
       dockerfile: backup.Dockerfile
     volumes:
       - ./database/backups:/backups
+      - ./database/uploads:/uploads
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
