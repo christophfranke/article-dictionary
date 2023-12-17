@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 import type { ArticlePreview } from '@/types';
-import { useFetchAuthorized } from '@/use/api';
+import useApi from '@/use/api';
 
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import ProgresseComponent from '@/components/Progress.vue';
@@ -35,7 +35,7 @@ const publicArticles = computed(() =>
     .sort((a, b) => usefulness(b) - usefulness(a))
   );
 
-const fetchAuthorized = useFetchAuthorized();
+const { fetchAuthorized, isLoading } = useApi();
 const fetchArticles = async (): Promise<void> => {
   const data = await fetchAuthorized<ArticlePreview[]>('/api/articles/');
   if (data) {
@@ -56,25 +56,30 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
-    <div class="title">
-      <Headline>Your Articles</Headline>
-      <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
-    </div>
-    <div v-if="newestArticles.length > 0" class="article-list">
-      <ArticlePreviewComponent v-for="article in newestArticles" :key="article.id" :article="article" />
-    </div>
-
-    <div v-else class="no-articles">
-      <p>No articles available.</p>
-    </div>
-
-    <template v-if="publicArticles.length > 0">
+    <template v-if="isLoading">
+      <Headline type="h2">Loading Articles...</Headline>
+    </template>
+    <template v-else>
       <div class="title">
-        <Headline>Public Articles</Headline>
+        <Headline>Your Articles</Headline>
+        <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
       </div>
-      <div class="article-list">
-        <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id"  :article="article" />
+      <div v-if="newestArticles.length > 0" class="article-list">
+        <ArticlePreviewComponent v-for="article in newestArticles" :key="article.id" :article="article" />
       </div>
+
+      <div v-else class="no-articles">
+        <p>No articles available.</p>
+      </div>
+
+      <template v-if="publicArticles.length > 0">
+        <div class="title">
+          <Headline>Public Articles</Headline>
+        </div>
+        <div class="article-list">
+          <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id"  :article="article" />
+        </div>
+      </template>
     </template>
   </main>
 </template>

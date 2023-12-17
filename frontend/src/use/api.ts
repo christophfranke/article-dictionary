@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed  } from 'vue';
 import type { Ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { FetchFn } from '@/types';
@@ -53,24 +53,26 @@ export default (): UseApi => {
   const route = useRoute();
 
   const errorMessage = ref<string | null>(null);
-  const isLoading = ref<boolean>(false);
+  const loadingCounter = ref<number>(0);
+  const isLoading = computed<boolean>(() => loadingCounter.value > 0);
 
   const fetchAuthorized = async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
     try {
-      isLoading.value = true;
+      loadingCounter.value += 1;
       errorMessage.value = null;
 
       const response = await fetch(...args);
 
       if (response.status === 401) {
-        isLoading.value = false;
         redirectToLogin(router, route);
+
+        loadingCounter.value -= 1;
         return null;
       }
 
       if (response.ok) {
         const data = await response.json() as T;
-        isLoading.value = false;
+        loadingCounter.value -= 1;
         return data;
       }
 
@@ -84,7 +86,7 @@ export default (): UseApi => {
       errorMessage.value = `Could not connect to server: ${error}`;
     }
 
-    isLoading.value = false;
+    loadingCounter.value -= 1;
     return null;
   };
 

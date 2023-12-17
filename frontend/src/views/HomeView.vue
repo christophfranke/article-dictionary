@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 import type { ArticlePreview } from '@/types';
-import { useFetchAuthorized } from '@/use/api';
+import useApi from '@/use/api';
 
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import ArticlePreviewList from '@/components/ArticlePreviewList.vue';
@@ -89,7 +89,7 @@ const publicArticles = computed(() => {
 })
 
 
-const fetchAuthorized = useFetchAuthorized();
+const { isLoading, fetchAuthorized } = useApi();
 const fetchArticles = async (): Promise<void> => {
   const data = await fetchAuthorized<ArticlePreview[]>('/api/articles/');
   if (data) {
@@ -112,35 +112,42 @@ const navigateToCreateArticle = (): void => {
   <main class="container">
     <ProgresseComponent />
 
-    <div v-if="articles.length === 0" class="no-articles">
-      <Headline class="title">You have no articles yet.</Headline>
-      <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
-    </div>
+    <template v-if="isLoading">
+      <div class="no-articles">
+        <Headline class="title">Loading...</Headline>
+      </div>
+    </template>
+    <template v-else>
+      <div v-if="articles.length === 0" class="no-articles">
+        <Headline class="title">You have no articles yet.</Headline>
+        <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
+      </div>
 
-    <ArticlePreviewList
-      title="Continue Reading"
-      :articleList="continueReadingArticles" />
+      <ArticlePreviewList
+        title="Continue Reading"
+        :articleList="continueReadingArticles" />
 
-    <ArticlePreviewList
-      title="Suggested Articles"
-      :articleList="suggestedArticles" />
+      <ArticlePreviewList
+        title="Suggested Articles"
+        :articleList="suggestedArticles" />
 
-    <ArticlePreviewList
-      title="New Articles"
-      :articleList="newArticles" />
+      <ArticlePreviewList
+        title="New Articles"
+        :articleList="newArticles" />
 
-    <ArticlePreviewList
-      title="Public Articles"
-      :articleList="publicArticles"
-      :showCreateButton="false" />
+      <ArticlePreviewList
+        title="Public Articles"
+        :articleList="publicArticles"
+        :showCreateButton="false" />
 
-    <ArticlePreviewList
-      title="Read again"
-      :articleList="readArticles" />
+      <ArticlePreviewList
+        title="Read again"
+        :articleList="readArticles" />
 
-    <ArticlePreviewList
-      title="More Articles"
-      :articleList="remainingArticles" />
+      <ArticlePreviewList
+        title="More Articles"
+        :articleList="remainingArticles" />
+    </template>
   </main>
 </template>
 
