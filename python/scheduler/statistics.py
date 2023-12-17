@@ -9,6 +9,7 @@ def jobs():
 
 def create_user_statistics(user_id):
     dictionary = get_collection('dictionary')
+    cluster = get_collection('cluster')
 
     new_count = dictionary.count_documents({'status': 'new', 'user_id': user_id})
     seen_count = dictionary.count_documents({'status': 'seen', 'user_id': user_id})
