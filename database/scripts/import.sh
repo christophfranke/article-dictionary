@@ -17,3 +17,4 @@ fi
 mongorestore --host $MONGO_HOST --port $MONGO_PORT -u $MONGO_USER -p $MONGO_PASSWORD --authenticationDatabase admin --archive=/$BACKUP_NAME --gzip
 
 echo "Database restored from backup: $BACKUP_NAME"
+
