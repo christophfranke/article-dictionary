@@ -18,7 +18,7 @@ services:
     command: gunicorn --capture-output --enable-stdio-inheritance -c /app/backend/gunicorn_config.py main:app
 
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0.4
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example

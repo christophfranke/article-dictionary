@@ -32,7 +32,7 @@ services:
       - mongodb
 
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0.4
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
