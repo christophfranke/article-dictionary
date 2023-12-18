@@ -22,12 +22,11 @@ services:
     build:
       context: ./database
       dockerfile: backup.Dockerfile
+    env_file:
+      - .env.mongodb
     volumes:
       - /database/backups:/backups
       - /database/uploads:/uploads
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
     depends_on:
       - mongodb
 

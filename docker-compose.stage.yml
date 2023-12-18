@@ -19,9 +19,8 @@ services:
 
   mongodb:
     image: mongo:7.0.4
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    env_file:
+      - .env.mongodb
     volumes:
       - ./database/mongodb:/data/db
     command: mongod --quiet --logpath /dev/null
@@ -30,11 +29,10 @@ services:
     build:
       context: ./database
       dockerfile: backup.Dockerfile
+    env_file:
+      - .env.mongodb
     volumes:
       - ./database/backups:/backups
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
     depends_on:
       - mongodb
 
