@@ -63,7 +63,6 @@ const lengthDescription = computed(() => {
 const link = (article: ArticlePreview): string => article.owned
   ? `/articles/${article.slug}`
   : `/articles/import/${article.id}`
-
 </script>
 
 <template>
