@@ -28,6 +28,8 @@ services:
     volumes:
       - ./python/backend:/app/backend
       - ./python/shared:/app/shared
+    env_file:
+      - .env.mongodb
     ports:
       - "9901:5000"
     depends_on:
@@ -49,6 +51,8 @@ services:
     build:
       context: ./python
       dockerfile: scheduler.Dockerfile
+    env_file:
+      - .env.mongodb
     volumes:
       - ./python/scheduler:/app/scheduler
       - ./python/shared:/app/shared

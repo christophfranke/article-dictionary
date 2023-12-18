@@ -1,8 +1,9 @@
+import os
 from flask import g
 from pymongo import MongoClient
 
-username = 'root'
-password = 'example'
+username = os.environ.get('MONGO_INITDB_ROOT_USERNAME', 'root')
+password = os.environ.get('MONGO_INITDB_ROOT_PASSWORD', 'example')
 database = 'dictionary_app_data'
 
 def get_db():
