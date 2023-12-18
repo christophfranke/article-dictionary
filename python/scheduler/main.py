@@ -11,7 +11,9 @@ import database
 # wait until the database is up
 time.sleep(5)
 
-# database.export()
+# make an initial export
+database.export()
+
 # dictionary.reset_clusters()
 # dictionary.add_missing_words()
 # dictionary.reset_word_frequency()
