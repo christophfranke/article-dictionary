@@ -22,7 +22,7 @@ const fetchAuthorized = useFetchAuthorized();
 const route = useRoute();
 const original = computed(() => route.params.original);
 
-const dictionary = useDictionaryView()
+const { dictionary } = useDictionaryView()
 const toggleStatusSeen = useToggleStatusSeen(dictionary);
 
 const fetchWord = async () => {

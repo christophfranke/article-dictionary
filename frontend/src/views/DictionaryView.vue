@@ -67,7 +67,7 @@ const filterFn = (word: Word) => {
 };
 
 
-const dictionary = useDictionaryView(filterFn);
+const { dictionary, isLoading } = useDictionaryView(filterFn);
 const filter = ref<string>('');
 const statusFilters = ref({
   new: true,
@@ -86,35 +86,40 @@ const rebuildDictionary = async (): Promise<void> => {
   <div class="dictionary-view">
     <Headline>Dictionary View</Headline>
 
-    <div class="filter-section">
-      <Label for="filter">Filter:</Label>
-      <Input v-model="filter" id="filter" placeholder="Search for..." />
-    </div>
-    <Statistics :dictionary="dictionary" class="statistics" />
+    <tempate v-if="isLoading && dictionary.allWords.value.length === 0">
+      <p>Loading dictionary...</p>
+    </tempate>
+    <template v-else>
+      <div class="filter-section">
+        <Label for="filter">Filter:</Label>
+        <Input v-model="filter" id="filter" placeholder="Search for..." />
+      </div>
+      <Statistics :dictionary="dictionary" class="statistics" />
 
-    <div class="status-filters">
-      <Label for="newCheckbox">
-        <Input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
-        New
-      </Label>
+      <div class="status-filters">
+        <Label for="newCheckbox">
+          <Input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
+          New
+        </Label>
 
-      <Label for="seenCheckbox">
-        <Input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
-        Seen
-      </Label>
+        <Label for="seenCheckbox">
+          <Input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
+          Seen
+        </Label>
 
-      <Label for="knownCheckbox">
-        <Input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
-        Known
-      </Label>
+        <Label for="knownCheckbox">
+          <Input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
+          Known
+        </Label>
 
-      <Label for="ignoreCheckbox">
-        <Input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
-        Ignore
-      </Label>
-    </div>
+        <Label for="ignoreCheckbox">
+          <Input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
+          Ignore
+        </Label>
+      </div>
 
-    <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
+      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
+    </template>
   </div>
 </template>
 
