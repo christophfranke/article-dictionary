@@ -9,4 +9,5 @@ def export():
     return "Export started."
 
 if __name__ == '__main__':
+    print("Starting backup service...")
     app.run(host='0.0.0.0', port=5005)
