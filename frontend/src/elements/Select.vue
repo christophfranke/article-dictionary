@@ -34,11 +34,13 @@ watch(() => props.modelValue, (newVal) => {
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 select {
   width: 100%;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid $border-color;
   border-radius: 4px;
   box-sizing: border-box;
 }

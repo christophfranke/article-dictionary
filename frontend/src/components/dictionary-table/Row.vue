@@ -189,21 +189,23 @@ const retranslateWord = props.dictionary.retranslateWord;
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 td {
-  border: 1px solid #ddd;
+  border: 1px solid $border-color;
   padding: 10px;
   text-align: left;
 }
 
 .highlighted {
-  background-color: rgba(255, 191, 128, 0.25);
+  background-color: $table-highlight-color;
 }
 
 .original-td-link {
   padding: 0;
 
   &:hover {
-    background-color: #f9f9f9;  
+    background-color: $table-hover-color;  
   }
 }
 
@@ -214,8 +216,10 @@ td {
   height: 100%;
 }
 
-.original-link, .original-link:visited {
-  color: black;
+.original-link {
+  &, &:visited {
+    color: inherit;
+  }
 }
 
 
@@ -223,7 +227,7 @@ td {
   cursor: pointer;
 
   &:hover {
-    background-color: #f9f9f9;
+    background-color: $table-hover-color;
   }
 }
 
@@ -231,7 +235,7 @@ td {
   cursor: pointer;
   
   &:hover {
-    background-color: #f9f9f9;
+    background-color: $table-hover-color;
   }
 }
 

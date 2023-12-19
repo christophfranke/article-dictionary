@@ -1,0 +1,48 @@
+@import "@/style/theme-dark";
+
+$main-background-color: $background-100;
+$main-color: $foreground-100;
+
+$card-outer-background-color: $background-98;
+$card-inner-background-color: $background-100;
+$border-color: $background-80;
+
+$statistics-preview-font-color: $foreground-90;
+$statistics-article-strong-color: $foreground-100;
+$statistics-article-font-color: $foreground-80;
+
+$table-hover-color: $background-95;
+$table-header-color: $background-95;
+$table-header-hover-color: $background-80;
+
+$header-background-color: $foreground-95;
+$header-font-color: $background-100;
+
+$header-link-font-color: $background-100;
+$header-link-hover-color: $foreground-80;
+
+$tooltip-background-color: $foreground-100;
+$tooltip-color: $background-100;
+$tooltip-font-size: 14px;
+
+$button-font-size: 16px;
+$button-small-font-size: 16px;
+
+$button-view-color: $view-color;
+$button-view-hover-color: $view-color-hover;
+
+$button-action-color: $action-color;
+$button-action-hover-color: $action-color-hover;
+
+$error-background-color: $error-color;
+$error-font-color: darken($error-color, 30);
+$error-border-color: darken($error-color, 10);
+
+$excerpt-color: $foreground-80;
+
+$form-background-color: $background-100;
+
+$headline-font-color: $foreground-100;
+
+$internal-link-color: $view-color;
+$label-color: $foreground-100;

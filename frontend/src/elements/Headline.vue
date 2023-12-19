@@ -16,9 +16,11 @@ const allowedTypes = ['h1', 'h2', 'h3'];
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 h1, h2, h3 {
 	margin: 0;
-  color: #333;
+  color: $headline-font-color;
 }
 
 h1 {

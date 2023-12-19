@@ -1,0 +1,24 @@
+$font-family: 'Helvetica Neue', 'Arial', sans-serif;
+
+$background-100: #fff;
+$background-98: #f8f8f8;
+$background-95: #f2f2f2;
+$background-80: #ddd;
+
+$foreground-100: #333;
+$foreground-95: #444;
+$foreground-90: #555;
+$foreground-80: #666;
+
+$view-color: #007bff;
+$view-color-hover: darken($view-color, 10);
+
+$action-color: #4caf50;
+$action-color-hover: darken($action-color, 10);
+
+$error-color: #f8d7da;
+
+$content-new-word-color: rgba(51, 153, 255, 0.15);
+$content-seen-word-color: rgba(255, 191, 128, 0.25);
+$content-mark-word-color: rgba(204, 22, 22, 0.5);
+$table-highlight-color: $content-seen-word-color;

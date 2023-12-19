@@ -110,24 +110,17 @@ onBeforeUnmount(() => {
   </div>	
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/style/global.scss";
+
 .tooltip {
   position: fixed;
-  z-index: 9999;
-  background-color: #333;
-  color: #fff;
+  z-index: 10;
+  background-color: $tooltip-background-color;
+  color: $tooltip-color;
   padding: 5px;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: $tooltip-font-size;
   pointer-events: none; /* Ensures tooltip doesn't interfere with mouse events */
-}
-
-/* Optional: Add some animation for the tooltip */
-.tooltip-enter-active, .tooltip-leave-active {
-  transition: opacity 0.5s;
-}
-
-.tooltip-enter, .tooltip-leave-to {
-  opacity: 0;
 }
 </style>

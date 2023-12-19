@@ -136,7 +136,9 @@ onMounted(() => {
   </template>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/style/global.scss";
+
 span.padding {
   padding: 2px 3px;
 }
@@ -151,14 +153,14 @@ span.separator {
 }
 
 span.new {
-  background-color: rgba(51, 153, 255, 0.15);
+  background-color: $content-new-word-color;
 }
 
 span.seen {
-  background-color: rgba(255, 191, 128, 0.25);
+  background-color: $content-seen-word-color;
 }
 
 span.mark {
-  background-color: rgba(204, 22, 22, 0.5);
+  background-color: $content-mark-word-color;
 }
 </style>	

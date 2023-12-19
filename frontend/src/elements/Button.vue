@@ -20,10 +20,12 @@ const { role, size } = defineProps({
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 button {
   color: #fff;
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: $button-font-size;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -31,20 +33,20 @@ button {
 
   &.small {
     padding: 5px 5px;
-    font-size: 16px;
+    font-size: $button-small-font-size;
   }
 
   &.view {
-    background-color: #007bff;
+    background-color: $button-view-color;
     &:hover {
-      background-color: #0056b3;
+      background-color: $button-view-hover-color;
     }
   }
 
   &.action {
-    background-color: #4caf50; /* Green background */
+    background-color: $button-action-color;
     &:hover {
-      background-color: #45a049;
+      background-color: $button-action-hover-color;
     }
   }
 

@@ -158,7 +158,9 @@ const addWord = async (): Promise<void> => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/style/global.scss";
+
 .add-word-section {
   margin-bottom: 20px;
 }
@@ -169,25 +171,25 @@ const addWord = async (): Promise<void> => {
 }
 
 th {
-  border: 1px solid #ddd;
+  border: 1px solid $border-color;
   padding: 10px;
   text-align: left;
 }
 
 th {
   cursor: pointer;
-  background-color: #f2f2f2;
+  background-color: $table-header-color;
 }
 
 th:hover {
-  background-color: #ddd;
+  background-color: $table-header-hover-color;
 }
 
 th.no-sort {
   cursor: default;
 }
 th.no-sort:hover {
-  background-color: #f2f2f2;
+  background-color: $table-hover-color;
 }
 
 .add-word-section {

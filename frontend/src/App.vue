@@ -11,13 +11,17 @@ import HeaderComponent from '@/components/HeaderComponent.vue'
   </div>
 </template>
 
-<style>
+<style lang="scss">
+@import "@/style/global.scss";
+
 body {
-  font-family: 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: $font-family;
   font-size: 16px;
   margin: 0;
   padding: 0 0 50px 0;
   box-sizing: border-box;
+  background-color: $main-background-color;
+  color: $main-color;
 }
 a, a:visited {
   text-decoration: none;

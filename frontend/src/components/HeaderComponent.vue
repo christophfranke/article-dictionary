@@ -17,10 +17,12 @@ import LogoutLink from './LogoutLink.vue';
   </header>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/style/global.scss';
+
 header {
-  background-color: #333;
-  color: #fff;
+  background-color: $header-background-color;
+  color: $header-font-color;
   padding: 10px 0;
 }
 
@@ -39,12 +41,12 @@ a, a:visited {
   padding: 5px 10px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  color: #fff;
+  color: $header-link-font-color;
   text-decoration: none;
 }
 
 a:hover {
-  background-color: #555;
+  background-color: $header-link-hover-color;
 }
 
 .profile-link {

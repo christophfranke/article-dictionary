@@ -15,10 +15,14 @@ watch(valueRef, (newValue) => {
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 textarea {
+  color: inherit;
+  background-color: inherit;
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid $border-color;
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;

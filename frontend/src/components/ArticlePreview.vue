@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { ArticlePreview } from '@/types';
 
 import Headline from '@/elements/Headline.vue';
-
+import Excerpt from '@/elements/Excerpt.vue'
 
 const props = defineProps({
   article: {
@@ -70,15 +70,15 @@ const link = (article: ArticlePreview): string => article.owned
     <div class="article-preview">
       <router-link :to="link(props.article)">
         <Headline type="h3" class="title">{{ props.article.title }}</Headline>
-        <p>{{ props.article.excerpt }}...</p>
+        <Excerpt class="excerpt">{{ props.article.excerpt }}...</Excerpt>
         <div class="statistics">
-          <span style="color: #666;" :title="`${props.article.statistics.new.words} new words`">
+          <span :title="`${props.article.statistics.new.words} new words`">
             <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
           </span>
-          <span style="color: #666;" :title="`${props.article.statistics.seen.words} seen words`">
+          <span :title="`${props.article.statistics.seen.words} seen words`">
             <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen.words }}
           </span>
-          <span style="color: #666;" :title="`${props.article.statistics.known.words} known words`">
+          <span :title="`${props.article.statistics.known.words} known words`">
             <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known.words }}
           </span>
         </div>
@@ -100,18 +100,20 @@ const link = (article: ArticlePreview): string => article.owned
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/style/global.scss';
+
 .outer-container {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
+  background-color: $card-outer-background-color;
+  border: 1px solid $border-color;
   padding: 15px;
   padding-bottom: 27px;
   border-radius: 8px;
 }
 
 .article-preview {
-  background-color: #fff; /* Bright background color */
-  border: 1px solid #ddd;
+  background-color: $card-inner-background-color;
+  border: 1px solid $border-color;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
@@ -124,6 +126,7 @@ const link = (article: ArticlePreview): string => article.owned
 }
 
 .article-preview > a {
+  color: inherit;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -133,23 +136,22 @@ const link = (article: ArticlePreview): string => article.owned
   margin-bottom: 10px;
 }
 
-p {
-  color: #666; /* Slightly darker text color */
+.excerpt {
   margin: 0;
   margin-bottom: 30px;
 }
 
 .statistics {
+  color: $statistics-preview-font-color;
   margin-top: auto;
-  color: #666;
   display: flex;
   justify-content: space-between;
 }
 
 .difficulty {
+  color: $statistics-preview-font-color;
   font-size: 14px;
   margin-top: 15px;
-  color: #666;
   display: flex;
   justify-content: space-between;
 }
@@ -162,8 +164,4 @@ p {
   padding-left: 5px;
 }
 
-
-a:hover {
-  background-color: transparent;
-}
 </style>

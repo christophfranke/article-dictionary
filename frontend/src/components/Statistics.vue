@@ -52,7 +52,9 @@ const statistics = useStatistics({ dictionary, article: article && ref(article) 
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/style/global.scss";
+
 .statistics {
   text-align: right;
   font-size: 16px;
@@ -77,13 +79,13 @@ const statistics = useStatistics({ dictionary, article: article && ref(article) 
 
 .word-statistic strong {
   font-size: 16px;
-  color: #333;
+  color: $statistics-article-strong-color;
 }
 
 .word-statistic span {
   font-size: 12px;
   display: block;
   white-space: nowrap;
-  color: #666;
+  color: $statistics-article-font-color;
 }
 </style>

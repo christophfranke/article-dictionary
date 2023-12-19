@@ -17,9 +17,11 @@ const { to } = defineProps({
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 a {	
   display: block;
-  color: #007bff;
+  color: $internal-link-color;
   text-decoration: none;
   font-size: 14px;
 

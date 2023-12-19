@@ -6,10 +6,12 @@ const { message } = defineProps(['message']);
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 p {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
+  color: $error-font-color;
+  background-color: $error-background-color;
+  border: 1px solid $error-border-color;
   padding: 10px;
   border-radius: 4px;
 }

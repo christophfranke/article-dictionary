@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
   if (timeoutId) {
     clearTimeout(timeoutId);
   }
-})
+});
 </script>
 
 
@@ -201,6 +201,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="scss">
+@import "@/style/global.scss";
+
 .article-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -250,7 +252,7 @@ onBeforeUnmount(() => {
 
 
 .dictionary-container {
-  background-color: white;
+  background-color: $background-100;
   position: fixed;
   top: 20px;
   right: 20px;

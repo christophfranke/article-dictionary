@@ -120,7 +120,7 @@ const chartOptions = computed<any>(() => ({
       grid: {
         display: true,
         drawOnChartArea: true,
-        color: '#f3f3f3'
+        color: 'rgba(127, 127, 127, 0.1)'
       },
     },
   },
