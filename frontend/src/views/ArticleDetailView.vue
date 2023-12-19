@@ -144,6 +144,8 @@ const toggleShowDictionary = () => {
 };
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
+
+onMounted(fetchArticleDetails);
 </script>
 
 
