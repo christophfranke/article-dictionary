@@ -39,6 +39,13 @@ def update_article(slug):
     if 'title' in article_data:
         article_data['slug'] = slugify(title)
 
+    if 'status' in article_data:
+        if article_data['status'] == 'seen':
+            article_data['last_read'] = datetime.utcnow()
+        else:
+            article_data['reading_index'] = 0
+
+
     collection.update_one({'_id': article['_id']}, {'$set': article_data})
 
     updated_article = collection.find_one({'_id': article['_id']})

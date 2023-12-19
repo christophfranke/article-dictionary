@@ -9,9 +9,11 @@ from .helpers import serialize
 
 
 @login_required
-def read_article():
+def seen_article():
     data = request.json
     id = data.get('id')
+    index = data.get('index', 0)
+
 
     if not id:
         return jsonify({'error': 'Article id is required'}), 400
@@ -25,7 +27,8 @@ def read_article():
     # update last read field
     collection.update_one({'_id': article['_id']}, {'$set': {
         'last_read': datetime.utcnow(),
-        'status': 'seen'
+        'status': 'seen',
+        'reading_index': index
     }})
 
     article['status'] = 'seen'

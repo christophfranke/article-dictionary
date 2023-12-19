@@ -29,6 +29,7 @@ export interface ArticleBase extends ArticleData {
   slug: string;
   status: string;
   owned: boolean;
+  readingIndex: number;
 }
 
 export interface ArticlePreview extends ArticleBase {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import type { PropType } from 'vue';
 import type { DictionaryView } from '../dictionary/view';
 
@@ -8,7 +8,7 @@ type ModelType = {
   index: number;
 }
 
-const { content, words, dictionary } = defineProps({
+const { content, words, dictionary, mark, scrollToIndex } = defineProps({
 	content: {
 		type: String,
 		default: '',
@@ -31,6 +31,10 @@ const { content, words, dictionary } = defineProps({
   mark: {
     type: String,
     default: '',
+  },
+  scrollToIndex: {
+    type: Number,
+    default: -1,
   },
   display: {
     default: {
@@ -95,6 +99,16 @@ const unsetHighlight = (update: ModelType) => {
   }
 };
 
+const unique = `${Math.random()}`.substring(2, 6);
+
+onMounted(() => {
+  if (scrollToIndex) {
+    const word = document.getElementById(`word-${unique}-${scrollToIndex}`);
+    if (word) {
+      word.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+})
 </script>
 
 <template>
@@ -108,6 +122,7 @@ const unsetHighlight = (update: ModelType) => {
       @mouseover="setHighlight({ word, index })"
       @mouseout="unsetHighlight({ word, index })"
       @click="event => emit('click', { word, index }, event)"
+      :id="`word-${unique}-${index}`"
       :class="{
         padding: display.padding,
         clickable: display.click,

@@ -71,6 +71,7 @@ const article = ref<ArticleDetail>({
   privacy: '',
   words: [],
   dictionary: [],
+  readingIndex: 0,
 });
 
 const route = useRoute();
@@ -195,7 +196,7 @@ onBeforeUnmount(() => {
       <p class="status-description">{{ statusDescription }}</p>
       <Headline class="title">{{ article.title }}</Headline>
       <Paragraph>
-        <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" />
+        <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" />
       </Paragraph>
       <Button
         v-if="article.status !== 'read'"
@@ -213,7 +214,7 @@ onBeforeUnmount(() => {
         <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlighted.word" />
       </div>
     </div>
-    <Tooltip :dictionary="dictionary" :highlightedWord="highlighted.word" />
+    <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
   </div>
 </template>
 

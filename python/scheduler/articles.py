@@ -10,7 +10,7 @@ def jobs():
     pass
 
 def repair():
-    # update_slug()
+    add_reading_index()
     add_words()
     add_language()
     add_dates()
@@ -136,17 +136,16 @@ def remove_dictionary():
         collection.replace_one({'_id': article['_id']}, article)
         print('Removed dictionary from article: ' + article['title'])
 
-def update_slug():
+def add_reading_index():
     collection = get_collection('articles')
-    users = get_collection('users')
 
-    query = {}
+    query = {
+        'reading_index': {'$exists': False}
+    }
 
     articles = collection.find(query)
 
     for article in articles:
-        user = users.find_one({'_id': ObjectId(article['user_id'])})
-        if user is not None:
-            article['slug'] = slugify(article['title'], user['source_language'], user['target_language'])
-            collection.replace_one({'_id': article['_id']}, article)
-            print('Change slug of article: ' + article['title'] + ' (' + article['slug'] + ')')
+        article['reading_index'] = 0
+        collection.replace_one({'_id': article['_id']}, article)
+        print('Added word_index to article: ' + article['title'])

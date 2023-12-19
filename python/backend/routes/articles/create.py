@@ -66,7 +66,8 @@ def create_article():
         'created_at': datetime.utcnow(),
         'last_read': datetime.utcnow(),
         'status': 'new',
-        'user_id': ObjectId(current_user.id)
+        'user_id': ObjectId(current_user.id),
+        'reading_index': 0
     }
 
     result = articles_collection.insert_one(new_article)

@@ -104,7 +104,7 @@ watchEffect(() => {
         <p>No sentences available.</p>
       </div>
     </div>
-    <Tooltip :dictionary="dictionary" :highlightedWord="highlighted.word" :display="tooltipDisplay" />
+    <Tooltip :dictionary="dictionary" :highlighted="highlighted" :display="tooltipDisplay" />
   </div>
 </template>
 

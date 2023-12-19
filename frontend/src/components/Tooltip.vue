@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
-import type { DictionaryView } from '../dictionary/view';
+import type { PropType } from 'vue';
+import type { ArticleBase } from '@/types';
+import type { DictionaryView } from '@/dictionary/view';
+import { useFetchAuthorized } from '@/use/api';
+
 
 const props = defineProps({
 	dictionary: {
-		type: Object as unknown as () => DictionaryView,
+		type: Object as PropType<DictionaryView>,
 		required: true,
 	},
-	highlightedWord: {
-		type: String,
+	highlighted: {
+		type: Object as PropType<{ word: string, index: number }>,
 		required: true
 	},
+  article: {
+    type: Object as PropType<ArticleBase>,
+    default: null,
+  },
   display: {
     type: Object,
     default: {
@@ -25,12 +33,12 @@ const props = defineProps({
 });
 
 const showStatus = computed<string[]>(() => ['new', 'seen', 'known'].filter(status => props.display[status]));
-const isVisible = computed(() => !!props.highlightedWord
-    && showStatus.value.includes(props.dictionary.find(props.highlightedWord || '')?.status || '')
+const isVisible = computed(() => !!props.highlighted.word
+    && showStatus.value.includes(props.dictionary.find(props.highlighted.word || '')?.status || '')
 );
 
 const content = computed(() => isVisible.value
-  ? (props.dictionary.find(props.highlightedWord || '')?.translations.join(', ') || '')
+  ? (props.dictionary.find(props.highlighted.word || '')?.translations.join(', ') || '')
   : ''
 );
 
@@ -40,9 +48,23 @@ const setTooltipPosition = (event: MouseEvent): void => {
   position.y = event.clientY + 20; // Adjust the offset based on your design preference
 };
 
+const fetchAuthorized = useFetchAuthorized();
+const markArticleAsSeen = async (article, index) => {
+  const result = await fetchAuthorized('/api/articles/seen', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: article.id, index }),
+  });
+  
+  if (result) {
+    article.status = 'seen';
+  }
+}
+
 // time how long a translation is shown
 const UPDATE_TIME = 500
-let timer = 0
 let original = ''
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 watch(isVisible, (newValue, oldValue) => {
@@ -51,11 +73,15 @@ watch(isVisible, (newValue, oldValue) => {
     timeoutId = null;
   }
   if (!oldValue && newValue) {
-    original = props.highlightedWord;
-    timer = Date.now();
+    original = props.highlighted.word;
     timeoutId = setTimeout(() => {
-      if (props.display.update.seen && props.dictionary.find(original)?.status === 'new') {
-        props.dictionary.updateWord(original, { status: 'seen' });
+      if (props.display.update.seen) {
+        if (props.dictionary.find(original)?.status === 'new') {
+          props.dictionary.updateWord(original, { status: 'seen' });
+        }
+        if (props.article) {
+          markArticleAsSeen(props.article, props.highlighted.index);
+        }
       }
     }, UPDATE_TIME);
   }
