@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import type { PropType } from 'vue';
 import type { DictionaryView } from '../dictionary/view';
+
+type ModelType = {
+  word: string;
+  index: number;
+}
 
 const { content, words, dictionary } = defineProps({
 	content: {
@@ -8,16 +14,19 @@ const { content, words, dictionary } = defineProps({
 		default: '',
 	},
 	words: {
-		type: Array as unknown as () => string[],
+		type: Array as PropType<string[]>,
 		required: true,
 	},
 	dictionary: {
-		type: Object as unknown as () => DictionaryView | null,
+		type: Object as PropType<DictionaryView | null>,
 		default: null
 	},
 	modelValue: {
-		type: String,
-		default: '',
+    type: Object as PropType<ModelType>,
+		default: {
+      word: null,
+      index: null
+    },
 	},
   mark: {
     type: String,
@@ -73,14 +82,16 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
 
 
 let internalHighlightedWord = ''
-const setHighlight = (word: string) => {
-	internalHighlightedWord = word;
-  emit('update:modelValue', word);
+const setHighlight = (update: ModelType) => {
+  if (update.word) {    
+  	internalHighlightedWord = update.word;
+    emit('update:modelValue', update);
+  }
 };
-const unsetHighlight = (word: string) => {
-	if (internalHighlightedWord === word) {
+const unsetHighlight = (update: ModelType) => {
+	if (internalHighlightedWord === update.word) {
 		internalHighlightedWord = '';
-		emit('update:modelValue', '');
+		emit('update:modelValue', { word: '', index: -1 });
   }
 };
 
@@ -89,14 +100,14 @@ const unsetHighlight = (word: string) => {
 <template>
   <template v-for="({ word, separator }, index) in processedContent" :key="index">
     <span class="separator">
-      <template v-for="(sep, index) in separator">
-        {{ sep }}<br v-if="index < separator.length - 1" />
+      <template v-for="(sep, sepIndex) in separator">
+        {{ sep }}<br v-if="sepIndex < separator.length - 1" />
       </template>
     </span>
     <span
-      @mouseover="setHighlight(word)"
-      @mouseout="unsetHighlight(word)"
-      @click="event => emit('click', word, event)"
+      @mouseover="setHighlight({ word, index })"
+      @mouseout="unsetHighlight({ word, index })"
+      @click="event => emit('click', { word, index }, event)"
       :class="{
         padding: display.padding,
         clickable: display.click,

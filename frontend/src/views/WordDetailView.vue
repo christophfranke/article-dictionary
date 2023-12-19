@@ -16,7 +16,10 @@ import Paragraph from '@/elements/Paragraph.vue';
 
 
 const word = ref<WordDetail | null>(null);
-const highlightedWord = ref('');
+const highlighted = ref<{ word: string; index: number }>({
+  word: '',
+  index: -1
+});
 const fetchAuthorized = useFetchAuthorized();
 
 const route = useRoute();
@@ -83,7 +86,7 @@ watchEffect(() => {
         <p><strong>Status:</strong> {{ word.status }}</p>
         <p><strong>Frequency:</strong> {{ word.frequency }}</p>
         <p><strong>Similar words:</strong>&nbsp;
-          <ProcessedContent v-if="word.similar.length > 0" :words="word.similar" :dictionary="dictionary" :display="similarDisplay" v-model="highlightedWord" @click="navigate" :key="word.original" />
+          <ProcessedContent v-if="word.similar.length > 0" :words="word.similar" :dictionary="dictionary" :display="similarDisplay" v-model="highlighted" @click="navigate" :key="word.original" />
           <span v-else>None</span>
         </p>
       </div>
@@ -92,7 +95,7 @@ watchEffect(() => {
           <li><strong>Sentences:</strong></li>
           <li v-for="(sentence, index) in word.sentences" :key="`${word.id}-${index}`">
             <Paragraph>
-              <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlightedWord" @click="navigate" />
+              <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlighted" @click="navigate" />
             </Paragraph>
           </li>
         </ul>
@@ -101,7 +104,7 @@ watchEffect(() => {
         <p>No sentences available.</p>
       </div>
     </div>
-    <Tooltip :dictionary="dictionary" :highlightedWord="highlightedWord" :display="tooltipDisplay" />
+    <Tooltip :dictionary="dictionary" :highlightedWord="highlighted.word" :display="tooltipDisplay" />
   </div>
 </template>
 

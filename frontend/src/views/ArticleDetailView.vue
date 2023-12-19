@@ -77,7 +77,10 @@ const { fetchAuthorized, errorMessage, isLoading } = useApi();
 const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = useCustomDictionary([], displayFilter);
 
-const highlightedWord = ref<string>('');
+const highlighted = ref<{ word: string; index: number }>({
+  word: '',
+  index: -1,
+});
 const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
 
 
@@ -187,7 +190,7 @@ onBeforeUnmount(() => {
       <p class="status-description">{{ statusDescription }}</p>
       <Headline class="title">{{ article.title }}</Headline>
       <Paragraph>
-        <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlightedWord" @click="toggleStatusSeen" :display="contentDisplayConfig" />
+        <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" />
       </Paragraph>
       <Button
         v-if="article.status !== 'read'"
@@ -202,10 +205,10 @@ onBeforeUnmount(() => {
         <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
       </Button>
       <div class="dictionary-scoller">
-        <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlightedWord" />
+        <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlighted.word" />
       </div>
     </div>
-    <Tooltip :dictionary="dictionary" :highlightedWord="highlightedWord" v-model="highlightedWord" />
+    <Tooltip :dictionary="dictionary" :highlightedWord="highlighted.word" />
   </div>
 </template>
 
