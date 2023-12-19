@@ -7,6 +7,7 @@ import useEdit from './use-edit';
 
 import Button from '@/elements/Button.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
+import Input from '@/elements/Input.vue';
 
 
 const props = defineProps({
@@ -121,7 +122,7 @@ const retranslateWord = props.dictionary.retranslateWord;
           <Button @click.prevent="cancelEditTranslations(word.id)" role="view">
             <FontAwesomeIcon icon="times" />
           </Button>
-          <input
+          <Input
             id="edit-translations"
             v-model="editTranslationsValue"
             @blur="cancelEditTranslations(word.id)"
