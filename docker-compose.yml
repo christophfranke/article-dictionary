@@ -57,6 +57,7 @@ services:
       context: ./nginx
     volumes:
       - frontend-dist:/usr/share/nginx/html
+      - certificates:/etc/letsencrypt
     ports:
       - "80:80"
       - "443:443"
@@ -67,6 +68,4 @@ services:
 
 volumes:
   frontend-dist:
-  acme-challenge:
-  nginx-conf:
-  letsencrypt:
+  certificates:
