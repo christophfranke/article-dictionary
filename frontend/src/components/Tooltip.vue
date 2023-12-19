@@ -49,7 +49,7 @@ const setTooltipPosition = (event: MouseEvent): void => {
 };
 
 const fetchAuthorized = useFetchAuthorized();
-const markArticleAsSeen = async (article, index) => {
+const markArticleAsSeen = async (article: ArticleBase, index: number) => {
   const result = await fetchAuthorized('/api/articles/seen', {
     method: 'POST',
     headers: {

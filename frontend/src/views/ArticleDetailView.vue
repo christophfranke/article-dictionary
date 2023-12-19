@@ -98,20 +98,6 @@ const statusDescription = computed(() => {
 
 })
 
-const markArticleAsSeen = async () => {
-  const result = await fetchAuthorized('/api/articles/seen', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id: article.value.id }),
-  });
-  
-  if (result) {
-    article.value.status = 'seen';
-  }
-}
-
 const fetchArticleDetails = async () => {
   const slug = route.params.slug;
   if (!slug) {
@@ -136,15 +122,6 @@ const fetchArticleDetails = async () => {
   }
 };
 
-// this function is currently unused, but may be useful in the future
-const markAllAsSeen = async () => {
-  const words = dictionary.words.value.filter((word) => word.status === 'new');
-  if (words.length > 0) {
-    await dictionary.updateMany(words.map((word) => word.original), { status: 'seen' });
-  }
-};
-
-
 const markArticleAsRead = async () => {
   const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${article.value.slug}`, {
     method: 'PUT',
@@ -167,25 +144,6 @@ const toggleShowDictionary = () => {
 };
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
-
-
-let timeoutId: ReturnType<typeof setTimeout> | null = null
-const SECOND: number = 1000
-const TIME_TO_MARK_AS_SEEN: number = 60 * SECOND;
-onMounted(() => {
-  fetchArticleDetails();
-
-  timeoutId = setTimeout(() => {
-    markArticleAsSeen();
-  }, TIME_TO_MARK_AS_SEEN);
-});
-
-onBeforeUnmount(() => {
-  if (timeoutId) {
-    clearTimeout(timeoutId);
-  }
-});
-
 </script>
 
 
