@@ -60,7 +60,9 @@ export default (collection: DictionaryCollection, filterFn: FilterFunction = x =
 
   const set = (newWords: PartialWord[]): void => {
     collection.set(newWords);
-    setOrder(order.value);
+    if (order.value) {
+      setOrder(order.value);
+    }
   }
 
   return {

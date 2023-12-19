@@ -121,7 +121,7 @@ const fetchArticleDetails = async () => {
   if (data) {
     article.value = data;
 
-    const wordIndexMap = {}
+    const wordIndexMap: { [key: string]: number } = {}
     article.value.words.forEach((word, index) => {
       if (!wordIndexMap[word]) {
         wordIndexMap[word] = index;
