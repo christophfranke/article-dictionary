@@ -58,7 +58,7 @@ services:
       - acme-challenge:/var/www/certbot
       - letsencrypt:/etc/letsencrypt
     depends_on:
-      - nginx
+      - webserver
     entrypoint: '/bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h; done;"'
 
   webserver:
