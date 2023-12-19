@@ -74,14 +74,14 @@ const article = ref<ArticleDetail>({
 });
 
 const route = useRoute();
-const { fetchAuthorized, errorMessage, isLoading: isApiLoading } = useApi();
+const { fetchAuthorized, errorMessage } = useApi();
 
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
   && (word.status === 'new' || word.status === 'seen')
 );
 
-const { dictionary, isLoading: isDictionaryLoading } = useDictionaryView(displayFilter);
+const { dictionary } = useDictionaryView(displayFilter);
 
 const highlighted = ref<{ word: string; index: number }>({
   word: '',
@@ -147,7 +147,7 @@ const toggleShowDictionary = () => {
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
 
-const isLoading = computed<boolean>(() => isApiLoading.value || isDictionaryLoading.value);
+const isLoading = computed<boolean>(() => !article.value?.title || dictionary.allWords.value.length === 0);
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 onMounted(async () => {
@@ -169,7 +169,9 @@ onBeforeUnmount(() => {
 
 
 <template>
-  <p v-if="isLoading">Loading...</p>
+  <div class="article-page" v-if="isLoading">
+    <Headline type="h2">Loading...</Headline>
+  </div>
   <div class="article-page" v-else>
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
