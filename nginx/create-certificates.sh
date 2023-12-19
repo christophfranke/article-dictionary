@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Configuration variables
 DOMAIN="articles.krito.de"

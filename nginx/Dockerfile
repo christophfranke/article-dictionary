@@ -7,6 +7,8 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.19/community" >> /etc/apk/repo
 RUN apk update && \
     apk add --no-cache certbot certbot-nginx
 
+RUN mkdir -p /var/www/certbot
+
 COPY ./create-certificates.sh /bin/create-certificates.sh
 RUN chmod a+x /bin/create-certificates.sh
 
