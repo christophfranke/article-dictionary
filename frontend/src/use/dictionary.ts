@@ -35,6 +35,6 @@ export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
 
 	return {
 		dictionary: createDictionaryView(dictionary, filter),
-		isLoading: isLoadingDictionary
+		isLoading: isLoadingDictionary!
 	}
 }

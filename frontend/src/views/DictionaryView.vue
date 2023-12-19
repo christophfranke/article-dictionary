@@ -77,11 +77,6 @@ const statusFilters = ref({
   known: true,
   ignore: false,
 } as { [key: string]: boolean });
-
-
-const rebuildDictionary = async (): Promise<void> => {
-  await dictionary.rebuild();
-};
 </script>
 
 <template>

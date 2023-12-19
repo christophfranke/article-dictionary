@@ -94,6 +94,5 @@ def serialize(article, user_id):
         'createdAt': article['created_at'],
         'lastRead': article['last_read'],
         'status': article['status'],
-        'dictionary': get_dictionary_entries(article['unique_words']),
         'readingIndex': article.get('reading_index', 0)
     })

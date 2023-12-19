@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import type { PartialWord, ArticleDetail } from '../types';
 
-import { useCustomDictionary } from '@/use/dictionary';
+import { useDictionaryView } from '@/use/dictionary';
 import useApi from '@/use/api';
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 
@@ -70,22 +70,23 @@ const article = ref<ArticleDetail>({
   owned: false,
   privacy: '',
   words: [],
-  dictionary: [],
   readingIndex: 0,
 });
 
 const route = useRoute();
-const { fetchAuthorized, errorMessage, isLoading } = useApi();
+const { fetchAuthorized, errorMessage, isLoading: isApiLoading } = useApi();
 
-const displayFilter = (word: PartialWord): boolean => word.status === 'new' || word.status === 'seen';
-const dictionary = useCustomDictionary([], displayFilter);
+const displayFilter = (word: PartialWord): boolean => (
+  wordIndexMap.value[word.original] > -1
+  && (word.status === 'new' || word.status === 'seen')
+);
+
+const { dictionary, isLoading: isDictionaryLoading } = useDictionaryView(displayFilter);
 
 const highlighted = ref<{ word: string; index: number }>({
   word: '',
   index: -1,
 });
-const newWordsCount = computed<number>(() => dictionary.words.value.filter((word) => word.status === 'new').length);
-
 
 const statusDescription = computed(() => {
   if (article.value.status === 'read') {
@@ -98,6 +99,8 @@ const statusDescription = computed(() => {
 
 })
 
+const wordIndexMap = ref<{ [key: string]: number }>({});
+
 const fetchArticleDetails = async () => {
   const slug = route.params.slug;
   if (!slug) {
@@ -108,22 +111,21 @@ const fetchArticleDetails = async () => {
   if (data) {
     article.value = data;
 
-    const wordIndexMap: { [key: string]: number } = {}
     article.value.words.forEach((word, index) => {
-      if (!wordIndexMap[word]) {
-        wordIndexMap[word] = index;
+      if (!wordIndexMap.value[word]) {
+        wordIndexMap.value[word] = index;
       }
     });
 
-    dictionary.setOrder((word: PartialWord) => wordIndexMap[word.original]);
-    dictionary.set(article.value.dictionary)
+    dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original]);
   } else {
     console.error('Failed to fetch article details');
   }
 };
 
+const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton } = useApi();
 const markArticleAsRead = async () => {
-  const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${article.value.slug}`, {
+  const data = await fetchAuthorizedButton<ArticleDetail>(`/api/articles/${article.value.slug}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -145,6 +147,8 @@ const toggleShowDictionary = () => {
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
 
+const isLoading = computed<boolean>(() => isApiLoading.value || isDictionaryLoading.value);
+
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 onMounted(async () => {
   await fetchArticleDetails();
@@ -165,7 +169,8 @@ onBeforeUnmount(() => {
 
 
 <template>
-  <div class="article-page" v-if="article.title">
+  <p v-if="isLoading">Loading...</p>
+  <div class="article-page" v-else>
     <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <p class="status-description">{{ statusDescription }}</p>
@@ -175,7 +180,7 @@ onBeforeUnmount(() => {
       </Paragraph>
       <Button
         v-if="article.status !== 'read'"
-        :disabled="isLoading"
+        :disabled="isLoadingButton"
         class="mark-as-read"
         @click="markArticleAsRead"
       >Mark as read</Button>

@@ -9,12 +9,11 @@ export type FilterFunction = (x: PartialWord) => boolean;
 export type OrderFunction = (x: PartialWord) => number;
 
 export interface DictionaryView {
-  find: (original: string) => Word | undefined;
+  find: (original: string) => PartialWord | undefined;
   isVisible: (original: string) => boolean;
   words: ComputedRef<Word[]>;
   allWords: ComputedRef<Word[]>;
 
-  set: (newWords: PartialWord[]) => void;
   setFilter: (filterFn: FilterFunction) => void;
   setOrder: (orderFn: OrderFunction) => void;
   discard: () => void;
@@ -41,28 +40,15 @@ export default (collection: DictionaryCollection, filterFn: FilterFunction = x =
     return false;
   }
 
-  const allWords = computed(() => collection.allWords.value as unknown as Word[]);
-  const words = computed(() => allWords.value.filter(filter.value) as unknown as Word[]);
-  const find = (original: string) => collection.find(original) as unknown as Word | undefined;
+  const allWords = computed(() => collection.allWords.value.map((word, index) => ({
+    ...word,
+    order: order.value ? order.value(word) ?? index : index,
+  })));
+  const words = computed(() => allWords.value.filter(filter.value));
+  const find = (original: string) => collection.find(original);
 
   const setOrder = (orderFn?: OrderFunction) => {
     order.value = orderFn || null;
-    if (orderFn) {
-      allWords.value.forEach((word, index) => {
-        word.order = orderFn(word) ?? index;
-      });
-    } else {
-      allWords.value.forEach((word, index) => {
-        word.order = index;
-      });
-    }
-  }
-
-  const set = (newWords: PartialWord[]): void => {
-    collection.set(newWords);
-    if (order.value) {
-      setOrder(order.value);
-    }
   }
 
   return {
@@ -70,7 +56,6 @@ export default (collection: DictionaryCollection, filterFn: FilterFunction = x =
     isVisible,
     words,
     allWords,
-    set,
     discard: collection.discard,
     setFilter: filterFn => {
       filter.value = filterFn

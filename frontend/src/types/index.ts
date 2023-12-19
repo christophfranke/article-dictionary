@@ -55,7 +55,6 @@ export interface ArticlePreview extends ArticleBase {
 
 export interface ArticleDetail extends ArticleBase {
   words: string[];
-  dictionary: Word[];
 }
 
 export interface Progress {
