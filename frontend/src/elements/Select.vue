@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import type { PropType } from 'vue';
 
-const { options, modelValue } = defineProps({
+const props = defineProps({
 	options: {
 		type: Object as PropType<{ [key: string]: string } | null>,
 		default: {},
@@ -15,15 +15,20 @@ const { options, modelValue } = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const valueRef = ref(modelValue);
+const valueRef = ref(props.modelValue);
 watch(valueRef, (newValue) => {
   emit('update:modelValue', newValue);
 });
 
+// Watch for external changes to modelValue and update valueRef accordingly
+watch(() => props.modelValue, (newVal) => {
+  valueRef.value = newVal;
+});
+
 </script>
 <template>
-	<select v-if="options" v-model="valueRef">
-		<option v-for="(label, value) in options" :key="value" :value="value">{{ label }}</option>
+	<select v-if="props.options" v-model="valueRef">
+		<option v-for="(label, value) in props.options" :key="value" :value="value">{{ label }}</option>
 		<slot />
 	</select>
 </template>
