@@ -7,7 +7,7 @@ export interface PartialWord {
 }
 
 export interface Word extends PartialWord {
-  index: number;
+  order: number;
 }
 
 export interface WordDetail extends Word {

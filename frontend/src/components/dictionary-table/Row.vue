@@ -95,7 +95,7 @@ const retranslateWord = props.dictionary.retranslateWord;
   	:class="{ highlighted: isHighlighed }"
   	:id="`word-${word.id}`"
   	>
-    <td v-if="display.col.number">{{ word.index + 1 }}</td>
+    <td v-if="display.col.number">{{ word.order + 1 }}</td>
     <td v-if="display.col.original" :class="{ 'original-td-link': display.action.link }">
       <RouterLink
         v-if="display.action.link"

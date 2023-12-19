@@ -1,11 +1,11 @@
 import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { DictionaryApi } from './request';
-import type { Word, PartialWord } from '@/types';
+import type { PartialWord } from '@/types';
 
 export interface DictionaryCollection {
-  find: (original: string) => Word | undefined;
-  allWords: ComputedRef<Word[]>;
+  find: (original: string) => PartialWord | undefined;
+  allWords: ComputedRef<PartialWord[]>;
 
   set: (newWords: PartialWord[]) => void;
   discard: () => void;
@@ -20,25 +20,20 @@ export interface DictionaryCollection {
 
 
 export default (request: DictionaryApi, collection: PartialWord[] = []): DictionaryCollection => {
-  const words = ref<Word[]>([])
+  const words = ref<PartialWord[]>([])
   const wordsByOriginal = ref<{
-    [key: string]: Word;
+    [key: string]: PartialWord;
   }>({})
 
   const set = (newWords: PartialWord[]): void => {
-    words.value = newWords.map((word, index) => ({ ...word, index }));
+    words.value = newWords.map(word => word); // make a new collection
     wordsByOriginal.value ={}
     words.value.forEach(word => wordsByOriginal.value[word.original] = word)
   };
 
   const addWord = async (original: string): Promise<void> => {
-    const addedPartialWord = await request.addWord(original);
-    if (addedPartialWord) {
-      const addedWord: Word = {
-        ...addedPartialWord,
-        index: words.value.length
-      };
-
+    const addedWord = await request.addWord(original);
+    if (addedWord) {
       words.value = [...words.value, addedWord];
       wordsByOriginal.value[addedWord.original] = addedWord;
     }
@@ -48,7 +43,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
     set(await request.loadAll());
   }
 
-  const find = (original: string): Word | undefined => wordsByOriginal.value[original]
+  const find = (original: string): PartialWord | undefined => wordsByOriginal.value[original]
 
   const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
     const word = find(original)

@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import type { Word, ArticleDetail } from '../types';
+import type { PartialWord, ArticleDetail } from '../types';
 
 import { useCustomDictionary } from '@/use/dictionary';
 import useApi from '@/use/api';
@@ -23,6 +23,8 @@ import Paragraph from '@/elements/Paragraph.vue';
 const tableDisplayConfig = computed(() => ({
   header: true,
   limit: 0,
+  sortBy: 'order',
+  sortOrder: 'asc',
   col: {
     number: true,
     original: true,
@@ -74,7 +76,7 @@ const article = ref<ArticleDetail>({
 const route = useRoute();
 const { fetchAuthorized, errorMessage, isLoading } = useApi();
 
-const displayFilter = (word: Word): boolean => word.status === 'new' || word.status === 'seen';
+const displayFilter = (word: PartialWord): boolean => word.status === 'new' || word.status === 'seen';
 const dictionary = useCustomDictionary([], displayFilter);
 
 const highlighted = ref<{ word: string; index: number }>({
@@ -119,11 +121,14 @@ const fetchArticleDetails = async () => {
   if (data) {
     article.value = data;
 
-    // Sort dictionary based on position in article
-    article.value.dictionary.sort(
-      (a, b) => article.value.words.indexOf(a.original) - article.value.words.indexOf(b.original)
-    );
+    const wordIndexMap = {}
+    article.value.words.forEach((word, index) => {
+      if (!wordIndexMap[word]) {
+        wordIndexMap[word] = index;
+      }
+    });
 
+    dictionary.setOrder((word: PartialWord) => wordIndexMap[word.original]);
     dictionary.set(article.value.dictionary)
   } else {
     console.error('Failed to fetch article details');

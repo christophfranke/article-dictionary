@@ -5,7 +5,8 @@ import type { Word, PartialWord } from '@/types';
 import type { DictionaryCollection } from './collection';
 
 
-export type FilterFunction = (x: Word) => boolean;
+export type FilterFunction = (x: PartialWord) => boolean;
+export type OrderFunction = (x: PartialWord) => number;
 
 export interface DictionaryView {
   find: (original: string) => Word | undefined;
@@ -15,6 +16,7 @@ export interface DictionaryView {
 
   set: (newWords: PartialWord[]) => void;
   setFilter: (filterFn: FilterFunction) => void;
+  setOrder: (orderFn: OrderFunction) => void;
   discard: () => void;
 
   load: () => Promise<void>;
@@ -26,8 +28,9 @@ export interface DictionaryView {
 }
 
 
-export default (collection: DictionaryCollection, filterFn: FilterFunction = x => !!x): DictionaryView => {
-  const filter = ref(filterFn)
+export default (collection: DictionaryCollection, filterFn: FilterFunction = x => !!x, orderFn: OrderFunction | null = null): DictionaryView => {
+  const filter = ref(filterFn);
+  const order = ref<OrderFunction | null>(orderFn);
 
   const isVisible = (orginal: string): boolean => {
     const word = collection.find(orginal);
@@ -35,19 +38,42 @@ export default (collection: DictionaryCollection, filterFn: FilterFunction = x =
       return filter.value(word);
     }
 
-    return false
+    return false;
+  }
+
+  const allWords = computed(() => collection.allWords.value as unknown as Word[]);
+  const words = computed(() => allWords.value.filter(filter.value) as unknown as Word[]);
+  const find = (original: string) => collection.find(original) as unknown as Word | undefined;
+
+  const setOrder = (orderFn?: OrderFunction) => {
+    order.value = orderFn || null;
+    if (orderFn) {
+      allWords.value.forEach((word, index) => {
+        word.order = orderFn(word) ?? index;
+      });
+    } else {
+      allWords.value.forEach((word, index) => {
+        word.order = index;
+      });
+    }
+  }
+
+  const set = (newWords: PartialWord[]): void => {
+    collection.set(newWords);
+    setOrder(order.value);
   }
 
   return {
-    find: collection.find,
+    find,
     isVisible,
-    words: computed(() => collection.allWords.value.filter(filter.value)),
-    allWords: collection.allWords,
-    set: collection.set,
+    words,
+    allWords,
+    set,
     discard: collection.discard,
     setFilter: filterFn => {
       filter.value = filterFn
     },
+    setOrder,
 
     load: collection.load,
     updateMany: collection.updateMany,

@@ -26,15 +26,13 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  sort: {
-    type: String,
-    default: 'original',
-  },
   display: {
     type: Object,
     default: {
       header: true,
       limit: 0,
+      sortBy: 'original',
+      sortOrder: 'asc',
       col: {
         number: false,
         original: true,
@@ -118,7 +116,7 @@ const addWord = async (): Promise<void> => {
       <thead>
         <tr v-if="display.header">
           <th
-            @click="sortTable('number')"
+            @click="sortTable('order')"
             v-if="display.col.number"
             :title="display.action.sort ? 'Sort by appearence in text' : undefined"
             :class="{ 'no-sort': !display.action.sort }"

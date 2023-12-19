@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 
-import type { Word } from '../types';
+import type { PartialWord } from '../types';
 
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
@@ -24,6 +24,8 @@ interface StatusFilters {
 const tableDisplayConfig = {
   header: true,
   limit: 200,
+  sortBy: 'original',
+  sortOrder: 'asc',
   col: {
     number: false,
     original: true,
@@ -50,7 +52,7 @@ const tableDisplayConfig = {
   }
 };
 
-const filterFn = (word: Word) => {
+const filterFn = (word: PartialWord) => {
   if (!statusFilters.value[word.status]) {
     return false;
   }
@@ -86,9 +88,10 @@ const rebuildDictionary = async (): Promise<void> => {
   <div class="dictionary-view">
     <Headline>Dictionary View</Headline>
 
-    <tempate v-if="isLoading && dictionary.allWords.value.length === 0">
-      <p>Loading dictionary...</p>
-    </tempate>
+    <p v-if="isLoading && dictionary.allWords.value.length === 0">
+      Loading dictionary...
+    </p>
+
     <template v-else>
       <div class="filter-section">
         <Label for="filter">Filter:</Label>

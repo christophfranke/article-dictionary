@@ -66,8 +66,8 @@ const tooltipDisplay = {
 };
 
 const router = useRouter()
-const navigate = (word: string) => {
-  router.push(`/dictionary/${word}`)
+const navigate = (params: { word: string }) => {
+  router.push(`/dictionary/${params.word}`)
 };
 
 

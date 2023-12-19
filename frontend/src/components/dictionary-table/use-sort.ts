@@ -2,8 +2,8 @@ import { computed, ref } from 'vue';
 import type { Word } from '@/types';
 
 export default (props: any) => {
-	const sortOrder = ref<string>('asc');
-	const sortedBy = ref<string>(props.sort);
+	const sortedBy = ref<string>(props.display.sortBy);
+	const sortOrder = ref<string>(props.display.sortOrder);
 
 	const sortTable = (column: string, defaultSortOrder: string = 'asc'): void => {
 	  if (!props.display.action.sort) {
@@ -22,7 +22,7 @@ export default (props: any) => {
 	  const sorted = [...props.dictionary.words.value];
 	  if (sortedBy.value) {
 	    sorted.sort((a, b) => {
-	      const order = sortOrder.value === 'asc' ? 1 : -1;
+	      const order = sortOrder.value === 'desc' ? -1 : 1;
 
 	      // Access property values
 	      const propertyA = (a as any)[sortedBy.value];
