@@ -39,8 +39,8 @@ scheduler.add_job(cluster.jobs, 'interval', seconds=1, id='cluster_jobs')
 scheduler.add_job(articles.jobs, 'interval', minutes=1, id='articles_jobs')
 scheduler.add_job(database.jobs, 'interval', hours=12, id='database_jobs')
 
-scheduler.add_job(dictionary.repair, 'interval', hours=0.7, id='dictionary_repair')
-scheduler.add_job(articles.repair, 'interval', hours=1.1, id='articles_repair')
+scheduler.add_job(dictionary.repair, 'interval', hours=2.7, id='dictionary_repair')
+scheduler.add_job(articles.repair, 'interval', hours=3.1, id='articles_repair')
 scheduler.add_job(user.repair, 'interval', hours=5.3, id='user_repair')
 
 # Start the scheduler

@@ -120,7 +120,7 @@ const fetchArticleDetails = async () => {
     article.value.dictionary.sort(
       (a, b) => article.value.words.indexOf(a.original) - article.value.words.indexOf(b.original)
     );
-    
+
     dictionary.set(article.value.dictionary)
   } else {
     console.error('Failed to fetch article details');

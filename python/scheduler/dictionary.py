@@ -18,7 +18,6 @@ def repair():
     add_src_and_target_lang()
     remove_no_original()
     add_cluster_id()
-    remove_zero_frequency()
 
 
 def reset_word_frequency():
