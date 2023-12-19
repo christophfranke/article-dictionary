@@ -38,6 +38,8 @@ watch(() => props.modelValue, (newVal) => {
 
 select {
   width: 100%;
+  background-color: inherit;
+  color: inherit;
   padding: 10px;
   font-size: 16px;
   border: 1px solid $border-color;

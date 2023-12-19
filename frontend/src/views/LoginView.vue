@@ -56,7 +56,7 @@ const loginAndRedirect = async () => {
 }
 
 .register-link {
-  margin-top: 10px; /* Adjust the spacing */
+  margin-top: 20px;
 }
 
 .error-message {
