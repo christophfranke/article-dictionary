@@ -145,7 +145,22 @@ const toggleShowDictionary = () => {
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
 
-onMounted(fetchArticleDetails);
+let timeoutId: ReturnType<typeof setTimeout> | null = null;
+onMounted(async () => {
+  await fetchArticleDetails();
+
+  if(article.value.status === 'read') {
+    timeoutId = setTimeout(() => {
+      article.value.status = 'seen';
+    }, 60000);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+})
 </script>
 
 

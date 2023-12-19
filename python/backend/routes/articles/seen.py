@@ -12,8 +12,6 @@ from .helpers import serialize
 def seen_article():
     data = request.json
     id = data.get('id')
-    index = data.get('index', 0)
-
 
     if not id:
         return jsonify({'error': 'Article id is required'}), 400
@@ -23,6 +21,8 @@ def seen_article():
 
     if not article:
         return jsonify({'error': 'Article not found'}), 404
+
+    index = data.get('index', article.get('reading_index', 0))
 
     # update last read field
     collection.update_one({'_id': article['_id']}, {'$set': {
