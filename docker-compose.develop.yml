@@ -4,7 +4,6 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
     volumes:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
@@ -15,7 +14,6 @@ services:
   type-check:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
     volumes:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
