@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router';
 import type { ArticlePreview } from '@/types';
 import useApi from '@/use/api';
 
+import { useArticleView } from '@/use/articles';
+
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import ProgresseComponent from '@/components/Progress.vue';
 
@@ -12,11 +14,11 @@ import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 
 
-const articles = ref<ArticlePreview[]>([]);
+const { articles, isLoading } = useArticleView();
 const router = useRouter();
 
 const newestArticles = computed(() =>
-  articles.value
+  articles.previews.value
     .filter(article => article.owned)
     .sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -30,24 +32,10 @@ const usefulness = (article: ArticlePreview): number =>
 
 
 const publicArticles = computed(() =>
-  articles.value
+  articles.previews.value
     .filter(article => !article.owned)
     .sort((a, b) => usefulness(b) - usefulness(a))
   );
-
-const { fetchAuthorized, isLoading } = useApi();
-const fetchArticles = async (): Promise<void> => {
-  const data = await fetchAuthorized<ArticlePreview[]>('/api/articles/');
-  if (data) {
-    articles.value = data;
-  } else {
-    console.error('Failed to fetch articles.');
-  }
-};
-
-onMounted(() => {
-  fetchArticles();
-});
 
 const navigateToCreateArticle = (): void => {
   router.push('/create');
@@ -65,7 +53,7 @@ const navigateToCreateArticle = (): void => {
         <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
       </div>
       <div v-if="newestArticles.length > 0" class="article-list">
-        <ArticlePreviewComponent v-for="article in newestArticles" :key="article.id" :article="article" />
+        <ArticlePreviewComponent v-for="article in newestArticles" :key="article.id" :article="article as any" />
       </div>
 
       <div v-else class="no-articles">
@@ -77,7 +65,7 @@ const navigateToCreateArticle = (): void => {
           <Headline>Public Articles</Headline>
         </div>
         <div class="article-list">
-          <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id"  :article="article" />
+          <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id"  :article="article as any" />
         </div>
       </template>
     </template>

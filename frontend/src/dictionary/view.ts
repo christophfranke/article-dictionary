@@ -10,7 +10,7 @@ import createView from '@/layers/view';
 export type FilterFunction = (x: PartialWord) => boolean;
 export type OrderFunction = (x: PartialWord) => number;
 
-export interface DictionaryView extends View<PartialWord, 'original'> {
+export interface DictionaryView extends View<PartialWord, 'original', 'id'> {
   retranslate: (original: string) => Promise<void>;
   rebuild: () => Promise<void>;
 }

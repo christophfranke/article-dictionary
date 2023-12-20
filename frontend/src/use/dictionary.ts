@@ -1,4 +1,3 @@
-import { watch } from 'vue';
 import type { Ref } from 'vue';
 
 import type { PartialWord, Word } from '@/types';

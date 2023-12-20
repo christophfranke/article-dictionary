@@ -10,7 +10,7 @@ export type WithOrder<T> = T & {
   order: number
 }
 
-export interface View<T extends { id: string } & Record<K, any>, K extends keyof T> {
+export interface View<T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T> {
   find: (keyValue: any) => T | undefined;
   
   isVisible: (keyValue: string) => boolean;
@@ -27,11 +27,11 @@ export interface View<T extends { id: string } & Record<K, any>, K extends keyof
   add: (data: Record<string, unknown>) => Promise<void>;
 }
 
-export default <T extends { id: string } & Record<K, any>, K extends keyof T>(
-  collection: Collection<T, K>,
+export default <T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T>(
+  collection: Collection<T, K, L>,
   filterFn: FilterFunction<T> = x => !!x,
   orderFn: OrderFunction<T> | null = null
-): View<T, K> => {
+): View<T, K, L> => {
   const filter = ref(filterFn);
   const order = ref<OrderFunction<T> | null>(orderFn);
 

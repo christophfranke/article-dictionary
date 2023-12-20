@@ -5,14 +5,14 @@ import type { PartialWord } from '@/types';
 import type { Collection } from '@/layers/collection';
 import createCollection from '@/layers/collection';
 
-export interface DictionaryCollection extends Collection<PartialWord, 'original'> {
+export interface DictionaryCollection extends Collection<PartialWord, 'original', 'id'> {
   retranslate: (original: string) => Promise<void>;
   rebuild: () => Promise<void>;
 }
 
 
 export default (request: DictionaryApi, words: PartialWord[] = []): DictionaryCollection => {
-  const collection = createCollection<PartialWord, 'original'>(request, 'original', words);
+  const collection = createCollection<PartialWord, 'original', 'id'>(request, 'original', 'id');
 
   const retranslate = async (original: string): Promise<void> => {
     const id = collection.find(original)?.id;

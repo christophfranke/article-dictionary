@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router';
 import type { ArticlePreview } from '@/types';
 import useApi from '@/use/api';
 
+import { useArticleView } from '@/use/articles';
+
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import ArticlePreviewList from '@/components/ArticlePreviewList.vue';
 import ProgresseComponent from '@/components/Progress.vue';
@@ -12,12 +14,12 @@ import ProgresseComponent from '@/components/Progress.vue';
 import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 
-const articles = ref<ArticlePreview[]>([]);
+const { articles, isLoading } = useArticleView();
 const router = useRouter();
 
 const continueReadingArticlesCount = ref(3)
 const continueReadingArticles = computed(() => {
-  const sortedArticles = articles.value
+  const sortedArticles = articles.previews.value
     .filter(article => article.owned)
     .filter(article => article.status === 'seen')
     .sort((a, b) => {
@@ -35,7 +37,7 @@ const usefulness = (article: ArticlePreview): number =>
 
 const suggestedArticlesCount = ref(6)
 const suggestedArticles = computed(() => {
-  const baseArticles = articles.value
+  const baseArticles = articles.previews.value
     .filter(article => article.owned)
     .filter(article => article.status !== 'read')
 
@@ -45,7 +47,7 @@ const suggestedArticles = computed(() => {
 
 const newArticlesCount = ref(6)
 const newArticles = computed(() => {
-  const baseArticles = articles.value
+  const baseArticles = articles.previews.value
     .filter(article => article.owned)
     .filter(article => article.status === 'new')
 
@@ -59,7 +61,7 @@ const newArticles = computed(() => {
 
 const readArticlesCount = ref(6)
 const readArticles = computed(() => {
-  const baseArticles = articles.value
+  const baseArticles = articles.previews.value
     .filter(article => article.owned)
     .filter(article => article.status === 'read')
 
@@ -68,7 +70,7 @@ const readArticles = computed(() => {
 });
 
 const remainingArticles = computed(() => {
-  const baseArticles = articles.value
+  const baseArticles = articles.previews.value
     .filter(article => article.owned)
     .filter(article => !continueReadingArticles.value.includes(article))
     .filter(article => !suggestedArticles.value.includes(article))
@@ -81,27 +83,13 @@ const remainingArticles = computed(() => {
 
 const publicArticlesCount = ref(9)
 const publicArticles = computed(() => {
-  const baseArticles = articles.value
+  const baseArticles = articles.previews.value
     .filter(article => !article.owned)
 
   const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
   return sortedArticles.slice(0, publicArticlesCount.value);
 })
 
-
-const { isLoading, fetchAuthorized } = useApi();
-const fetchArticles = async (): Promise<void> => {
-  const data = await fetchAuthorized<ArticlePreview[]>('/api/articles/');
-  if (data) {
-    articles.value = data;
-  } else {
-    console.error('Failed to fetch articles.');
-  }
-};
-
-onMounted(() => {
-  fetchArticles();
-});
 
 const navigateToCreateArticle = (): void => {
   router.push('/create');
@@ -118,7 +106,7 @@ const navigateToCreateArticle = (): void => {
       </div>
     </template>
     <template v-else>
-      <div v-if="articles.length === 0" class="no-articles">
+      <div v-if="articles.previews.value.length === 0" class="no-articles">
         <Headline class="title">You have no articles yet.</Headline>
         <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
       </div>

@@ -2,7 +2,7 @@ import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { StreamApi } from './api';
 
-export interface Collection<T extends { id: string } & Record<K, any>, K extends keyof T> {
+export interface Collection<T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T> {
   find: (keyValue: any) => T | undefined;
   findById: (id: string) => T | undefined;
 
@@ -19,7 +19,7 @@ export interface Collection<T extends { id: string } & Record<K, any>, K extends
 }
 
 
-export default <T extends { id: string } & Record<K, any>, K extends keyof T>(request: StreamApi<T>, searchField: K, collection: T[] = []): Collection<T, K> => {
+export default <T extends { id: string } & Record<K, any>, K extends keyof T, L extends keyof T>(request: StreamApi<T>, searchField: K, requestField: L): Collection<T, K, L> => {
   const items = ref<T[]>([]);
   const itemsByKey = ref<Record<string, T>>({});
   const itemsById = ref<Record<string, T>>({});
@@ -62,7 +62,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T>(re
   const updateOne = async (id: string, data: Record<string, unknown>): Promise<void> => {
     const item = findById(id);
     if (item) {
-      for await (const updatedItem of request.updateOne(id, data)) {        
+      for await (const updatedItem of request.updateOne(item[requestField], data)) {        
         if (updatedItem) {
           updateLocal([updatedItem]);
         }
@@ -71,7 +71,11 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T>(re
   };
 
   const updateMany = async (ids: string[], data: Record<string, unknown>): Promise<void> => {
-    for await (const updatedItems of request.updateMany(ids, data)) {
+    const requestParams = ids
+      .map(id => findById(id))
+      .filter(x => !!x)
+      .map(x => x![requestField]);
+    for await (const updatedItems of request.updateMany(requestParams, data)) {
       if (updatedItems) {
         updateLocal(updatedItems);
       }
@@ -84,14 +88,12 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T>(re
       if (item) {
         Object.assign(item, updated);
       } else {
-        items.value = [...items.value, updated] as any;
+        items.value.push(updated as any);
         itemsByKey.value[updated[searchField]] = updated;
         itemsById.value[updated.id] = updated;
       }
     });
   }
-
-  set(collection);
 
   return {
     find,

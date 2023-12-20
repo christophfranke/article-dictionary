@@ -3,6 +3,8 @@ import type { Ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { FetchFn } from '@/types';
 
+const SIMULATE_DELAY = true;
+
 const redirectToLogin = (router: any, route: any) => {
   // Redirect to login with the current path as the 'next' parameter using Vue Router
   const currentPath = route?.fullPath;
@@ -21,8 +23,10 @@ export const useFetchAuthorized = (): FetchFn => {
   
   // this is the adjusted fetch function
   return async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
-    // await new Promise(resolve => setTimeout(resolve, 2000 * Math.random()));
     try {
+      if (SIMULATE_DELAY) {
+        await new Promise(resolve => setTimeout(resolve, 3000 * Math.random()));
+      }
       const response = await fetch(...args);
 
       if (response.status === 401) {
@@ -61,7 +65,9 @@ export default (): UseApi => {
       loadingCounter.value += 1;
       errorMessage.value = null;
 
-      // await new Promise(resolve => setTimeout(resolve, 4000 * Math.random()));
+      if (SIMULATE_DELAY) {
+        await new Promise(resolve => setTimeout(resolve, 3000 * Math.random()));
+      }
       const response = await fetch(...args);
 
       if (response.status === 401) {
