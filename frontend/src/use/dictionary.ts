@@ -5,6 +5,7 @@ import type { PartialWord, Word } from '@/types';
 import type { DictionaryView, FilterFunction } from '@/dictionary/view';
 import type { DictionaryCollection } from '@/dictionary/collection';
 
+import createDictionaryStorage from '@/dictionary/storage';
 import createDictionaryRequest from '@/dictionary/request';
 import createDictionaryView from '@/dictionary/view';
 import createDictionaryCollection from '@/dictionary/collection';
@@ -27,9 +28,10 @@ export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
 	if (!dictionary) {		
 		const { fetchAuthorized, isLoading } = useApi()
 		const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
+		const dictionaryStorage = createDictionaryStorage(dictionaryRequest, 'mainDictionary')
 		
 		isLoadingDictionary = isLoading;
-		dictionary = createDictionaryCollection(dictionaryRequest, []);
+		dictionary = createDictionaryCollection(dictionaryStorage);
 		dictionary.load();
 	}
 
