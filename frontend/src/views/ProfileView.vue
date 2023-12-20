@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watchEffect, watch } from 'vue';
 import { useProfile, useUpdateProfile } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language';
+import { getThemeName, setTheme } from '@/themes';
 
 import Headline from '@/elements/Headline.vue';
 import Form from '@/elements/Form.vue';
@@ -46,6 +47,11 @@ const submitForm = async () => {
     form.value.confirmPassword = '';
   }
 };
+
+const theme = ref(getThemeName());
+watch(theme, newValue => {
+  setTheme(newValue);
+})
 </script>
 
 <template>
@@ -61,6 +67,14 @@ const submitForm = async () => {
       <FormGroup>
         <Label for="name">Name:</Label>
         <Input type="text" id="name" v-model="form.name" />
+      </FormGroup>
+
+      <FormGroup>
+        <Label for="theme">Theme:</Label>
+        <Select v-model="theme">
+          <option value="bright">Light</option>
+          <option value="dark">Dark</option>
+        </Select>
       </FormGroup>
 
       <FormGroup>
