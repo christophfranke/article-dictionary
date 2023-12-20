@@ -17,15 +17,16 @@ export default (request: DictionaryApi, words: PartialWord[] = []): DictionaryCo
   const retranslate = async (original: string): Promise<void> => {
     const id = collection.find(original)?.id;
     if (id) {
-      const retranslatedWord = await request.retranslate(original);
-      if (retranslatedWord) {
-        collection.updateLocal([retranslatedWord]);
-      }      
+      for await (const retranslatedWord of request.retranslate(original)) {        
+        if (retranslatedWord) {
+          collection.updateLocal([retranslatedWord]);
+        }      
+      }
     }
   };
 
   const rebuild = async (): Promise<void> => {
-    await request.rebuild();
+    for await (const _ of request.rebuild());
     await collection.load();
   }
 

@@ -1,26 +1,27 @@
 import type { PartialWord, FetchFn } from '@/types';
-import type { Api } from '@/layers/api';
+import type { StreamApi } from '@/layers/api';
 
-export interface DictionaryApi extends Api<PartialWord> {
-  rebuild: () => Promise<{ message: string } | null>;
-  retranslate: (id: string) => Promise<PartialWord | null>;
+
+export interface DictionaryApi extends StreamApi<PartialWord> {
+  rebuild: () => AsyncGenerator<{ message: string } | null, void, unknown>;
+  retranslate: (id: string) => AsyncGenerator<PartialWord | null, void, unknown>;
 }
 
 export default (apiRequest: FetchFn): DictionaryApi => {
-  const list = async (): Promise<PartialWord[]> => {
-    return await apiRequest<PartialWord[]>('/api/dictionary/') || [];
+  const list = async function* (): AsyncGenerator<PartialWord[], void, unknown> {
+    yield await apiRequest<PartialWord[]>('/api/dictionary/') || [];
   };
 
-  const rebuild = async (): Promise<{ message: string } | null> => {
-    return await apiRequest('/api/dictionary/reset', { method: 'POST' });
+  const rebuild = async function* (): AsyncGenerator<{ message: string } | null, void, unknown> {
+    yield await apiRequest('/api/dictionary/reset', { method: 'POST' });
   };
 
-  const retranslate = async (id: string): Promise<PartialWord | null> => {
-    return await apiRequest(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
+  const retranslate = async function* (id: string): AsyncGenerator<PartialWord | null, void, unknown> {
+    yield await apiRequest(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
   };
 
-  const add = async (data: Record<string, unknown>): Promise<PartialWord | null> => {
-    return await apiRequest('/api/dictionary/add', {
+  const add = async function* (data: Record<string, unknown>): AsyncGenerator<PartialWord | null, void, unknown> {
+    yield await apiRequest('/api/dictionary/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +32,7 @@ export default (apiRequest: FetchFn): DictionaryApi => {
 
   // make sure only one request per id is active
   const updateRequestMap: { [key: string]: Promise<PartialWord | null> | undefined } = {}
-  const updateOne = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
+  const updateOne = async function* (id: string, data: Record<string, unknown>): AsyncGenerator<PartialWord | null, void, unknown> {
     if (updateRequestMap[id]) {
       await updateRequestMap[id];
     }
@@ -44,11 +45,11 @@ export default (apiRequest: FetchFn): DictionaryApi => {
       body: JSON.stringify(data),
     });
 
-    return await updateRequestMap[id]!;
+    yield await updateRequestMap[id]!;
   };
 
-  const updateMany = async (ids: string[], update: Record<string, unknown>): Promise<PartialWord[] | null> => {
-    return await apiRequest('/api/dictionary/update/', {
+  const updateMany = async function* (ids: string[], update: Record<string, unknown>): AsyncGenerator<PartialWord[] | null, void, unknown> {
+    yield await apiRequest('/api/dictionary/update/', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -57,10 +58,8 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     });
   }
 
-  const get = async (id: string): Promise<PartialWord | null> => {
-    throw new Error('Not implemented');
-
-    return null as unknown as Promise<PartialWord>;
+  const get = async function* (id: string): AsyncGenerator<PartialWord | null, void, unknown> {
+    // not implemented yet
   }
 
   return {
@@ -73,4 +72,3 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     retranslate,
   }
 }
-

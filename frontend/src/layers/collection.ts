@@ -1,9 +1,10 @@
 import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
-import type { Api } from './api';
+import type { StreamApi } from './api';
 
 export interface Collection<T extends { id: string } & Record<K, any>, K extends keyof T> {
   find: (keyValue: any) => T | undefined;
+  findById: (id: string) => T | undefined;
 
   all: ComputedRef<T[]>;
 
@@ -18,9 +19,10 @@ export interface Collection<T extends { id: string } & Record<K, any>, K extends
 }
 
 
-export default <T extends { id: string } & Record<K, any>, K extends keyof T>(request: Api<T>, searchField: K, collection: T[] = []): Collection<T, K> => {
+export default <T extends { id: string } & Record<K, any>, K extends keyof T>(request: StreamApi<T>, searchField: K, collection: T[] = []): Collection<T, K> => {
   const items = ref<T[]>([]);
   const itemsByKey = ref<Record<string, T>>({});
+  const itemsById = ref<Record<string, T>>({});
 
   const set = (newItems: T[]): void => {
     items.value = newItems as any;
@@ -28,54 +30,74 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T>(re
       acc[item[searchField]] = item;
       return acc;
     }, {} as Record<string, T>);
+    itemsById.value = newItems.reduce((acc, item) => {
+      acc[item.id] = item;
+      return acc;
+    }, {} as Record<string, T>);
   };
 
   const add = async (data: Record<string, unknown>): Promise<void> => {
-    const item = await request.add(data);
-    if (item) {
-      items.value = [...items.value, item] as any;
-      itemsByKey.value[item[searchField]] = item;
+    for await (const item of request.add(data)) {      
+      if (item) {
+        if (!itemsByKey.value[item[searchField]]) {          
+          items.value = [...items.value, item] as any;
+          itemsByKey.value[item[searchField]] = item;
+          itemsById.value[item.id] = item;
+        } else {
+          updateLocal([item]);
+        }
+      }
     }
   };
 
   const load = async () => {
-    set(await request.list());
+    for await (const items of request.list()) {
+      set(items);
+    }
   }
 
   const find = (searchValue: any): T | undefined => itemsByKey.value[searchValue];
+  const findById = (id: any): T | undefined => itemsById.value[id];
 
   const updateOne = async (id: string, data: Record<string, unknown>): Promise<void> => {
-    const item = find(id);
+    const item = findById(id);
     if (item) {
       Object.assign(item, data);
 
-      const updatedItem = await request.updateOne(id, data);
-      if (updatedItem) {
-        updateLocal([updatedItem]);
+      for await (const updatedItem of request.updateOne(id, data)) {        
+        if (updatedItem) {
+          updateLocal([updatedItem]);
+        }
       }
     }
   };
 
   const updateMany = async (ids: string[], data: Record<string, unknown>): Promise<void> => {
-    const updatedItems = await request.updateMany(ids, data);
-    if (updatedItems) {
-      updateLocal(updatedItems);
+    for await (const updatedItems of request.updateMany(ids, data)) {
+      if (updatedItems) {
+        updateLocal(updatedItems);
+      }
     }
   };
 
   const updateLocal = (updatedItems: T[]): void => {
-    items.value = items.value.map((item: any) => {
-      const updatedItem = updatedItems.find(ui => ui.id === item.id);
-      return updatedItem ? { ...item, ...updatedItem } : item;
+    updatedItems.forEach(updated => {
+      const item = findById(updated.id);
+      if (item) {
+        Object.assign(item, updated);
+      } else {
+        items.value = [...items.value, updated] as any;
+        itemsByKey.value[updated[searchField]] = updated;
+        itemsById.value[updated.id] = updated;
+      }
     });
-
-    updatedItems.forEach(item => itemsByKey.value[item[searchField]] = { ...itemsByKey.value[item[searchField]], ...item });
   }
 
   set(collection);
 
   return {
     find,
+    findById,
     all: computed<T[]>(() => items.value as any),
     set,
     discard: () => set([]),
