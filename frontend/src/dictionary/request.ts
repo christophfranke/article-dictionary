@@ -19,7 +19,6 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     return await apiRequest(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
   };
 
-
   const add = async (data: Record<string, unknown>): Promise<PartialWord | null> => {
     return await apiRequest('/api/dictionary/add', {
       method: 'POST',
