@@ -3,7 +3,7 @@ import type { Ref, ComputedRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { FetchFn } from '@/types';
 
-const SIMULATE_DELAY = 3000;
+const SIMULATE_DELAY = 0;
 
 const redirectToLogin = (router: any, route: any) => {
   // Redirect to login with the current path as the 'next' parameter using Vue Router
