@@ -3,10 +3,14 @@ import App from './App.vue'
 import router from './router'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-
+import { setTheme } from '@/themes';
 
 // Add the solid icons to the library
 library.add(fas);
+
+
+setTheme('bright');
+
 
 const app = createApp(App)
 

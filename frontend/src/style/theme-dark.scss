@@ -17,6 +17,8 @@ $action-color: #107303;
 $action-color-hover: darken($action-color, 5);
 
 $error-color: #f8d7da;
+$error-color-dark: darken($error-color, 10);
+$error-color-darker: darken($error-color, 30);
 
 $content-new-word-color: rgba(0, 64, 255, 0.25);
 $content-seen-word-color: rgba(255, 203, 0, 0.125);

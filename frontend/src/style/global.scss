@@ -1,4 +1,4 @@
-@import "@/style/theme-dark";
+@import "@/style/theme-css-var";
 
 $main-background-color: $background-100;
 $main-color: $foreground-100;
@@ -35,8 +35,8 @@ $button-action-color: $action-color;
 $button-action-hover-color: $action-color-hover;
 
 $error-background-color: $error-color;
-$error-font-color: darken($error-color, 30);
-$error-border-color: darken($error-color, 10);
+$error-font-color: $error-color-darker;
+$error-border-color: $error-color-dark;
 
 $excerpt-color: $foreground-80;
 
