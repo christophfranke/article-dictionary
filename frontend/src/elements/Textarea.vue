@@ -27,5 +27,9 @@ textarea {
   box-sizing: border-box;
   resize: vertical;
   min-height: 300px;
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 </style>

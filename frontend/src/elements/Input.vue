@@ -37,5 +37,9 @@ input {
   border: 1px solid $border-color;
   border-radius: 4px;
   box-sizing: border-box;
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 </style>
