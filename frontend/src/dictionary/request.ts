@@ -1,16 +1,13 @@
 import type { PartialWord, FetchFn } from '@/types';
+import type { Api } from '@/collection/api';
 
-export interface DictionaryApi {
-  loadAll: () => Promise<PartialWord[]>;
+export interface DictionaryApi extends Api<PartialWord> {
   rebuild: () => Promise<{ message: string } | null>;
   retranslate: (id: string) => Promise<PartialWord | null>;
-  addWord: (original: string) => Promise<PartialWord | null>;
-  updateWord: (id: string, data: Record<string, unknown>) => Promise<PartialWord | null>;
-  updateMany: (ids: string[], update: Record<string, unknown>) => Promise<PartialWord[] | null>;
 }
 
 export default (apiRequest: FetchFn): DictionaryApi => {
-  const loadAll = async (): Promise<PartialWord[]> => {
+  const list = async (): Promise<PartialWord[]> => {
     return await apiRequest<PartialWord[]>('/api/dictionary/') || [];
   };
 
@@ -23,19 +20,19 @@ export default (apiRequest: FetchFn): DictionaryApi => {
   };
 
 
-  const addWord = async (original: string): Promise<PartialWord | null> => {
+  const add = async (data: Record<string, unknown>): Promise<PartialWord | null> => {
     return await apiRequest('/api/dictionary/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ original }),
+      body: JSON.stringify(data),
     });
   };
 
   // make sure only one request per id is active
   const updateRequestMap: { [key: string]: Promise<PartialWord | null> | undefined } = {}
-  const updateWord = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
+  const updateOne = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
     if (updateRequestMap[id]) {
       await updateRequestMap[id];
     }
@@ -61,13 +58,20 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     });
   }
 
+  const get = async (id: string): Promise<PartialWord | null> => {
+    throw new Error('Not implemented');
+
+    return null as unknown as Promise<PartialWord>;
+  }
+
   return {
-    loadAll,
+    list,
+    get,
+    add,
+    updateOne,
+    updateMany,
     rebuild,
     retranslate,
-    addWord,
-    updateWord,
-    updateMany,
   }
 }
 

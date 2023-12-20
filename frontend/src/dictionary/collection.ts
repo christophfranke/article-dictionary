@@ -32,7 +32,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
   };
 
   const addWord = async (original: string): Promise<void> => {
-    const addedWord = await request.addWord(original);
+    const addedWord = await request.add({ original });
     if (addedWord) {
       words.value = [...words.value, addedWord];
       wordsByOriginal.value[addedWord.original] = addedWord;
@@ -40,7 +40,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
   };
 
   const load = async () => {
-    set(await request.loadAll());
+    set(await request.list());
   }
 
   const find = (original: string): PartialWord | undefined => wordsByOriginal.value[original]
@@ -54,7 +54,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
       // update remote collection
       const id = word.id;
       if (id) {      
-        const updatedWord = await request.updateWord(id, data);
+        const updatedWord = await request.updateOne(id, data);
         if (updatedWord) {
           // keep in sync with remote collection
           updateLocalCollection([updatedWord]);
@@ -105,7 +105,7 @@ export default (request: DictionaryApi, collection: PartialWord[] = []): Diction
 
   const rebuild = async (): Promise<void> => {
     await request.rebuild();
-    const newCollection = await request.loadAll();
+    const newCollection = await request.list();
     if (newCollection) {
       set(newCollection);
     }
