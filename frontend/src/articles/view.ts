@@ -31,7 +31,9 @@ function isArticleDetail(article: ArticleBase): article is ArticleDetail {
 export default (collection: ArticleCollection, filterFn: FilterFunction = x => !!x, orderFn: OrderFunction | null = null): ArticleView => {
   const view = createView(collection, filterFn, orderFn)
 
-  const previews = computed<ArticlePreview[]>(() => view.items.value.filter(isArticlePreview) as unknown as ArticlePreview[])
+  const previews = computed<ArticlePreview[]>(() => {
+    return view.items.value.filter(isArticlePreview) as unknown as ArticlePreview[]
+  })
   const detail = (slug: string): ComputedRef<ArticleDetail | undefined> => computed<ArticleDetail | undefined>(() => {
     const article = view.find(slug);
     if (article) {

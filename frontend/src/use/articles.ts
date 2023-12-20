@@ -6,6 +6,7 @@ import type { ArticleCollection } from '@/articles/collection';
 
 import createArticleApi from '@/articles/api';
 import createArticleView from '@/articles/view';
+import createArticleStorage from '@/articles/storage';
 import createArticleCollection from '@/articles/collection';
 
 import useApi from './api';
@@ -17,9 +18,10 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	if (!articles) {		
 		const { fetchAuthorized, isLoading } = useApi()
 		const articleApi = createArticleApi(fetchAuthorized)
+		const articleStorage = createArticleStorage(articleApi, 'allArticles');
 		
 		isLoadingArticles = isLoading;
-		articles = createArticleCollection(articleApi);
+		articles = createArticleCollection(articleStorage);
 		articles.load();
 	}
 

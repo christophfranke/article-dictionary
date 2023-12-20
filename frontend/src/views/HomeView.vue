@@ -100,7 +100,7 @@ const navigateToCreateArticle = (): void => {
   <main class="container">
     <ProgresseComponent />
 
-    <template v-if="isLoading">
+    <template v-if="isLoading && !articles.previews.value.length">
       <div class="no-articles">
         <Headline class="title">Loading...</Headline>
       </div>

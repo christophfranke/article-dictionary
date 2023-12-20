@@ -5,7 +5,11 @@ export default <T extends { id: string }>(request: StreamApi<T>, key: string): S
 
   const save = (newData: T[]) => {
     newData.forEach(item => {
-      collection[item.id] = item;
+      if (item.id in collection) {
+        Object.assign(collection[item.id], item);
+      } else {
+        collection[item.id] = item;
+      }
     });
     localStorage.setItem(key, JSON.stringify(collection));
   };
@@ -23,6 +27,19 @@ export default <T extends { id: string }>(request: StreamApi<T>, key: string): S
       yield newData;
       if (newData) {
         save([newData]);
+      }
+    }
+  };
+
+  const get = async function* (id: string): AsyncGenerator<T | null, void, unknown> {
+    const item = collection[id];
+    if (item) {
+      yield item;
+    }
+    for await(const newItem of request.get(id)) {
+      yield newItem;
+      if (newItem) {
+        save([newItem]);
       }
     }
   };
@@ -46,6 +63,7 @@ export default <T extends { id: string }>(request: StreamApi<T>, key: string): S
   return {
     ...request,
     add,
+    get,
     updateOne,
     list
   };

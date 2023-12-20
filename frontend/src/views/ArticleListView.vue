@@ -44,7 +44,7 @@ const navigateToCreateArticle = (): void => {
 
 <template>
   <main class="container">
-    <template v-if="isLoading">
+    <template v-if="isLoading && !articles.previews.value.length">
       <Headline type="h2">Loading Articles...</Headline>
     </template>
     <template v-else>

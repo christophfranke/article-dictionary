@@ -104,7 +104,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
   return {
     find,
     findById,
-    all: computed<T[]>(() => items.value as any),
+    all: computed<T[]>(() => items.value),
     set,
     discard: () => set([]),
     load,
