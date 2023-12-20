@@ -22,8 +22,9 @@ export interface View<T extends { id: string } & Record<K, any> & Record<L, any>
   discard: () => void;
 
   load: () => Promise<void>;
-  updateMany: (ids: string[], data: Record<string, unknown>) => Promise<void>;
-  updateOne: (id: string, data: Record<string, unknown>) => Promise<void>;
+  get: (requestId: string) => Promise<void>;
+  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<void>;
+  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<void>;
   add: (data: Record<string, unknown>) => Promise<void>;
 }
 

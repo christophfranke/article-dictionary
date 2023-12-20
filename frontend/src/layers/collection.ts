@@ -12,8 +12,9 @@ export interface Collection<T extends { id: string } & Record<K, any> & Record<L
   discard: () => void;
 
   load: () => Promise<void>;
-  updateMany: (ids: string[], data: Record<string, unknown>) => Promise<void>;
-  updateOne: (id: string, data: Record<string, unknown>) => Promise<void>;
+  get: (requestId: string) => Promise<void>;
+  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<void>;
+  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<void>;
   add: (data: Record<string, unknown>) => Promise<void>;
   updateLocal: (updatedItems: T[]) => void;
 }
@@ -52,48 +53,53 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
 
   const load = async () => {
     for await (const items of request.list()) {
-      set(items);
+      updateLocal(items);
     }
   }
 
   const find = (searchValue: any): T | undefined => itemsByKey.value[searchValue];
   const findById = (id: any): T | undefined => itemsById.value[id];
 
-  const updateOne = async (id: string, data: Record<string, unknown>): Promise<void> => {
-    const item = findById(id);
-    if (item) {
-      for await (const updatedItem of request.updateOne(item[requestField], data)) {        
-        if (updatedItem) {
-          updateLocal([updatedItem]);
-        }
+  const updateOne = async (requestId: string, data: Record<string, unknown>): Promise<void> => {
+    for await (const updatedItem of request.updateOne(requestId, data)) {        
+      if (updatedItem) {
+        updateLocal([updatedItem]);
       }
     }
   };
 
-  const updateMany = async (ids: string[], data: Record<string, unknown>): Promise<void> => {
-    const requestParams = ids
-      .map(id => findById(id))
-      .filter(x => !!x)
-      .map(x => x![requestField]);
-    for await (const updatedItems of request.updateMany(requestParams, data)) {
+  const updateMany = async (requestIds: string[], data: Record<string, unknown>): Promise<void> => {
+    for await (const updatedItems of request.updateMany(requestIds, data)) {
       if (updatedItems) {
         updateLocal(updatedItems);
       }
     }
   };
 
-  const updateLocal = (updatedItems: T[]): void => {
-    updatedItems.forEach(updated => {
-      const item = findById(updated.id);
-      if (item) {
-        Object.assign(item, updated);
-      } else {
-        items.value.push(updated as any);
-        itemsByKey.value[updated[searchField]] = updated;
-        itemsById.value[updated.id] = updated;
+  const get = async (requestId: string): Promise<void> => {
+    for await (const updatedItem of request.get(requestId)) {
+      if (updatedItem) {
+        updateLocal([updatedItem]);
       }
-    });
-  }
+    }
+  };
+
+  const updateLocal = (updatedItems: T[]): void => {
+    if (!items.value.length) {
+      set(updatedItems);
+    } else {
+      updatedItems.forEach(updated => {
+        const item = findById(updated.id);
+        if (item) {
+          Object.assign(item, updated);
+        } else {
+          items.value.push(updated as any);
+          itemsByKey.value[updated[searchField]] = updated;
+          itemsById.value[updated.id] = updated;
+        }
+      });
+    }
+  };
 
   return {
     find,
@@ -102,6 +108,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     set,
     discard: () => set([]),
     load,
+    get,
     updateMany,
     updateOne,
     add,

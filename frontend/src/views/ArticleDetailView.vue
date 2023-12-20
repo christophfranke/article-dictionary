@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { PartialWord, ArticleDetail } from '../types';
 
 import { useDictionaryView } from '@/use/dictionary';
+import { useArticleView } from '@/use/articles';
+
 import useApi from '@/use/api';
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 
@@ -61,20 +63,11 @@ const contentDisplayConfig = {
   }  
 }
 
-const article = ref<ArticleDetail>({
-  id: '',
-  title: '',
-  content: '',
-  slug: '',
-  status: '',
-  owned: false,
-  privacy: '',
-  words: [],
-  readingIndex: 0,
-});
-
 const route = useRoute();
-const { fetchAuthorized, errorMessage } = useApi();
+const slug = ref(typeof route.params.slug === 'string' ? route.params.slug : (route.params.slug[0] || ''));
+
+const { articles } = useArticleView();
+const article = articles.detail(slug.value)
 
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
@@ -89,55 +82,41 @@ const highlighted = ref<{ word: string; index: number }>({
 });
 
 const statusDescription = computed(() => {
-  if (article.value.status === 'read') {
+  if (article.value?.status === 'read') {
     return 'You have read this article.';
-  } else if (article.value.status === 'seen') {
+  } else if (article.value?.status === 'seen') {
     return 'You have been reading this article.';
   } else {
     return 'New article';
   }
 
+  return ''
 })
 
-const wordIndexMap = ref<{ [key: string]: number }>({});
-
-const fetchArticleDetails = async () => {
-  const slug = route.params.slug;
-  if (!slug) {
-    console.error('No slug provided');
-    return;
-  }
-  const data = await fetchAuthorized<ArticleDetail>(`/api/articles/${slug}`);
-  if (data) {
-    article.value = data;
-
-    article.value.words.forEach((word, index) => {
-      if (!wordIndexMap.value[word]) {
-        wordIndexMap.value[word] = index;
-      }
-    });
-
-    dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original]);
-  } else {
-    console.error('Failed to fetch article details');
-  }
-};
-
-const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton } = useApi();
-const markArticleAsRead = async () => {
-  const data = await fetchAuthorizedButton<ArticleDetail>(`/api/articles/${article.value.slug}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ status: 'read' }),
+const wordIndexMap = computed(() => {
+  const map: { [key: string]: number } = {};
+  article.value?.words.forEach((word, index) => {
+    map[word] = index;
   });
+  return map;
+});
+dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] || Infinity);
 
-  if (data) {
-    article.value = data;
-    await new Promise(resolve => setTimeout(resolve, 100));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton, errorMessage } = useApi();
+const markArticleAsRead = async () => {
+  // const data = await fetchAuthorizedButton<ArticleDetail>(`/api/articles/${article.value.slug}`, {
+  //   method: 'PUT',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({ status: 'read' }),
+  // });
+
+  // if (data) {
+  //   article.value = data;
+  //   await new Promise(resolve => setTimeout(resolve, 100));
+  //   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // }
 }
 
 const showDictionary = ref(true);
@@ -151,11 +130,13 @@ const isLoading = computed<boolean>(() => !article.value?.title || dictionary.al
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 onMounted(async () => {
-  await fetchArticleDetails();
+  articles.get(slug.value);
 
-  if(article.value.status === 'read') {
+  if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {
-      article.value.status = 'seen';
+      if (article.value) {
+        article.value.status = 'seen';
+      }
     }, 60000);
   }
 });
@@ -169,11 +150,11 @@ onBeforeUnmount(() => {
 
 
 <template>
-  <div class="article-page" v-if="isLoading">
+  <div class="article-page" v-if="!article">
     <Headline type="h2">Loading...</Headline>
   </div>
   <div class="article-page" v-else>
-    <div :class="{ content: true, 'no-dictionary': !showDictionary }" v-if="article.content && article.content.length">
+    <div :class="{ content: true, 'no-dictionary': !showDictionary }">
       <Statistics :article="article" :dictionary="dictionary" showPercentage />
       <p class="status-description">{{ statusDescription }}</p>
       <Headline class="title">{{ article.title }}</Headline>
