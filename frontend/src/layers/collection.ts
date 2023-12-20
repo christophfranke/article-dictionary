@@ -62,8 +62,6 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T>(re
   const updateOne = async (id: string, data: Record<string, unknown>): Promise<void> => {
     const item = findById(id);
     if (item) {
-      Object.assign(item, data);
-
       for await (const updatedItem of request.updateOne(id, data)) {        
         if (updatedItem) {
           updateLocal([updatedItem]);
