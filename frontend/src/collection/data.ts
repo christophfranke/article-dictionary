@@ -2,8 +2,8 @@ import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Api } from './api';
 
-export interface Collection<T extends { id: string }> {
-  find: (id: string) => T | undefined;
+export interface Collection<T extends { id: string } & Record<K, string>, K extends keyof T> {
+  find: (keyValue: string) => T | undefined;
 
   all: ComputedRef<T[]>;
 
@@ -17,23 +17,23 @@ export interface Collection<T extends { id: string }> {
 }
 
 
-export default <T extends { id: string }>(request: Api<T>, collection: T[] = []): Collection<T> => {
+export default <T extends { id: string } & Record<K, string>, K extends keyof T>(request: Api<T>, searchField: K, collection: T[] = []): Collection<T, K> => {
   const items = ref<T[]>([]);
-  const itemsById = ref<Record<string, T>>({});
+  const itemsByKey = ref<Record<string, T>>({});
 
   const set = (newItems: T[]): void => {
     items.value = newItems as any;
-    itemsById.value = newItems.reduce((acc, item) => {
-      acc[item.id] = item;
+    itemsByKey.value = newItems.reduce((acc, item) => {
+      acc[item[searchField]] = item;
       return acc;
-    }, {} as { [key: string]: T });
+    }, {} as Record<string, T>);
   };
 
   const add = async (data: Record<string, unknown>): Promise<void> => {
     const item = await request.add(data);
     if (item) {
       items.value = [...items.value, item] as any;
-      itemsById.value[item.id] = item;
+      itemsByKey.value[item[searchField]] = item;
     }
   };
 
@@ -41,7 +41,7 @@ export default <T extends { id: string }>(request: Api<T>, collection: T[] = [])
     set(await request.list());
   }
 
-  const find = (id: string): T | undefined => itemsById.value[id];
+  const find = (searchValue: string): T | undefined => itemsByKey.value[searchValue];
 
   const updateOne = async (id: string, data: Record<string, unknown>): Promise<void> => {
     const item = find(id);
@@ -63,12 +63,12 @@ export default <T extends { id: string }>(request: Api<T>, collection: T[] = [])
   };
 
   const updateLocalCollection = (updatedItems: T[]): void => {
-    items.value = items.value.map(item => {
+    items.value = items.value.map((item: any) => {
       const updatedItem = updatedItems.find(ui => ui.id === item.id);
       return updatedItem ? { ...item, ...updatedItem } : item;
     });
 
-    updatedItems.forEach(item => itemsById.value[item.id] = { ...itemsById.value[item.id], ...item });
+    updatedItems.forEach(item => itemsByKey.value[item[searchField]] = { ...itemsByKey.value[item[searchField]], ...item });
   }
 
   set(collection);
