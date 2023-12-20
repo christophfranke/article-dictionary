@@ -6,12 +6,19 @@ const baseColors = {
     errorColor: "#f8d7da",
 };
 
-const foregroundColors = {
+const foreground = {
     foreground100: "#fff",
     foreground95: "#eee",
     foreground90: "#ddd",
     foreground80: "#ccc",
 };
+
+const background = {
+    background100: "#222",
+    background98: "#2a2a2a",
+    background95: "#333",
+    background80: "#666",    
+}
 
 const wordColors = {
     new: "rgba(0, 64, 255, 0.25)",
@@ -22,15 +29,15 @@ const wordColors = {
 export default {
     fontFamily: "'Helvetica', 'Arial', sans-serif",
 
-    background100: "#222",
-    background98: "#2a2a2a",
-    background95: "#333",
-    background80: "#666",
+    background100: background.background100,
+    background98: background.background98,
+    background95: background.background95,
+    background80: background.background80,
 
-    foreground100: foregroundColors.foreground100,
-    foreground95: foregroundColors.foreground95,
-    foreground90: foregroundColors.foreground90,
-    foreground80: foregroundColors.foreground80,
+    foreground100: foreground.foreground100,
+    foreground95: foreground.foreground95,
+    foreground90: foreground.foreground90,
+    foreground80: foreground.foreground80,
 
     viewColor: baseColors.viewColor,
     viewColorHover: darken(baseColors.viewColor, 7),
@@ -47,5 +54,9 @@ export default {
     contentMarkWordColor: wordColors.mark,
     tableHighlightColor: wordColors.seen,
 
-    internalLinkColor: foregroundColors.foreground100,
+    headerBackgroundColor: background.background95,
+    headerFontColor: foreground.foreground100,
+    headerHoverColor: baseColors.viewColor,
+
+    internalLinkColor: foreground.foreground100,
 };

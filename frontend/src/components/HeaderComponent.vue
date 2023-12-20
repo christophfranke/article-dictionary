@@ -41,12 +41,12 @@ a, a:visited {
   padding: 5px 10px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  color: $header-link-font-color;
+  color: $header-font-color;
   text-decoration: none;
 }
 
 a:hover {
-  background-color: $header-link-hover-color;
+  background-color: $header-hover-color;
 }
 
 .profile-link {

@@ -1,8 +1,8 @@
 import darken from './helper/darken';
 
 const baseColors = {
-    viewColor: "#007bff",
-    actionColor: "#4caf50",
+    viewColor: "#51779f",
+    actionColor: "#387b3b",
     errorColor: "#f8d7da",
 };
 
@@ -26,8 +26,9 @@ const foreground = {
     foreground80: "#666",
 }
 
+
 export default {
-    fontFamily: "'Helvetica Neue', 'Arial', sans-serif",
+    fontFamily: "'Times New Roman', serif",
 
     background100: background.background100,
     background98: background.background98,
@@ -54,8 +55,8 @@ export default {
     contentMarkWordColor: wordColors.mark,
     tableHighlightColor: wordColors.seen,
 
-    headerBackgroundColor: foreground.foreground100,
-    headerHoverColor: darken(baseColors.viewColor, 10),
+    headerBackgroundColor: foreground.foreground95,
+    headerHoverColor: foreground.foreground90,
     headerFontColor: background.background95,
 
     internalLinkColor: baseColors.viewColor,

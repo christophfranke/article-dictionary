@@ -51,7 +51,12 @@ const submitForm = async () => {
 const theme = ref(getThemeName());
 watch(theme, newValue => {
   setTheme(newValue);
-})
+});
+const themes = {
+  'bright': 'Light',
+  'dark': 'Dark',
+  'classic': 'Classic',
+};
 </script>
 
 <template>
@@ -71,9 +76,7 @@ watch(theme, newValue => {
 
       <FormGroup>
         <Label for="theme">Theme:</Label>
-        <Select v-model="theme">
-          <option value="bright">Light</option>
-          <option value="dark">Dark</option>
+        <Select v-model="theme" :options="themes">
         </Select>
       </FormGroup>
 
