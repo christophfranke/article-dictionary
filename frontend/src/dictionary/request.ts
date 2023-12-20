@@ -1,5 +1,5 @@
 import type { PartialWord, FetchFn } from '@/types';
-import type { Api } from '@/collection/api';
+import type { Api } from '@/layers/api';
 
 export interface DictionaryApi extends Api<PartialWord> {
   rebuild: () => Promise<{ message: string } | null>;

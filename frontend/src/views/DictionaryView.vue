@@ -83,7 +83,7 @@ const statusFilters = ref({
   <div class="dictionary-view">
     <Headline>Dictionary View</Headline>
 
-    <p v-if="isLoading && dictionary.allWords.value.length === 0">
+    <p v-if="isLoading && dictionary.all.value.length === 0">
       Loading dictionary...
     </p>
 

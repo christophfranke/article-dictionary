@@ -2,127 +2,36 @@ import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { DictionaryApi } from './request';
 import type { PartialWord } from '@/types';
+import type { Collection } from '@/layers/collection';
+import createCollection from '@/layers/collection';
 
-export interface DictionaryCollection {
-  find: (original: string) => PartialWord | undefined;
-  allWords: ComputedRef<PartialWord[]>;
-
-  set: (newWords: PartialWord[]) => void;
-  discard: () => void;
-
-  load: () => Promise<void>;
-  updateMany: (originals: string[], data: Record<string, unknown>) => Promise<void>;
-  retranslateWord: (original: string) => Promise<void>;
-  updateWord: (original: string, data: Record<string, unknown>) => Promise<void>;
-  addWord: (original: string) => Promise<void>;
+export interface DictionaryCollection extends Collection<PartialWord, 'original'> {
+  retranslate: (original: string) => Promise<void>;
   rebuild: () => Promise<void>;
 }
 
 
-export default (request: DictionaryApi, collection: PartialWord[] = []): DictionaryCollection => {
-  const words = ref<PartialWord[]>([])
-  const wordsByOriginal = ref<{
-    [key: string]: PartialWord;
-  }>({})
+export default (request: DictionaryApi, words: PartialWord[] = []): DictionaryCollection => {
+  const collection = createCollection<PartialWord, 'original'>(request, 'original', words);
 
-  const set = (newWords: PartialWord[]): void => {
-    words.value = newWords.map(word => word); // make a new collection
-    wordsByOriginal.value ={}
-    words.value.forEach(word => wordsByOriginal.value[word.original] = word)
-  };
-
-  const addWord = async (original: string): Promise<void> => {
-    const addedWord = await request.add({ original });
-    if (addedWord) {
-      words.value = [...words.value, addedWord];
-      wordsByOriginal.value[addedWord.original] = addedWord;
-    }
-  };
-
-  const load = async () => {
-    set(await request.list());
-  }
-
-  const find = (original: string): PartialWord | undefined => wordsByOriginal.value[original]
-
-  const updateWord = async (original: string, data: Record<string, unknown>): Promise<void> => {
-    const word = find(original)
-    if (word) {
-      // update local collection
-      Object.assign(word, data)
-
-      // update remote collection
-      const id = word.id;
-      if (id) {      
-        const updatedWord = await request.updateOne(id, data);
-        if (updatedWord) {
-          // keep in sync with remote collection
-          updateLocalCollection([updatedWord]);
-        }
-      }
-    }
-  };
-
-  const updateMany = async (originals: string[], data: Record<string, unknown>): Promise<void> => {
-    const ids = originals.map(original => find(original)?.id!).filter(id => id);
-    const updatedWords = await request.updateMany(ids, data);
-    if (updatedWords) {
-      updateLocalCollection(updatedWords);
-    }
-  };
-
-  const updateLocalCollection = (updatedWords: PartialWord[]): void => {
-    words.value = [...words.value.map(word => updatedWords.find(updatedWord => updatedWord.original === word.original)
-      ? {
-        ...word,
-        ...updatedWords.find(updatedWord => updatedWord.original === word.original)
-      } : word
-    )];
-    updatedWords.forEach(word => wordsByOriginal.value[word.original] = {
-      ...wordsByOriginal.value[word.original],
-      ...word
-    });
-  }
-
-  const retranslateWord = async (original: string): Promise<void> => {
-    const id = find(original)?.id;
+  const retranslate = async (original: string): Promise<void> => {
+    const id = collection.find(original)?.id;
     if (id) {
       const retranslatedWord = await request.retranslate(original);
       if (retranslatedWord) {
-        words.value = [...words.value.map(word => word.original === retranslatedWord.original
-          ? {
-            ...word,
-            ...retranslatedWord
-          } : word
-        )];
-        wordsByOriginal.value[retranslatedWord.original] = {
-          ...wordsByOriginal.value[retranslatedWord.original],
-          ...retranslatedWord
-        };
+        collection.updateLocal([retranslatedWord]);
       }      
     }
   };
 
   const rebuild = async (): Promise<void> => {
     await request.rebuild();
-    const newCollection = await request.list();
-    if (newCollection) {
-      set(newCollection);
-    }
+    await collection.load();
   }
 
-  set(collection);
-
   return {
-    find,
-    allWords: computed(() => words.value),
-    set,
-    discard: () => set([]),
-    load,
-    updateMany,
-    retranslateWord,
-    updateWord,
-    addWord,
+    ...collection,
+    retranslate,
     rebuild,
   }
 }

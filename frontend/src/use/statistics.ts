@@ -50,7 +50,7 @@ const statisticsForArticle = (dictionary: DictionaryView, article: Ref<ArticleDe
     newWords,
     seenWords,
     knownWords,
-    uniqueWords: dictionary.allWords.value.length,
+    uniqueWords: dictionary.items.value.length,
     totalWords: article.value.words.length,
   };
 }
@@ -60,7 +60,7 @@ const statisticsForDictionary = (dictionary: DictionaryView): StatisticsResult =
   let seenWords = 0;
   let knownWords = 0;
 
-  dictionary.allWords.value.forEach((word: Word) => {
+  dictionary.all.value.forEach((word: Word) => {
     if (word.status === 'new') {
       newWords++;
     } else if (word.status === 'seen') {

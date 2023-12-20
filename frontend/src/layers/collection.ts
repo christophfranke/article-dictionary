@@ -2,8 +2,8 @@ import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Api } from './api';
 
-export interface Collection<T extends { id: string } & Record<K, string>, K extends keyof T> {
-  find: (keyValue: string) => T | undefined;
+export interface Collection<T extends { id: string } & Record<K, any>, K extends keyof T> {
+  find: (keyValue: any) => T | undefined;
 
   all: ComputedRef<T[]>;
 
@@ -14,10 +14,11 @@ export interface Collection<T extends { id: string } & Record<K, string>, K exte
   updateMany: (ids: string[], data: Record<string, unknown>) => Promise<void>;
   updateOne: (id: string, data: Record<string, unknown>) => Promise<void>;
   add: (data: Record<string, unknown>) => Promise<void>;
+  updateLocal: (updatedItems: T[]) => void;
 }
 
 
-export default <T extends { id: string } & Record<K, string>, K extends keyof T>(request: Api<T>, searchField: K, collection: T[] = []): Collection<T, K> => {
+export default <T extends { id: string } & Record<K, any>, K extends keyof T>(request: Api<T>, searchField: K, collection: T[] = []): Collection<T, K> => {
   const items = ref<T[]>([]);
   const itemsByKey = ref<Record<string, T>>({});
 
@@ -41,7 +42,7 @@ export default <T extends { id: string } & Record<K, string>, K extends keyof T>
     set(await request.list());
   }
 
-  const find = (searchValue: string): T | undefined => itemsByKey.value[searchValue];
+  const find = (searchValue: any): T | undefined => itemsByKey.value[searchValue];
 
   const updateOne = async (id: string, data: Record<string, unknown>): Promise<void> => {
     const item = find(id);
@@ -50,7 +51,7 @@ export default <T extends { id: string } & Record<K, string>, K extends keyof T>
 
       const updatedItem = await request.updateOne(id, data);
       if (updatedItem) {
-        updateLocalCollection([updatedItem]);
+        updateLocal([updatedItem]);
       }
     }
   };
@@ -58,11 +59,11 @@ export default <T extends { id: string } & Record<K, string>, K extends keyof T>
   const updateMany = async (ids: string[], data: Record<string, unknown>): Promise<void> => {
     const updatedItems = await request.updateMany(ids, data);
     if (updatedItems) {
-      updateLocalCollection(updatedItems);
+      updateLocal(updatedItems);
     }
   };
 
-  const updateLocalCollection = (updatedItems: T[]): void => {
+  const updateLocal = (updatedItems: T[]): void => {
     items.value = items.value.map((item: any) => {
       const updatedItem = updatedItems.find(ui => ui.id === item.id);
       return updatedItem ? { ...item, ...updatedItem } : item;
@@ -82,5 +83,6 @@ export default <T extends { id: string } & Record<K, string>, K extends keyof T>
     updateMany,
     updateOne,
     add,
+    updateLocal
   }
 }

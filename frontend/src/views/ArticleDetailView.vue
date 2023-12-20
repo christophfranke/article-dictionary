@@ -147,7 +147,7 @@ const toggleShowDictionary = () => {
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
 
-const isLoading = computed<boolean>(() => !article.value?.title || dictionary.allWords.value.length === 0);
+const isLoading = computed<boolean>(() => !article.value?.title || dictionary.all.value.length === 0);
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 onMounted(async () => {

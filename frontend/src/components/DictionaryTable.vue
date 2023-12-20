@@ -98,7 +98,7 @@ watchEffect(() => {
 const newWord = ref<string>('');
 const addWord = async (): Promise<void> => {
   if (newWord.value) {
-    await props.dictionary.addWord(newWord.value);
+    await props.dictionary.add({ original: newWord.value });
     newWord.value = '';
   }
 };

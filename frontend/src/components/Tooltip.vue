@@ -76,8 +76,9 @@ watch(isVisible, (newValue, oldValue) => {
     original = props.highlighted.word;
     timeoutId = setTimeout(() => {
       if (props.display.update.seen) {
-        if (props.dictionary.find(original)?.status === 'new') {
-          props.dictionary.updateWord(original, { status: 'seen' });
+        const word = props.dictionary.find(original)
+        if (word?.status === 'new') {
+          props.dictionary.updateOne(word.id, { status: 'seen' });
         }
         if (props.article && props.article.status !== 'read') {
           markArticleAsSeen(props.article, props.highlighted.index);

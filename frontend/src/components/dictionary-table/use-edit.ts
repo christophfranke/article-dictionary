@@ -9,7 +9,7 @@ export default (props: any) => {
 	  if (props.display.action.edit) {
 	    editingTranslationId.value = id;
 	    if (id) {
-	      const word: Word | undefined = props.dictionary.words.value.find((word: Word) => word.id === id);
+	      const word: Word | undefined = props.dictionary.items.value.find((word: Word) => word.id === id);
 
 	      if (word) {
 	        editTranslationsValue.value = word.translations.join(', ');
@@ -42,11 +42,11 @@ export default (props: any) => {
 	  }
 
 	  isUpdating.value = true;
-	  const word: Word | undefined = props.dictionary.words.value.find((word: Word) => word.id === editingTranslationId.value);
+	  const word: Word | undefined = props.dictionary.items.value.find((word: Word) => word.id === editingTranslationId.value);
 
 	  if (word) {
 	    const translations: string[] = editTranslationsValue.value.split(',').map((t) => t.trim());
-	    await props.dictionary.updateWord(word.original, { translations });
+	    await props.dictionary.updateOne(word.id, { translations });
 	    editingTranslationId.value = '';
 	  }
 

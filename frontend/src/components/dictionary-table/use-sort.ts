@@ -19,7 +19,7 @@ export default (props: any) => {
 	};
 
 	const sortedWords = computed<Array<Word>>(() => {
-	  const sorted = [...props.dictionary.words.value];
+	  const sorted = [...props.dictionary.items.value];
 	  if (sortedBy.value) {
 	    sorted.sort((a, b) => {
 	      const order = sortOrder.value === 'desc' ? -1 : 1;

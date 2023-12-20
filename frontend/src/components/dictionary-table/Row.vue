@@ -87,8 +87,8 @@ const changeStatus = async (word: Word): Promise<void> => {
 };
 
 
-const updateWord = props.dictionary.updateWord;
-const retranslateWord = props.dictionary.retranslateWord;
+const updateWord = props.dictionary.updateOne;
+const retranslateWord = props.dictionary.retranslate;
 </script>
 
 <template>
