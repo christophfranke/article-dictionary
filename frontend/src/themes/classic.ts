@@ -29,6 +29,7 @@ const foreground = {
 
 export default {
     fontFamily: "'Times New Roman', serif",
+    fontWeight: "normal",
 
     background100: background.background100,
     background98: background.background98,

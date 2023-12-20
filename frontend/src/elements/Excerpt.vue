@@ -10,5 +10,6 @@
 p {
   color: $excerpt-color;
   line-height: 1.4;	
+  font-weight: $font-weight;
 }	
 </style>

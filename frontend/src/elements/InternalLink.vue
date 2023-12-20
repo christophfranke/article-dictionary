@@ -24,6 +24,7 @@ a {
   color: $internal-link-color;
   text-decoration: none;
   font-size: 14px;
+  font-weight: normal;
 
   &:hover {
 	  text-decoration: underline;

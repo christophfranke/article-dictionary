@@ -16,6 +16,7 @@ import HeaderComponent from '@/components/HeaderComponent.vue'
 
 body {
   font-family: $font-family;
+  font-weight: $font-weight;
   font-size: 16px;
   margin: 0;
   padding: 0 0 50px 0;

@@ -28,6 +28,7 @@ const foreground = {
 
 export default {
     fontFamily: "'Helvetica Neue', 'Arial', sans-serif",
+    fontWeight: "normal",
 
     background100: background.background100,
     background98: background.background98,

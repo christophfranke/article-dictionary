@@ -30,6 +30,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-weight: normal;
 
   &.small {
     padding: 5px 5px;

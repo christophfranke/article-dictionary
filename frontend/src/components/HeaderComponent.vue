@@ -24,6 +24,7 @@ header {
   background-color: $header-background-color;
   color: $header-font-color;
   padding: 10px 0;
+  font-weight: normal;
 }
 
 .wrapper {

@@ -28,6 +28,7 @@ const wordColors = {
 
 export default {
     fontFamily: "'Helvetica', 'Arial', sans-serif",
+    fontWeight: "lighter",
 
     background100: background.background100,
     background98: background.background98,
