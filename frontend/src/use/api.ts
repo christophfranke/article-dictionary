@@ -1,9 +1,9 @@
 import { ref, onMounted, computed  } from 'vue';
-import type { Ref } from 'vue';
+import type { Ref, ComputedRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import type { FetchFn } from '@/types';
 
-const SIMULATE_DELAY = true;
+const SIMULATE_DELAY = 3000;
 
 const redirectToLogin = (router: any, route: any) => {
   // Redirect to login with the current path as the 'next' parameter using Vue Router
@@ -25,7 +25,7 @@ export const useFetchAuthorized = (): FetchFn => {
   return async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
     try {
       if (SIMULATE_DELAY) {
-        await new Promise(resolve => setTimeout(resolve, 3000 * Math.random()));
+        await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
       }
       const response = await fetch(...args);
 
@@ -49,7 +49,7 @@ export const useFetchAuthorized = (): FetchFn => {
 interface UseApi {
   fetchAuthorized: FetchFn;
   errorMessage: Ref<string | null>;
-  isLoading: Ref<boolean>;
+  isLoading: ComputedRef<boolean>;
 }
 
 export default (): UseApi => {
@@ -66,7 +66,7 @@ export default (): UseApi => {
       errorMessage.value = null;
 
       if (SIMULATE_DELAY) {
-        await new Promise(resolve => setTimeout(resolve, 3000 * Math.random()));
+        await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
       }
       const response = await fetch(...args);
 

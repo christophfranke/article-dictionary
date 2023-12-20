@@ -18,7 +18,7 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	if (!articles) {		
 		const { fetchAuthorized, isLoading } = useApi()
 		const articleApi = createArticleApi(fetchAuthorized)
-		const articleStorage = createArticleStorage(articleApi, 'allArticles');
+		const articleStorage = createArticleStorage(articleApi, 'articles');
 		
 		isLoadingArticles = isLoading;
 		articles = createArticleCollection(articleStorage);

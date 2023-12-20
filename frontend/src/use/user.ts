@@ -1,6 +1,8 @@
 import { ref, onMounted } from 'vue';
 import useApi from '@/use/api';
 import type { User, UserPreview, FetchFn } from '@/types';
+import { useDictionaryView } from '@/use/dictionary';
+import { useArticleView } from '@/use/articles';
 
 const name = ref('');
 const isLoggedIn = ref(false);
@@ -83,11 +85,16 @@ export const useUpdateProfile = () => {
 
 
 export const useLogin = () => {
-	const { fetchAuthorized, errorMessage, isLoading } = useApi();
+	const { fetchAuthorized, errorMessage } = useApi();
 	const localEmail = ref('')
 	const localPassword = ref('')
+	const localIsLoading = ref(false);
+
+	const { dictionary } = useDictionaryView();
+	const { articles } = useArticleView();
 
 	const login = async (): Promise<boolean> => {
+		localIsLoading.value = true;
     const data = await fetchAuthorized<UserPreview>('/api/auth/login', {
       method: 'POST',
       headers: {
@@ -97,9 +104,18 @@ export const useLogin = () => {
     });
 
     if (data) {
+    	dictionary.discard();
+    	articles.discard();
+
+    	await Promise.all([
+	    	fetchPreview(fetchAuthorized)(),
+	    	dictionary.load(),
+	    	articles.load(),
+    	]);
+
+    	localIsLoading.value = false;
     	isLoggedIn.value = true;
     	email.value = localEmail.value;
-    	fetchPreview(fetchAuthorized)();
 
     	return true;
     }
@@ -112,7 +128,7 @@ export const useLogin = () => {
 		email: localEmail,
 		password: localPassword,
 		errorMessage,
-		isLoading,
+		isLoading: localIsLoading,
 	}
 };
 
@@ -165,15 +181,28 @@ export const useRegister = () => {
 
 export const useLogout = () => {
 	const { fetchAuthorized } = useApi();
+	const { dictionary } = useDictionaryView();
+	const { articles } = useArticleView();
 	return async (): Promise<boolean> => {
     const data = await fetchAuthorized('/api/auth/logout');
 
     if (data) {
+    	localStorage.removeItem('main-dictionary');
+    	localStorage.removeItem('articles');
+    	dictionary.discard();
+    	articles.discard();
+	    // Object.keys(localStorage).forEach(key => {
+	    // 	if (key.includes(email.value)) {
+	    // 		localStorage.removeItem(key)
+	    // 	}
+	    // });
+
 	    isLoggedIn.value = false
 	    name.value = ''
 	    email.value = ''
 	    sourceLanguage.value = '';
 	    targetLanguage.value = '';
+
 	    return true
     }
 

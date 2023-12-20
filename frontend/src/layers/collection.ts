@@ -101,12 +101,21 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     }
   };
 
+  const discard = () => {
+    items.value = [];
+    itemsByKey.value = {};
+    itemsById.value = {};
+    console.log('discarded all', all.value);
+  }
+
+  const all = computed<T[]>(() => items.value);
+
   return {
     find,
     findById,
-    all: computed<T[]>(() => items.value),
+    all,
     set,
-    discard: () => set([]),
+    discard,
     load,
     get,
     updateMany,

@@ -27,7 +27,7 @@ export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
 	if (!dictionary) {		
 		const { fetchAuthorized, isLoading } = useApi()
 		const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
-		const dictionaryStorage = createDictionaryStorage(dictionaryRequest, 'mainDictionary')
+		const dictionaryStorage = createDictionaryStorage(dictionaryRequest, 'main-dictionary')
 		
 		isLoadingDictionary = isLoading;
 		dictionary = createDictionaryCollection(dictionaryStorage);
