@@ -77,6 +77,10 @@ const statusFilters = ref({
   known: true,
   ignore: false,
 } as { [key: string]: boolean });
+
+onMounted(() => {
+  dictionary.load();
+});
 </script>
 
 <template>
