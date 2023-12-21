@@ -127,6 +127,7 @@ const isLoading = computed<boolean>(() => !article.value?.title || dictionary.al
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 let SECOND = 1000;
 onMounted(async () => {
+  dictionary.load();
   await articles.get(slug.value);
 
   if(article.value?.status === 'read') {
