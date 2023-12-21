@@ -17,7 +17,6 @@ watch(profile, () => {
 }, { deep: true });
 
 watchEffect(() => {
-	console.log('running watch effect', { isLoggedIn: profile.isLoggedIn, theme: profile.isLoggedIn && profile.theme });
 	if (profile.isLoggedIn) {
 		setTheme(profile.theme);
 	} else {

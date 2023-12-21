@@ -96,11 +96,13 @@ const statusDescription = computed(() => {
 const wordIndexMap = computed(() => {
   const map: { [key: string]: number } = {};
   article.value?.words.forEach((word, index) => {
-    map[word] = index;
+    if (!map[word]) {
+      map[word] = index;
+    }
   });
   return map;
 });
-dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] || Infinity);
+dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
 const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton, errorMessage } = useApi();
 const markArticleAsRead = async () => {
