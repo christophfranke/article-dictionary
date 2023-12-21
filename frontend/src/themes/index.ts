@@ -9,14 +9,11 @@ const themes: { [key: string]: { [key: string]: string } } = {
   classic,
 }
 
-let currentTheme = 'bright'
-export const setTheme = (theme: string): void => {
+let currentTheme = ''
+export const setTheme = (theme: string = 'bright'): void => {
   if (theme in themes) {
     currentTheme = theme;
     setCssVariables(themes[theme]);
-    const profile = JSON.parse(localStorage.getItem('profile') ?? '{}') ?? {};
-    profile.theme = theme
-    localStorage.setItem('profile', JSON.stringify(profile));
   } else {
     console.log(`Theme ${theme} not found`);
   }
@@ -24,12 +21,8 @@ export const setTheme = (theme: string): void => {
 
 export const getTheme = () => themes[currentTheme];
 export const getThemeName = () => currentTheme;
-
 export const setInitialTheme = () => {
-  const profile = JSON.parse(localStorage.getItem('profile') ?? '{}');
-  if (profile?.theme) {
-    setTheme(profile.theme);
-  } else {
-    setTheme('bright');
+  if (!currentTheme) {
+    setTheme();
   }
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watchEffect, watch } from 'vue';
+import { ref, reactive, onMounted, onBeforeUnmount, watchEffect, watch } from 'vue';
 import { useProfile, useUpdateProfile } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language';
-import { getThemeName, setTheme } from '@/themes';
+import { setTheme } from '@/themes';
 
 import Headline from '@/elements/Headline.vue';
 import Form from '@/elements/Form.vue';
@@ -21,6 +21,7 @@ const form = reactive({
   confirmPassword: '',
   sourceLanguage: '',
   targetLanguage: '',
+  theme: '',
 });
 
 const languages = useSupportedLanguages()
@@ -40,6 +41,9 @@ watchEffect(() => {
   if (!form.targetLanguage) {
     form.targetLanguage = profile.targetLanguage;
   }
+  if (!form.theme) {
+    form.theme = profile.theme;
+  }
 });
 
 const submitForm = async () => {
@@ -56,10 +60,14 @@ const submitForm = async () => {
   }
 };
 
-const theme = ref(getThemeName());
-watch(theme, newValue => {
-  setTheme(newValue);
+watchEffect(() => {
+  setTheme(form.theme);
 });
+
+onBeforeUnmount(() => {
+  setTheme(profile.theme);
+});
+
 const themes = {
   'bright': 'Light',
   'dark': 'Dark',
@@ -84,7 +92,7 @@ const themes = {
 
       <FormGroup>
         <Label for="theme">Theme:</Label>
-        <Select v-model="theme" :options="themes">
+        <Select v-model="form.theme" :options="themes">
         </Select>
       </FormGroup>
 

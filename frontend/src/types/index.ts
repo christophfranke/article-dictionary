@@ -79,6 +79,7 @@ export interface ProfilePreview {
 export interface Profile extends ProfilePreview {
   sourceLanguage: string;
   targetLanguage: string;
+  theme: string;
 }
 
 export type FetchFn = <T>(...args: Parameters<typeof fetch>) => Promise<T | null>;

@@ -24,6 +24,7 @@ def preview():
             'isLoggedIn': True,
             'name': user_data.get('name', ''),
             'email': user_data.get('email'),
+            'theme': user_data.get('theme', 'bright'),
             'sourceLanguage': user_data.get('source_language', ''),
         }
 
@@ -41,7 +42,7 @@ def update():
     users = get_collection('users')
 
     # Only include fields that are provided in the data
-    new_data = {camel_to_snake(key): data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage']}
+    new_data = {camel_to_snake(key): data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage', 'theme']}
 
     if 'source_language' in new_data or 'target_language' in new_data:
         return jsonify({'error': 'Source and target language cannot be updated at this moment'}), 400
@@ -62,6 +63,7 @@ def update():
         'name': updated_user.get('name', ''),
         'sourceLanguage': updated_user.get('source_language', ''),
         'targetLanguage': updated_user.get('target_language', ''),
+        'theme': updated_user.get('theme', 'bright'),
     }
     return jsonify(response_data), 200
 
@@ -82,6 +84,7 @@ def settings():
         'name': user_data.get('name', ''),
         'sourceLanguage': user_data.get('source_language', ''),
         'targetLanguage': user_data.get('target_language', ''),
+        'theme': user_data.get('theme', 'bright'),
     }
 
     return jsonify(settings_data), 200

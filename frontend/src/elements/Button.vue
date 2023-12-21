@@ -42,12 +42,18 @@ button {
     &:hover {
       background-color: $button-view-hover-color;
     }
+    &:disabled {
+      background-color: $button-view-color;
+    }
   }
 
   &.action {
     background-color: $button-action-color;
     &:hover {
       background-color: $button-action-hover-color;
+    }
+    &:disabled {
+      background-color: $button-action-color;
     }
   }
 
