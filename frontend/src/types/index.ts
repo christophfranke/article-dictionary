@@ -70,13 +70,13 @@ export interface Progress {
     total_cluster: number;
 }
 
-export interface UserPreview {
+export interface ProfilePreview {
   isLoggedIn: boolean;
   name: string;
   email: string;
 }
 
-export interface User extends UserPreview {
+export interface Profile extends ProfilePreview {
   sourceLanguage: string;
   targetLanguage: string;
 }

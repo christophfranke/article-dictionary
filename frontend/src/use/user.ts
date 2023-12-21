@@ -1,41 +1,43 @@
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive, watch } from 'vue';
 import useApi from '@/use/api';
-import type { User, UserPreview, FetchFn } from '@/types';
+import type { Profile, ProfilePreview, FetchFn } from '@/types';
 import { useDictionaryView } from '@/use/dictionary';
 import { useArticleView } from '@/use/articles';
 
-const name = ref('');
-const isLoggedIn = ref(false);
-const email = ref('');
-const sourceLanguage = ref('');
-const targetLanguage = ref('');
+const PROFILE_KEY = 'profile'
+
+const profile = reactive<Profile>(
+	JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}')
+);
+
+// Watch for changes in the profile and update localStorage
+watch(profile, () => {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+}, { deep: true });
 
 
 const fetchPreview = (fetchAuthorized: FetchFn) => async  () => {
-  const data = await fetchAuthorized<UserPreview>('/api/profile/preview');
+  const data = await fetchAuthorized<ProfilePreview>('/api/profile/preview');
 
-  if (data) {  	
-	  isLoggedIn.value = data.isLoggedIn;
-	  name.value = data.name;
-	  email.value = data.email;
+  if (data) {
+  	Object.assign(profile, data);
   }
 };
 
 const fetchProfileSettings = (fetchAuthorized: FetchFn) => async () => {
-  const data = await fetchAuthorized<User>('/api/profile/settings');
+  const data = await fetchAuthorized<Profile>('/api/profile/settings');
 
   if (data) {
-    email.value = data.email;
-    name.value = data.name;
-    sourceLanguage.value = data.sourceLanguage;
-    targetLanguage.value = data.targetLanguage;
+  	Object.assign(profile, data);
   }
 };
 
 export const useUser = () => {
 	const { fetchAuthorized } = useApi();
 	onMounted(fetchPreview(fetchAuthorized))
-	return { name, email, isLoggedIn }
+	return { 
+		profile
+	}
 };
 
 export const useProfile = () => {
@@ -43,11 +45,7 @@ export const useProfile = () => {
 	onMounted(fetchProfileSettings(fetchAuthorized))
 
 	return {
-		isLoggedIn,
-		email,
-		name,
-		sourceLanguage,
-		targetLanguage,
+		profile
 	}
 }
 
@@ -55,7 +53,7 @@ export const useUpdateProfile = () => {
 	const { fetchAuthorized, errorMessage, isLoading } = useApi();
 
 	const updateProfile = async (formData: any) => {
-	  const data = await fetchAuthorized<User>('/api/profile/update', {
+	  const data = await fetchAuthorized<Profile>('/api/profile/update', {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
@@ -65,10 +63,7 @@ export const useUpdateProfile = () => {
 	  });
 
 	  if (data) {
-	    email.value = data.email;
-	    name.value = data.name;
-	    sourceLanguage.value = data.sourceLanguage;
-	    targetLanguage.value = data.targetLanguage;
+	  	Object.assign(profile, data);
 
 	    return true;
 	  }
@@ -95,7 +90,7 @@ export const useLogin = () => {
 
 	const login = async (): Promise<boolean> => {
 		localIsLoading.value = true;
-    const data = await fetchAuthorized<UserPreview>('/api/auth/login', {
+    const data = await fetchAuthorized<ProfilePreview>('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -107,12 +102,10 @@ export const useLogin = () => {
     	dictionary.discard();
     	articles.discard();
 
+	  	Object.assign(profile, data);
 	    await fetchPreview(fetchAuthorized)();
 
     	localIsLoading.value = false;
-    	isLoggedIn.value = true;
-    	email.value = localEmail.value;
-
     	return true;
     }
 
@@ -138,7 +131,7 @@ export const useRegister = () => {
 	const localTargetLanguage = ref('')
 
 	const register = async (): Promise<boolean> => {
-    const data = await fetchAuthorized<UserPreview>('/api/auth/register', {
+    const data = await fetchAuthorized<ProfilePreview>('/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -153,10 +146,8 @@ export const useRegister = () => {
     });
 
     if (data) {
-    	isLoggedIn.value = true;
-    	email.value = localEmail.value;
-    	name.value = localName.value;
-    	fetchPreview(fetchAuthorized)();
+	  	Object.assign(profile, data);
+    	await fetchPreview(fetchAuthorized)();
 
     	return true;
     }
@@ -188,17 +179,14 @@ export const useLogout = () => {
     	localStorage.removeItem('articles');
     	dictionary.discard();
     	articles.discard();
-	    // Object.keys(localStorage).forEach(key => {
-	    // 	if (key.includes(email.value)) {
-	    // 		localStorage.removeItem(key)
-	    // 	}
-	    // });
 
-	    isLoggedIn.value = false
-	    name.value = ''
-	    email.value = ''
-	    sourceLanguage.value = '';
-	    targetLanguage.value = '';
+      Object.assign(profile, {
+        isLoggedIn: false,
+        name: '',
+        email: '',
+        sourceLanguage: '',
+        targetLanguage: '',
+      });
 
 	    return true
     }

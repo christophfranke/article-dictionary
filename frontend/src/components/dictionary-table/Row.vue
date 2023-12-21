@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import type { Word, User } from '@/types';
+
+import type { PropType } from 'vue';
+import type { Word, Profile } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
+
 import useEdit from './use-edit';
 
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from '@/elements/Button.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 import Input from '@/elements/Input.vue';
@@ -12,7 +15,7 @@ import Input from '@/elements/Input.vue';
 
 const props = defineProps({
 	word: {
-		type: Object as unknown as () => Word,
+		type: Object as PropType<Word>,
 		required: true,
 	},
 	isHighlighed: {
@@ -45,11 +48,11 @@ const props = defineProps({
 		},
 	},
 	dictionary: {
-		type: Object as unknown as () => DictionaryView,
+		type: Object as PropType<DictionaryView>,
 		required: true,
 	},
 	profile: {
-		type: Object as unknown as () => User,
+		type: Object as PropType<Profile>,
 		required: true,
 	},
 });

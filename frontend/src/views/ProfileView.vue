@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watchEffect, watch } from 'vue';
+import { ref, reactive, onMounted, watchEffect, watch } from 'vue';
 import { useProfile, useUpdateProfile } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language';
 import { getThemeName, setTheme } from '@/themes';
@@ -14,7 +14,7 @@ import Select from '@/elements/Select.vue';
 import ErrorMessage from '@/elements/ErrorMessage.vue';
 
 
-const form = ref({
+const form = reactive({
   email: '',
   name: '',
   newPassword: '',
@@ -24,27 +24,35 @@ const form = ref({
 });
 
 const languages = useSupportedLanguages()
-const profile = useProfile();
+const { profile } = useProfile();
 const { updateProfile, errorMessage, isLoading } = useUpdateProfile();
 
 watchEffect(() => {
-  form.value.email = profile.email.value;
-  form.value.name = profile.name.value;
-  form.value.sourceLanguage = profile.sourceLanguage.value;
-  form.value.targetLanguage = profile.targetLanguage.value;
-})
+  if (!form.email) {
+    form.email = profile.email;
+  }
+  if (!form.name) {
+    form.name = profile.name;
+  }
+  if (!form.sourceLanguage) {
+    form.sourceLanguage = profile.sourceLanguage;
+  }
+  if (!form.targetLanguage) {
+    form.targetLanguage = profile.targetLanguage;
+  }
+});
 
 const submitForm = async () => {
   const formData = Object.fromEntries(
-    Object.entries(form.value).filter(([key, value]) => value !== '')
+    Object.entries(form).filter(([key, value]) => value !== '')
   );
 
   delete formData.sourceLanguage;
   delete formData.targetLanguage;
 
   if (await updateProfile(formData)) {
-    form.value.newPassword = '';
-    form.value.confirmPassword = '';
+    form.newPassword = '';
+    form.confirmPassword = '';
   }
 };
 

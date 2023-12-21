@@ -63,7 +63,7 @@ const props = defineProps({
 
 useScroll(props);
 const { sortTable, sortedWords } = useSort(props);
-const profile = reactive(useProfile());
+const { profile } = useProfile();
 
 const highlightedWord = computed(() => {
   return (props.display.behaviour.highlight || props.display.behaviour.highlight)
