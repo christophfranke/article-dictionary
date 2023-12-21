@@ -107,11 +107,7 @@ export const useLogin = () => {
     	dictionary.discard();
     	articles.discard();
 
-    	await Promise.all([
-	    	fetchPreview(fetchAuthorized)(),
-	    	dictionary.load(),
-	    	articles.load(),
-    	]);
+	    await fetchPreview(fetchAuthorized)();
 
     	localIsLoading.value = false;
     	isLoggedIn.value = true;
@@ -120,6 +116,7 @@ export const useLogin = () => {
     	return true;
     }
 
+		localIsLoading.value = false;
     return false;
 	}
 
