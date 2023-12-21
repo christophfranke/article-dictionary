@@ -55,7 +55,7 @@ const markArticleAsSeen = (article: ArticleBase, index: number) => {
 
 
 // time how long a translation is shown
-const UPDATE_TIME = 1000
+const UPDATE_TIME = 500
 let original = ''
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 watch(isVisible, (newValue, oldValue) => {
