@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -96,7 +96,7 @@ const statusDescription = computed(() => {
 const wordIndexMap = computed(() => {
   const map: { [key: string]: number } = {};
   article.value?.words.forEach((word, index) => {
-    if (!map[word]) {
+    if (!(word in map)) {
       map[word] = index;
     }
   });
@@ -144,6 +144,7 @@ onBeforeUnmount(() => {
     clearTimeout(timeoutId);
   }
 });
+
 </script>
 
 

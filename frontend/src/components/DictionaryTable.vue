@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect, reactive } from 'vue';
+import type { PropType } from 'vue';
 
 import type { DictionaryView } from '@/dictionary/view';
 import type { Word } from '@/types';
@@ -19,7 +20,7 @@ import Button from '@/elements/Button.vue';
 
 const props = defineProps({
   dictionary: {
-    type: Object as unknown as () => DictionaryView,
+    type: Object as PropType<DictionaryView>,
     required: true,
   },
   highlight: {
