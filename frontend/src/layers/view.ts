@@ -12,6 +12,7 @@ export type WithOrder<T> = T & {
 
 export interface View<T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T> {
   find: (keyValue: any) => T | undefined;
+  findById: (id: string) => T | undefined;  
   
   isVisible: (keyValue: string) => boolean;
   items: ComputedRef<WithOrder<T>[]>;

@@ -40,6 +40,10 @@ const publicArticles = computed(() =>
 const navigateToCreateArticle = (): void => {
   router.push('/create');
 };
+
+onMounted(() => {
+  articles.load()
+});
 </script>
 
 <template>

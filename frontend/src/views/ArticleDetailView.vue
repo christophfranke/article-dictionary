@@ -104,19 +104,13 @@ dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] || 
 
 const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton, errorMessage } = useApi();
 const markArticleAsRead = async () => {
-  // const data = await fetchAuthorizedButton<ArticleDetail>(`/api/articles/${article.value.slug}`, {
-  //   method: 'PUT',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({ status: 'read' }),
-  // });
+  const slug = article.value?.slug
+  if (slug) {
+    await articles.updateOne(slug, { status: 'read' });
 
-  // if (data) {
-  //   article.value = data;
-  //   await new Promise(resolve => setTimeout(resolve, 100));
-  //   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // }
+    await new Promise(resolve => setTimeout(resolve, 100));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 const showDictionary = ref(true);
@@ -129,15 +123,16 @@ const toggleStatusSeen = useToggleStatusSeen(dictionary)
 const isLoading = computed<boolean>(() => !article.value?.title || dictionary.all.value.length === 0);
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
+let SECOND = 1000;
 onMounted(async () => {
-  articles.get(slug.value);
+  await articles.get(slug.value);
 
   if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {
       if (article.value) {
-        article.value.status = 'seen';
+        articles.updateOne(article.value.slug, { status: 'seen' });
       }
-    }, 60000);
+    }, 60* SECOND);
   }
 });
 

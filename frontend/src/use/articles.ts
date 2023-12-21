@@ -14,19 +14,22 @@ import useApi from './api';
 
 let articles: ArticleCollection | null = null
 let isLoadingArticles: Ref<boolean> | null = null
+let errorMessageArticles: Ref<string | null> | null = null
 export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	if (!articles) {		
-		const { fetchAuthorized, isLoading } = useApi()
+		const { fetchAuthorized, isLoading, errorMessage } = useApi()
 		const articleApi = createArticleApi(fetchAuthorized)
-		const articleStorage = createArticleStorage(articleApi, 'articles');
+		// const articleStorage = createArticleStorage(articleApi, 'articles');
 		
 		isLoadingArticles = isLoading;
-		articles = createArticleCollection(articleStorage);
+		errorMessageArticles = errorMessage;
+		articles = createArticleCollection(articleApi);
 		articles.load();
 	}
 
 	return {
 		articles: createArticleView(articles, filter),
-		isLoading: isLoadingArticles!
+		isLoading: isLoadingArticles!,
+		errorMessage: errorMessageArticles!
 	}
 }

@@ -16,7 +16,9 @@ export interface Collection<T extends { id: string } & Record<K, any> & Record<L
   updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<void>;
   updateOne: (requestId: string, data: Record<string, unknown>) => Promise<void>;
   add: (data: Record<string, unknown>) => Promise<void>;
+
   updateLocal: (updatedItems: T[]) => void;
+  removeLocalExcept: (ids: string[]) => void;
 }
 
 
@@ -54,6 +56,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
   const load = async () => {
     for await (const items of request.list()) {
       updateLocal(items);
+      removeLocalExcept(items.map(item => item.id));
     }
   }
 
@@ -101,11 +104,23 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     }
   };
 
+  const removeLocalExcept = (keepIds: string[]): void => {
+    const removeIds = items.value
+      .filter(item => !keepIds.includes(item.id))
+      .map(item => item.id);
+
+    items.value = items.value
+      .filter(item => keepIds.includes(item.id));
+    removeIds.forEach(id => {
+      delete itemsByKey.value[id];
+      delete itemsById.value[id];
+    });
+  }
+
   const discard = () => {
     items.value = [];
     itemsByKey.value = {};
     itemsById.value = {};
-    console.log('discarded all', all.value);
   }
 
   const all = computed<T[]>(() => items.value);
@@ -121,6 +136,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     updateMany,
     updateOne,
     add,
-    updateLocal
+    updateLocal,
+    removeLocalExcept,
   }
 }

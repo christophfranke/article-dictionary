@@ -3,7 +3,7 @@ import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue'
 import type { PropType } from 'vue';
 import type { ArticleBase } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
-import { useFetchAuthorized } from '@/use/api';
+import { useArticleView } from '@/use/articles';
 
 
 const props = defineProps({
@@ -48,20 +48,11 @@ const setTooltipPosition = (event: MouseEvent): void => {
   position.y = event.clientY + 20; // Adjust the offset based on your design preference
 };
 
-const fetchAuthorized = useFetchAuthorized();
-const markArticleAsSeen = async (article: ArticleBase, index: number) => {
-  const result = await fetchAuthorized('/api/articles/seen', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id: article.id, index }),
-  });
-  
-  if (result) {
-    article.status = 'seen';
-  }
+const { articles } = useArticleView();
+const markArticleAsSeen = (article: ArticleBase, index: number) => {
+  return articles.markSeen({ id: article.id, index });
 }
+
 
 // time how long a translation is shown
 const UPDATE_TIME = 500

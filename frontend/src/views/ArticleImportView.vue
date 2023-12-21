@@ -3,28 +3,26 @@ import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useApi from '@/use/api';
 import type { ArticleDetail } from '@/types'
+import { useArticleView } from '@/use/articles';
 
 import ErrorMessage from '@/elements/ErrorMessage.vue';
+import Paragraph from '@/elements/Paragraph.vue';
 import Headline from '@/elements/Headline.vue';
 
 
 const route = useRoute();
-const id = route.params.id;
+const id = route.params.id as string;
 
 const router = useRouter();
 
-const { fetchAuthorized, errorMessage } = useApi();
+const { articles, errorMessage } = useArticleView();
 const importArticle = async () => {
-	const data = await fetchAuthorized<ArticleDetail>(`/api/articles/create`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id }),
-  });
+  await articles.add({ id });
 
-  if (data) {
-  	router.push(`/articles/${data.slug}`)
+  const article = articles.findById(id);
+
+  if (article) {
+    router.push(`/articles/${article.slug}`);
   }
 }
 
@@ -34,6 +32,7 @@ onMounted(importArticle)
 
 <template>
 	<Headline class="title">Importing article...</Headline>
+  <Paragrph>Translating the article word by word. This may take a minute.</Paragrph>
   <ErrorMessage :message="errorMessage" />
 </template>
 
