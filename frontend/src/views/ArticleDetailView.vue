@@ -18,6 +18,7 @@ import ProcessedContent from '@/components/ProcessedContent.vue';
 
 import Headline from '@/elements/Headline.vue';
 import Button from '@/elements/Button.vue';
+import ButtonLink from '@/elements/ButtonLink.vue';
 import ErroMessage from '@/elements/ErrorMessage.vue';
 import Paragraph from '@/elements/Paragraph.vue';
 
@@ -154,7 +155,12 @@ onBeforeUnmount(() => {
   </div>
   <div class="article-page" v-else>
     <div :class="{ content: true, 'no-dictionary': !showDictionary }">
-      <Statistics :article="article" :dictionary="dictionary" showPercentage />
+      <div class="statistics-container">
+        <ButtonLink class="edit-article" :to="`/articles/${article.slug}/edit`">
+          Edit Article
+        </ButtonLink>
+        <Statistics :article="article" :dictionary="dictionary" showPercentage />
+      </div>
       <p class="status-description">{{ statusDescription }}</p>
       <Headline class="title">{{ article.title }}</Headline>
       <Paragraph>
@@ -223,6 +229,7 @@ onBeforeUnmount(() => {
 }
 
 .title {
+  clear: both;
   margin-bottom: 20px;
 }
 
@@ -270,8 +277,18 @@ onBeforeUnmount(() => {
 }
 
 
-.statistics {
+.statistics-container {
   float: right;
   margin-left: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
+
+.edit-article {
+  display: block;
+  margin-right: 20px;
+}
+
 </style>

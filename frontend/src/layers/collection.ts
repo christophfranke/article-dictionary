@@ -11,11 +11,11 @@ export interface Collection<T extends { id: string } & Record<K, any> & Record<L
   set: (newItems: T[]) => void;
   discard: () => void;
 
-  load: () => Promise<void>;
-  get: (requestId: string) => Promise<void>;
-  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<void>;
-  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<void>;
-  add: (data: Record<string, unknown>) => Promise<void>;
+  load: () => Promise<T[] | null>;
+  get: (requestId: string) => Promise<T | null>;
+  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<T[] | null>;
+  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<T | null>;
+  add: (data: Record<string, unknown>) => Promise<T | null>;
 
   updateLocal: (updatedItems: T[]) => void;
   removeLocalExcept: (ids: string[]) => void;
@@ -39,10 +39,12 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     }, {} as Record<string, T>);
   };
 
-  const add = async (data: Record<string, unknown>): Promise<void> => {
+  const add = async (data: Record<string, unknown>): Promise<T | null> => {
+    let result = null;
     for await (const item of request.add(data)) {      
       if (item) {
-        if (!itemsByKey.value[item[searchField]]) {          
+        result = item;
+        if (!itemsByKey.value[item[searchField]]) {
           items.value = [...items.value, item] as any;
           itemsByKey.value[item[searchField]] = item;
           itemsById.value[item.id] = item;
@@ -51,40 +53,59 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
         }
       }
     }
+
+    return result;
   };
 
-  const load = async () => {
+  const load = async (): Promise<T[] | null> => {
+    let result = null;
     for await (const items of request.list()) {
       updateLocal(items);
       removeLocalExcept(items.map(item => item.id));
+
+      result = items;
     }
+
+    return result;
   }
 
   const find = (searchValue: any): T | undefined => itemsByKey.value[searchValue];
   const findById = (id: any): T | undefined => itemsById.value[id];
 
-  const updateOne = async (requestId: string, data: Record<string, unknown>): Promise<void> => {
+  const updateOne = async (requestId: string, data: Record<string, unknown>): Promise<T | null> => {
+    let result = null;
     for await (const updatedItem of request.updateOne(requestId, data)) {        
       if (updatedItem) {
+        result = updatedItem;
         updateLocal([updatedItem]);
       }
     }
+
+    return result;
   };
 
-  const updateMany = async (requestIds: string[], data: Record<string, unknown>): Promise<void> => {
+  const updateMany = async (requestIds: string[], data: Record<string, unknown>): Promise<T[] | null> => {
+    let result = null;
     for await (const updatedItems of request.updateMany(requestIds, data)) {
       if (updatedItems) {
+        result = updatedItems;
         updateLocal(updatedItems);
       }
     }
+
+    return result;
   };
 
-  const get = async (requestId: string): Promise<void> => {
+  const get = async (requestId: string): Promise<T | null> => {
+    let result = null;
     for await (const updatedItem of request.get(requestId)) {
       if (updatedItem) {
+        result = updatedItem;
         updateLocal([updatedItem]);
       }
     }
+
+    return result;
   };
 
   const updateLocal = (updatedItems: T[]): void => {

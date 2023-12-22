@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useArticleView } from '@/use/articles';
 
 import type { ArticleData, ArticleBase } from '@/types';
@@ -17,28 +16,37 @@ import Textarea from '@/elements/Textarea.vue';
 import ErrorMessage from '@/elements/ErrorMessage.vue';
 
 
-const article = ref<ArticleData>({
-  title: '',
-  content: '',
-  privacy: 'public',
-});
+const article = ref<ArticleBase | null>(null);
+
+const route = useRoute();
+const slug = ref<string>(typeof route.params.slug === 'string' ? route.params.slug : (route.params.slug[0] || ''));
 
 const router = useRouter();
 
 const { articles, errorMessage, isLoading } = useArticleView();
-
 const submitForm = async (): Promise<void> => {
-  const newArticle = await articles.add(article.value);
+  if (article.value) {    
+    const updatedArticle = await articles.updateOne(slug.value, article.value)
 
-  if (newArticle) {
-    router.push(`/articles/${newArticle.slug}`);
+    if (updatedArticle) {
+      router.push(`/articles/${updatedArticle.slug}`);
+    }
   }
 };
+
+onMounted(async () => {
+  article.value = articles.detail(slug.value).value || await articles.get(slug.value);
+  console.log(article.value);
+
+  if (!article.value) {
+    router.push('/404-not-found');
+  }
+});
 </script>
 
 <template>
-  <div class="create-article">
-    <Headline>Create Article</Headline>
+  <div class="create-article" v-if="article">
+    <Headline>Edit Article</Headline>
     <Form @submit.prevent="submitForm" class="article-form">
       <Label for="articleName">Title:</Label>
       <Input id="articleName" v-model="article.title" type="text" required :disabled="isLoading" />
@@ -86,6 +94,7 @@ h1 {
 .submit-button {
   margin-top: 20px;
 }
+
 .error {
   margin-top: 20px;
 }

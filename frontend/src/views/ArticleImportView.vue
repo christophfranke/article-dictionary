@@ -17,12 +17,10 @@ const router = useRouter();
 
 const { articles, errorMessage } = useArticleView();
 const importArticle = async () => {
-  await articles.add({ id });
+  const newArticle = await articles.add({ id });
 
-  const article = articles.findById(id);
-
-  if (article) {
-    router.push(`/articles/${article.slug}`);
+  if (newArticle) {
+    router.push(`/articles/${newArticle.slug}`);
   }
 }
 

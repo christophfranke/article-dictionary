@@ -8,11 +8,9 @@ const SIMULATE_DELAY = 0;
 const redirectToLogin = (router: any, route: any) => {
   // Redirect to login with the current path as the 'next' parameter using Vue Router
   const currentPath = route?.fullPath;
-  if (router) {          
+  if (router) {    
     if (currentPath && !currentPath.startsWith('/login')) {
       router.push(`/login?next=${encodeURIComponent(currentPath)}`);
-    } else {
-      router.push('/login');
     }
   }
 }

@@ -22,11 +22,11 @@ export interface View<T extends { id: string } & Record<K, any> & Record<L, any>
   setOrder: (orderFn: OrderFunction<T>) => void;
   discard: () => void;
 
-  load: () => Promise<void>;
-  get: (requestId: string) => Promise<void>;
-  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<void>;
-  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<void>;
-  add: (data: Record<string, unknown>) => Promise<void>;
+  load: () => Promise<T[] | null>;
+  get: (requestId: string) => Promise<T | null>;
+  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<T[] | null>;
+  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<T | null>;
+  add: (data: Record<string, unknown>) => Promise<T | null>;
 }
 
 export default <T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T>(
