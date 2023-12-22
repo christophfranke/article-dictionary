@@ -70,7 +70,7 @@ const dictionaryLink = (word: Word): string => `https://glosbe.com/${props.profi
 const routerLink = (word: Word): string => `/dictionary/${word.original}`;
 
 const setStatus = async (word: Word, status: string): Promise<void> => {
-  await updateWord(word.original, { status });
+  await updateWord(word.id, { status });
 };
 
 
@@ -86,7 +86,7 @@ const changeStatus = async (word: Word): Promise<void> => {
     return
   }
 
-  await updateWord(word.original, { status: nextStatus(word.status) });
+  await updateWord(word.id, { status: nextStatus(word.status) });
 };
 
 
@@ -164,7 +164,7 @@ const retranslateWord = props.dictionary.retranslate;
         </Button>
         <Button
           v-if="display.action.retranslate"
-          @click="retranslateWord(word.original)"
+          @click="retranslateWord(word.id)"
           title="Retranslate word"
           size="small"
         >

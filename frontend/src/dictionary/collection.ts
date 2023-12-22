@@ -14,14 +14,11 @@ export interface DictionaryCollection extends Collection<PartialWord, 'original'
 export default (request: DictionaryApi, words: PartialWord[] = []): DictionaryCollection => {
   const collection = createCollection<PartialWord, 'original', 'id'>(request, 'original', 'id');
 
-  const retranslate = async (original: string): Promise<void> => {
-    const id = collection.find(original)?.id;
-    if (id) {
-      for await (const retranslatedWord of request.retranslate(original)) {        
-        if (retranslatedWord) {
-          collection.updateLocal([retranslatedWord]);
-        }      
-      }
+  const retranslate = async (id: string): Promise<void> => {
+    for await (const retranslatedWord of request.retranslate(id)) {        
+      if (retranslatedWord) {
+        collection.updateLocal([retranslatedWord]);
+      }      
     }
   };
 

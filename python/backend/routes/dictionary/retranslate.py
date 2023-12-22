@@ -8,20 +8,20 @@ from bson import ObjectId
 from .helpers import serialize
 
 @login_required
-def retranslate(original):
+def retranslate(id):
     dictionary_collection = get_collection('dictionary')
 
-    word = dictionary_collection.find_one({'original': original, 'user_id': ObjectId(current_user.id)})
+    word = dictionary_collection.find_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)})
 
     if word is None:
-        return jsonify({'error': f'Word not found: {original}'}), 404
+        return jsonify({'error': f'Word not found: {id}'}), 404
 
     source_language, target_language = get_languages(get_collection('users'), ObjectId(current_user.id))
-    word['translations'] = translate_single_word(original, source_language, target_language)
+    word['translations'] = translate_single_word(word['original'], source_language, target_language)
     word['needs_retranslate'] = False
     word['needs_clustering'] = True
 
-    dictionary_collection.replace_one({'original': original, 'user_id': ObjectId(current_user.id)}, word)
+    dictionary_collection.replace_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)}, word)
 
-    updated_word = dictionary_collection.find_one({'original': original, 'user_id': ObjectId(current_user.id)})
+    updated_word = dictionary_collection.find_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)})
     return serialize(updated_word)
