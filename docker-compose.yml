@@ -4,9 +4,14 @@ services:
   frontend-build:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
     volumes:
-      - frontend-dist:/app/frontend/dist
+      - frontend-dist:/dist
+    command: >
+      sh -c "echo 'Starting copy...' &&
+             rm -rf /dist/* &&
+             cp -r /app/frontend/dist/* /dist &&
+             ls -l /dist &&
+             echo 'Copied files to /dist'"
 
   backend:
     build:
@@ -19,6 +24,15 @@ services:
     command: gunicorn --capture-output --enable-stdio-inheritance -c /app/backend/gunicorn_config.py live:app
     restart: always
 
+  mongodb:
+    image: mongo:7.0.4
+    env_file:
+      - .env.mongodb
+    volumes:
+      - /database/mongodb:/data/db
+    command: mongod --quiet --logpath /dev/null
+    restart: always
+
   backup:
     build:
       context: ./database
@@ -27,19 +41,9 @@ services:
       - .env.mongodb
     volumes:
       - /database/backups:/backups
-      - /database/uploads:/uploads
+      - /database/uploads:/uploads:ro
     depends_on:
       - mongodb
-
-  mongodb:
-    image: mongo:7.0.4
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - /database/mongodb:/data/db
-    command: mongod --quiet --logpath /dev/null
-    restart: always
 
   scheduler:
     build:
@@ -55,7 +59,7 @@ services:
     build:
       context: ./nginx
     volumes:
-      - frontend-dist:/usr/share/nginx/html
+      - frontend-dist:/usr/share/nginx/html:ro
       - certificates:/etc/letsencrypt
     ports:
       - "80:80"

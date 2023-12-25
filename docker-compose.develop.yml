@@ -4,7 +4,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: fullimage.Dockerfile
+      dockerfile: Dockerfile
     environment:
       - FORCE_COLOR=1
     volumes:
