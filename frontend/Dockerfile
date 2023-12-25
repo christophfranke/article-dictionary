@@ -19,3 +19,5 @@ RUN date > /app/frontend/timestamp.txt
 
 # Copy the rest of the application code into the container
 COPY . .
+
+RUN npm run build
