@@ -44,7 +44,7 @@ type DataPoint = {
 
 const showRelativeData = ref(false);
 const toggleRelativeData = () => showRelativeData.value = !showRelativeData.value;
-const showClusterData = ref(false);
+const showClusterData = ref(true);
 const toggleClusterData = () => showClusterData.value = !showClusterData.value;
 const processedChartData = computed<ChartData<"line", Point[], unknown> | null>(() => {
   if (!chartData.value)
