@@ -50,6 +50,23 @@ services:
     command: python3 develop.py
     restart: unless-stopped
 
+  flask-test:
+    build:
+      context: ./python
+      dockerfile: testing.Dockerfile
+    volumes:
+      - ./python/testing:/app/testing
+      - ./python/backend:/app/backend
+      - ./python/shared:/app/shared
+    environment:
+      - FORCE_COLOR=1
+    env_file:
+      - .env.mongodb
+    depends_on:
+      - mongodb
+    command: ptw backend/
+
+
   mongodb:
     image: mongo:7.0.4
     ports:
