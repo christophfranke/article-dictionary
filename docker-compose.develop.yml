@@ -17,7 +17,7 @@ services:
   type-check:
     build:
       context: ./frontend
-      dockerfile: fullimage.Dockerfile
+      dockerfile: no-alpine.Dockerfile
     volumes:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
@@ -26,7 +26,7 @@ services:
   unit-test:
     build:
       context: ./frontend
-      dockerfile: fullimage.Dockerfile
+      dockerfile: no-alpine.Dockerfile
     environment:
       - FORCE_COLOR=1
     volumes:
