@@ -9,7 +9,7 @@
     "test:unit": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "watch-types": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false --watch --preserveWatchOutput"
+    "type-check:watch": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",

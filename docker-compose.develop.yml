@@ -4,6 +4,9 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: fullimage.Dockerfile
+    environment:
+      - FORCE_COLOR=1
     volumes:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
@@ -14,10 +17,22 @@ services:
   type-check:
     build:
       context: ./frontend
+      dockerfile: fullimage.Dockerfile
     volumes:
       - ./frontend:/app/frontend/
       - node_modules:/app/frontend/node_modules/
-    command: npm run watch-types
+    command: /bin/bash -c 'script -q -c "npm run type-check:watch" /dev/null'
+
+  unit-test:
+    build:
+      context: ./frontend
+      dockerfile: fullimage.Dockerfile
+    environment:
+      - FORCE_COLOR=1
+    volumes:
+      - ./frontend:/app/frontend/
+      - node_modules_test:/app/frontend/node_modules/
+    command: /bin/bash -c 'stdbuf -oL npm run test:unit | sed -r "s/\x1bc|\x1b\[H\x1b\[J|\x1b\[H\x1b\[2J|\x1b\[2J|\x1b\[3J|\x0c//g"'
 
   backend:
     build:
@@ -84,3 +99,4 @@ services:
 
 volumes:
   node_modules:
+  node_modules_test:
