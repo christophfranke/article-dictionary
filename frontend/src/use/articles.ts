@@ -1,3 +1,5 @@
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import type { Ref } from 'vue';
 
 import type { ArticleBase } from '@/types';
@@ -8,27 +10,43 @@ import createArticleApi from '@/articles/api';
 import createArticleView from '@/articles/view';
 import createArticleStorage from '@/articles/storage';
 import createArticleCollection from '@/articles/collection';
+import createEmptyArticleView from '@/articles/empty-view';
 
-import useApi from './api';
+
+import { redirectToLogin, default as useApi } from './api';
+import { profile } from './user';
 
 
-let articles: ArticleCollection | null = null
+let articles: { [key: string]: ArticleCollection } = {}
 let isLoadingArticles: Ref<boolean> | null = null
 let errorMessageArticles: Ref<string | null> | null = null
 export const useArticleView = (filter: FilterFunction = x => !!x) => {
-	if (!articles) {		
+	if (!profile.isLoggedIn || !profile.email) {
+		const route = useRouter();
+		const router = useRoute();
+		redirectToLogin(router, route);
+
+		return {
+			isLoading: ref(false),
+			articles: createEmptyArticleView()
+		}
+	}
+
+	const key = profile.email;
+
+	if (!articles[key]) {		
 		const { fetchAuthorized, isLoading, errorMessage } = useApi()
 		const articleApi = createArticleApi(fetchAuthorized)
-		// const articleStorage = createArticleStorage(articleApi, 'articles');
+		const articleStorage = createArticleStorage(articleApi, `${key}-articles`);
 		
 		isLoadingArticles = isLoading;
 		errorMessageArticles = errorMessage;
-		articles = createArticleCollection(articleApi);
-		articles.load();
+		articles[key] = createArticleCollection(articleApi);
+		articles[key].load();
 	}
 
 	return {
-		articles: createArticleView(articles, filter),
+		articles: createArticleView(articles[key], filter),
 		isLoading: isLoadingArticles!,
 		errorMessage: errorMessageArticles!
 	}

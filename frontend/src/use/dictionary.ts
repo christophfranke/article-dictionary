@@ -1,4 +1,6 @@
+import { ref } from 'vue';
 import type { Ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router'
 
 import type { PartialWord, Word } from '@/types';
 import type { DictionaryView, FilterFunction } from '@/dictionary/view';
@@ -8,8 +10,10 @@ import createDictionaryStorage from '@/dictionary/storage';
 import createDictionaryRequest from '@/dictionary/request';
 import createDictionaryView from '@/dictionary/view';
 import createDictionaryCollection from '@/dictionary/collection';
+import createEmptyDictionaryView from '@/dictionary/empty-view';
 
-import useApi from './api';
+import { profile } from './user';
+import { default as useApi, redirectToLogin } from './api';
 
 
 export const useCustomDictionary = (words: PartialWord[] = [], filter: FilterFunction): DictionaryView => {
@@ -21,21 +25,34 @@ export const useCustomDictionary = (words: PartialWord[] = [], filter: FilterFun
 }
 
 
-let dictionary: DictionaryCollection | null = null
+let dictionary: { [key:string]: DictionaryCollection } = {}
 let isLoadingDictionary: Ref<boolean> | null = null
 export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
-	if (!dictionary) {		
+	if (!profile.isLoggedIn || !profile.email) {
+		const route = useRouter();
+		const router = useRoute();
+		redirectToLogin(router, route);
+
+		return {
+			isLoading: ref(false),
+			dictionary: createEmptyDictionaryView()
+		}
+	}
+
+	const key = profile.email
+
+	if (!dictionary[key]) {
 		const { fetchAuthorized, isLoading } = useApi()
 		const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
-		const dictionaryStorage = createDictionaryStorage(dictionaryRequest, 'main-dictionary')
+		const dictionaryStorage = createDictionaryStorage(dictionaryRequest, `${key}-main-dictionary`)
 		
 		isLoadingDictionary = isLoading;
-		dictionary = createDictionaryCollection(dictionaryStorage);
-		dictionary.load();
+		dictionary[key] = createDictionaryCollection(dictionaryStorage);
+		dictionary[key].load();
 	}
 
 	return {
-		dictionary: createDictionaryView(dictionary, filter),
+		dictionary: createDictionaryView(dictionary[key], filter),
 		isLoading: isLoadingDictionary!
 	}
 }

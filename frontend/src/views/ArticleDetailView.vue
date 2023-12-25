@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watchEffect } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import type { PartialWord, ArticleDetail } from '../types';
@@ -21,6 +21,9 @@ import Button from '@/elements/Button.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 import ErroMessage from '@/elements/ErrorMessage.vue';
 import Paragraph from '@/elements/Paragraph.vue';
+
+import NotFoundView from '@/views/NotFoundView.vue';
+
 
 
 const tableDisplayConfig = computed(() => ({
@@ -67,7 +70,7 @@ const contentDisplayConfig = {
 const route = useRoute();
 const slug = ref(typeof route.params.slug === 'string' ? route.params.slug : (route.params.slug[0] || ''));
 
-const { articles } = useArticleView();
+const { articles, isLoading } = useArticleView();
 const article = articles.detail(slug.value)
 
 const displayFilter = (word: PartialWord): boolean => (
@@ -122,8 +125,7 @@ const toggleShowDictionary = () => {
 };
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
-
-const isLoading = computed<boolean>(() => !article.value?.title || dictionary.all.value.length === 0);
+const router = useRouter();
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 let SECOND = 1000;
@@ -150,39 +152,42 @@ onBeforeUnmount(() => {
 
 
 <template>
-  <div class="article-page" v-if="!article">
+  <div class="article-page" v-if="!article && isLoading">
     <Headline type="h2">Loading...</Headline>
   </div>
   <div class="article-page" v-else>
-    <div :class="{ content: true, 'no-dictionary': !showDictionary }">
-      <div class="statistics-container">
-        <ButtonLink class="edit-article" :to="`/articles/${article.slug}/edit`">
-          Edit Article
-        </ButtonLink>
-        <Statistics :article="article" :dictionary="dictionary" showPercentage />
+    <template v-if="article">
+      <div :class="{ content: true, 'no-dictionary': !showDictionary }">
+        <div class="statistics-container">
+          <ButtonLink class="edit-article" :to="`/articles/${article.slug}/edit`">
+            Edit Article
+          </ButtonLink>
+          <Statistics :article="article" :dictionary="dictionary" showPercentage />
+        </div>
+        <p class="status-description">{{ statusDescription }}</p>
+        <Headline class="title">{{ article.title }}</Headline>
+        <Paragraph>
+          <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" />
+        </Paragraph>
+        <Button
+          v-if="article.status !== 'read'"
+          :disabled="isLoadingButton"
+          class="mark-as-read"
+          @click="markArticleAsRead"
+        >Mark as read</Button>
+        <ErroMessage :message="errorMessage" />
       </div>
-      <p class="status-description">{{ statusDescription }}</p>
-      <Headline class="title">{{ article.title }}</Headline>
-      <Paragraph>
-        <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" />
-      </Paragraph>
-      <Button
-        v-if="article.status !== 'read'"
-        :disabled="isLoadingButton"
-        class="mark-as-read"
-        @click="markArticleAsRead"
-      >Mark as read</Button>
-      <ErroMessage :message="errorMessage" />
-    </div>
-    <div class="dictionary-container" :class="{ hidden: !showDictionary}">
-      <Button class="toggle-dictionary-button" @click="toggleShowDictionary" role="view">
-        <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
-      </Button>
-      <div class="dictionary-scoller">
-        <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlighted.word" />
+      <div class="dictionary-container" :class="{ hidden: !showDictionary}">
+        <Button class="toggle-dictionary-button" @click="toggleShowDictionary" role="view">
+          <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
+        </Button>
+        <div class="dictionary-scoller">
+          <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlighted.word" />
+        </div>
       </div>
-    </div>
-    <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
+      <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
+    </template>
+    <NotFoundView v-else />
   </div>
 </template>
 

@@ -19,7 +19,7 @@ const { login, email, password, errorMessage, isLoading } = useLogin();
 const loginAndRedirect = async () => {
   if (await login()) {    
     const nextPath = Array.isArray(router.currentRoute.value.query.next)
-      ? '/'
+      ? router.currentRoute.value.query.next[0] || '/'
       : router.currentRoute.value.query.next || '/';
     router.push(nextPath);
   }

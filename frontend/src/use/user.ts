@@ -93,9 +93,6 @@ export const useLogin = () => {
 	const localPassword = ref('')
 	const localIsLoading = ref(false);
 
-	const { dictionary } = useDictionaryView();
-	const { articles } = useArticleView();
-
 	const login = async (): Promise<boolean> => {
 		localIsLoading.value = true;
     const data = await fetchAuthorized<ProfilePreview>('/api/auth/login', {
@@ -107,13 +104,13 @@ export const useLogin = () => {
     });
 
     if (data) {
-    	dictionary.discard();
-    	articles.discard();
-
 	  	Object.assign(profile, data);
 	    await fetchPreview(fetchAuthorized)();
 
     	localIsLoading.value = false;
+
+			const { dictionary } = useDictionaryView();
+			const { articles } = useArticleView();
     	return true;
     }
 
@@ -177,17 +174,10 @@ export const useRegister = () => {
 
 export const useLogout = () => {
 	const { fetchAuthorized } = useApi();
-	const { dictionary } = useDictionaryView();
-	const { articles } = useArticleView();
 	return async (): Promise<boolean> => {
     const data = await fetchAuthorized('/api/auth/logout');
 
     if (data) {
-    	localStorage.removeItem('main-dictionary');
-    	localStorage.removeItem('articles');
-    	dictionary.discard();
-    	articles.discard();
-
       Object.assign(profile, {
         isLoggedIn: false,
         name: '',
