@@ -71,6 +71,9 @@ watch(isVisible, (newValue, oldValue) => {
         if (word?.status === 'new') {
           props.dictionary.updateOne(word.id, { status: 'seen' });
         }
+        if (word) {
+          props.dictionary.markSeen(word.id);
+        }
         if (props.article && props.article.status !== 'read') {
           markArticleAsSeen(props.article, props.highlighted.index);
         }

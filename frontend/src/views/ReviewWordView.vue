@@ -8,6 +8,7 @@ import Button from '@/elements/Button.vue';
 
 
 const { dictionary, isLoading } = useDictionaryView();
+const recentlyShown: string[] = [];
 const findWordForReview = (): WordDetail => {
   const now = new Date();
 
@@ -29,10 +30,9 @@ const findWordForReview = (): WordDetail => {
       return 0;
     }
 
-    // wait for at least 3 minutes before reviewing again
-    if (timeSinceLastViewed < 3 / (24 * 60)) {
-			return 0;
-		}
+    if (recentlyShown.includes(word.id)) {
+    	return 0;
+    }
 
     if (word.reviewLevel === 1) {
       return (1 - timeSinceLastViewed) / 1; // 1 day
@@ -61,7 +61,16 @@ const findWordForReview = (): WordDetail => {
 const word = ref<WordDetail>(findWordForReview());
 const phase = ref('recall');
 
+const RECENTLY_SHOWN_LIMIT = 10
+const markRecentlyShown = (word: WordDetail) => {
+	recentlyShown.push(word.id);
+	if (recentlyShown.length > RECENTLY_SHOWN_LIMIT) {
+		recentlyShown.shift();
+	}
+}
+
 const showTranslation = () => {
+	markRecentlyShown(word.value)
 	dictionary.markSeen(word.value.id);
   phase.value = 'review';
 }
