@@ -11,8 +11,9 @@ export type FilterFunction = (x: PartialWord) => boolean;
 export type OrderFunction = (x: PartialWord) => number;
 
 export interface DictionaryView extends View<PartialWord, 'original', 'id'> {
-  retranslate: (original: string) => Promise<void>;
-  rebuild: () => Promise<void>;
+  retranslate: (original: string) => Promise<PartialWord | null>;
+  rebuild: () => Promise<PartialWord[] | null>;
+  markSeen: (id: string) => Promise<PartialWord | null>;
 }
 
 
@@ -20,8 +21,7 @@ export default (collection: DictionaryCollection, filterFn: FilterFunction = x =
   const view = createView(collection, filterFn, orderFn)
 
   return {
+    ...collection,
     ...view,
-    retranslate: collection.retranslate,
-    rebuild: collection.rebuild,
   }
 }

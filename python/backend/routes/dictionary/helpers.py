@@ -37,7 +37,7 @@ def update_word_data(word, data):
 	# 3: seen
 	# 4: known
 	# 5: known
-	if 'status' in data:
+	if 'status' in data and not 'review_level' in data:
 		review_level = word.get('review_level', 0)
 		if data['status'] == 'new':
 			word['review_level'] = 0
@@ -47,6 +47,14 @@ def update_word_data(word, data):
 			word['review_level'] = known_level - 1
 		if data['status'] == 'known' and review_level < known_level:
 			word['review_level'] = known_level
+
+	if 'review_level' in data and not 'status' in data:
+		if data['review_level'] == 0:
+			word['status'] = 'new'
+		if data['review_level'] > 0 and data['review_level'] < known_level:
+			word['status'] = 'seen'
+		if data['review_level'] >= known_level:
+			word['status'] = 'known'
 
 	allowed_keys = ['original', 'translations', 'status', 'frequency', 'last_viewed', 'review_level', 'needs_retranslate', 'needs_clustering', 'cluster_id']
 	for json_key, value in data.items():

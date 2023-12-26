@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import type { WordDetail } from '@/types';
+import type { WordDetail, PartialWord } from '@/types';
 import { useDictionaryView } from '@/use/dictionary';
 
 import Headline from '@/elements/Headline.vue';
@@ -9,20 +9,88 @@ import Button from '@/elements/Button.vue';
 
 const { dictionary, isLoading } = useDictionaryView();
 const findWordForReview = (): WordDetail => {
-	// Here you can implement your own logic to find a word for review
-	const choice = Math.floor(dictionary.items.value.length * Math.random());
-	return dictionary.items.value[choice] as WordDetail;
+  const now = new Date();
+
+	const maxFreq = Math.max(...dictionary.items.value.map(word => word.frequency));
+	const calculateImportance = (word: PartialWord): number => {
+		const frequency = word.frequency
+	  if (frequency === 0) return 0;
+	  if (maxFreq === 1) return 1; // Edge case to handle if maxFreq is 1
+
+	  // Logarithmic scale: importance goes from 0 (for freq 1) to 1 (for maxFreq)
+	  return Math.log(frequency) / Math.log(maxFreq);
+	};
+
+  const calculateScore = (word: PartialWord): number => {
+    const lastViewed = new Date(word.lastViewed);
+    const timeSinceLastViewed = (now.getTime() - lastViewed.getTime()) / (1000 * 3600 * 24); // in days
+
+    if (word.reviewLevel === 0) {
+      return 0;
+    }
+
+    // wait for at least 3 minutes before reviewing again
+    if (timeSinceLastViewed < 3 / (24 * 60)) {
+			return 0;
+		}
+
+    if (word.reviewLevel === 1) {
+      return (1 - timeSinceLastViewed) / 1; // 1 day
+    }
+
+    // Calculate ideal review time
+    const idealReviewTime = 3.5 * Math.pow(2, word.reviewLevel - 2); // level 2 -> 3.5 days, doubles with each level
+    return timeSinceLastViewed * (2 - timeSinceLastViewed) / idealReviewTime;
+  };
+
+  let highestScore = -Infinity;
+  let wordToReview: any | null = null;
+
+  for (const word of dictionary.items.value) {
+    const score = calculateImportance(word) * calculateScore(word);
+    if (score > highestScore) {
+    	console.log(`Found new highest score for ${word.original}: ${score}`);
+      highestScore = score;
+      wordToReview = word;
+    }
+  }
+
+  return wordToReview
 };
 
 const word = ref<WordDetail>(findWordForReview());
 const phase = ref('recall');
 
 const showTranslation = () => {
+	dictionary.markSeen(word.value.id);
   phase.value = 'review';
 }
 
-const recordResponse = (response: string) => {
+const recordResponse = async (response: string) => {
   console.log(`User responded: ${response}`);
+
+  let reviewLevel = word.value.reviewLevel
+  switch (response) {
+		case 'again':
+			reviewLevel = 1;
+			break;
+		case 'hard':
+			reviewLevel--;
+			break;
+		case 'good':
+			reviewLevel++;
+			break;
+		case 'easy':
+			reviewLevel += 2;
+			break;
+	}
+
+	if (reviewLevel < 1) {
+		reviewLevel = 1;
+	}
+
+	await dictionary.updateOne(word.value.id, { reviewLevel });
+
   word.value = findWordForReview();
   phase.value = 'recall';
 }

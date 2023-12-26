@@ -5,6 +5,7 @@ import type { StreamApi } from '@/layers/api';
 export interface DictionaryApi extends StreamApi<PartialWord> {
   rebuild: () => AsyncGenerator<{ message: string } | null, void, unknown>;
   retranslate: (id: string) => AsyncGenerator<PartialWord | null, void, unknown>;
+  markSeen: (id: string) => AsyncGenerator<PartialWord | null, void, unknown>;
 }
 
 export default (apiRequest: FetchFn): DictionaryApi => {
@@ -18,6 +19,10 @@ export default (apiRequest: FetchFn): DictionaryApi => {
 
   const retranslate = async function* (id: string): AsyncGenerator<PartialWord | null, void, unknown> {
     yield await apiRequest(`/api/dictionary/retranslate/${id}`, { method: 'POST' });
+  };
+
+  const markSeen = async function* (id: string): AsyncGenerator<PartialWord | null, void, unknown> {
+    yield await apiRequest(`/api/dictionary/seen/${id}`, { method: 'POST' });
   };
 
   const add = async function* (data: Record<string, unknown>): AsyncGenerator<PartialWord | null, void, unknown> {
@@ -70,5 +75,6 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     updateMany,
     rebuild,
     retranslate,
+    markSeen,
   }
 }

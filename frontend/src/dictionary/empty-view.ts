@@ -17,7 +17,8 @@ export default (): DictionaryView => {
 		updateMany: () => Promise.resolve(null),
 		updateOne: () => Promise.resolve(null),
 		add: () => Promise.resolve(null),
-		retranslate: () => Promise.resolve(),
-		rebuild: () => Promise.resolve(),
+		retranslate: () => Promise.resolve(null),
+		rebuild: () => Promise.resolve(null),
+		markSeen: () => Promise.resolve(null),
 	};
 }
