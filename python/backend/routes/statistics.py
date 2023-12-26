@@ -8,13 +8,24 @@ from bson import ObjectId
 statistics = Blueprint('statistics', __name__)
 
 
-@statistics.route('/daily', methods=['GET'])
+@statistics.route('/week', methods=['GET'])
 @login_required
-def get_statistics():
+def get_week():
+    result = calculate_statistics(7, current_user.id)
+    return jsonify(result)
+
+@statistics.route('/month', methods=['GET'])
+@login_required
+def get_month():
+    result = calculate_statistics(30, current_user.id)
+    return jsonify(result)
+
+
+def calculate_statistics(days, user_id):
     statistics_collection = get_collection('statistics')
 
     # Calculate the date 7 days ago from today
-    seven_days_ago = datetime.utcnow() - timedelta(days=8)
+    seven_days_ago = datetime.utcnow() - timedelta(days=days + 1)
 
     # MongoDB Aggregation Pipeline
     pipeline = [
@@ -24,7 +35,7 @@ def get_statistics():
                     '$gte': seven_days_ago,
                     '$lt': datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
                 },
-                'user_id': ObjectId(current_user.id)  # Filter by current user_id
+                'user_id': ObjectId(user_id)  # Filter by current user_id
             }
         },
         {
@@ -83,17 +94,16 @@ def get_statistics():
     today_statistics = {
         'date': today_date,
         'latest_timestamp': None,  # Update this if needed based on your requirements
-        'new_words': dictionary.count_documents({'status': 'new', 'user_id': ObjectId(current_user.id)}),
-        'seen_words': dictionary.count_documents({'status': 'seen', 'user_id': ObjectId(current_user.id)}),
-        'known_words': dictionary.count_documents({'status': 'known', 'user_id': ObjectId(current_user.id)}),
-        'total_words': dictionary.count_documents({'user_id': ObjectId(current_user.id)}),
-        'new_cluster': cluster.count_documents({'status': 'new', 'user_id': ObjectId(current_user.id)}),
-        'seen_cluster': cluster.count_documents({'status': 'seen', 'user_id': ObjectId(current_user.id)}),
-        'known_cluster': cluster.count_documents({'status': 'known', 'user_id': ObjectId(current_user.id)}),
-        'total_cluster': cluster.count_documents({'user_id': ObjectId(current_user.id)}),
+        'new_words': dictionary.count_documents({'status': 'new', 'user_id': ObjectId(user_id)}),
+        'seen_words': dictionary.count_documents({'status': 'seen', 'user_id': ObjectId(user_id)}),
+        'known_words': dictionary.count_documents({'status': 'known', 'user_id': ObjectId(user_id)}),
+        'total_words': dictionary.count_documents({'user_id': ObjectId(user_id)}),
+        'new_cluster': cluster.count_documents({'status': 'new', 'user_id': ObjectId(user_id)}),
+        'seen_cluster': cluster.count_documents({'status': 'seen', 'user_id': ObjectId(user_id)}),
+        'known_cluster': cluster.count_documents({'status': 'known', 'user_id': ObjectId(user_id)}),
+        'total_cluster': cluster.count_documents({'user_id': ObjectId(user_id)}),
     }
 
     # Add today's statistics to the result
     result.append(today_statistics)
-
-    return jsonify(result)
+    return result

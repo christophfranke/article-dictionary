@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { Line } from 'vue-chartjs';
 import type { ChartData, Point, ChartOptions } from 'chart.js';
 import type { Progress } from '@/types';
@@ -41,14 +41,29 @@ type DataPoint = {
   cluster: number;
 }
 
-
 const showRelativeData = ref(false);
 const toggleRelativeData = () => showRelativeData.value = !showRelativeData.value;
 const showClusterData = ref(true);
 const toggleClusterData = () => showClusterData.value = !showClusterData.value;
+
+const selectedData = ref<string>('week')
+const selectedDataValues = ['week', 'month'];
+const toggleSelectedData = () => {
+  const currentIndex = selectedDataValues.indexOf(selectedData.value);
+  const nextIndex = (currentIndex + 1) % selectedDataValues.length;
+  selectedData.value = selectedDataValues[nextIndex];
+}
+
+const selectedDataDisplay = computed(() => ({
+  week: 'This Week',
+  month: 'This Month',
+  year: 'This Year',
+}[selectedData.value]) ?? 'All');
+
+let lastData: ChartData<"line", Point[], unknown> | null = null;
 const processedChartData = computed<ChartData<"line", Point[], unknown> | null>(() => {
   if (!chartData.value)
-    return null
+    return lastData;
 
   if (showRelativeData.value) {
     const result = {
@@ -78,10 +93,11 @@ const processedChartData = computed<ChartData<"line", Point[], unknown> | null>(
       }))
     }
 
-    return result
+    lastData = result;
+    return lastData;
   }
 
-  return {
+  lastData = {
     ...chartData.value,
     datasets: chartData.value.datasets.map(dataset => ({
       ...dataset,
@@ -91,10 +107,11 @@ const processedChartData = computed<ChartData<"line", Point[], unknown> | null>(
       })).filter((point: DataPoint, index: number) => index > 0)
     })),
   }
+  return lastData;
 });
 
-
-const chartData = ref<ChartData<any> | null>(null);
+const rawData = ref<{ [key: string]: ChartData<any> }>({});
+const chartData = computed(() => rawData.value[selectedData.value]);
 // It would have been nice to put ChartOptions here, but it errors like crazy
 const chartOptions = computed<any>(() => ({
   responsive: true,
@@ -133,17 +150,15 @@ const hasEnoughData = computed(() => {
   return chartData.value.labels.length > 1;
 });
 
-
-
 const fetchAuthorized = useFetchAuthorized();
-onMounted(async () => {
-  const data = await fetchAuthorized<Progress[]>('/api/statistics/daily');
+const fetchData = async (dataType: string) => {
+  const data = await fetchAuthorized<Progress[]>(`/api/statistics/${dataType}`);
 
   if (data) {      
     // sort data by date
     data.sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    chartData.value = {
+    return {
       labels: data.map(entry => entry.date).filter((date, index) => index > 0),
       datasets: [
         {
@@ -182,10 +197,21 @@ onMounted(async () => {
       ],
     };
   }
-});
+}
+
+watch(selectedData, async (newValue: string) => {
+  if (!rawData.value[newValue]) {
+    const result = await fetchData(newValue);
+    if (result) {
+      rawData.value[newValue] = result;
+    }
+  }
+}, { immediate: true });
+
+
 </script>
 <template>
-  <div class="chart-container" v-if="hasEnoughData">
+  <div :class="{ 'chart-container': true, disabled: !hasEnoughData }">
     <div class="chart-toggle">
       <Headline type="h2">Progress</Headline>
       <div class="buttons">
@@ -194,6 +220,9 @@ onMounted(async () => {
         </Button>
         <Button @click="toggleRelativeData" role="view">
           {{ showRelativeData ? 'Per Day' : 'Overall'}}
+        </Button>
+        <Button @click="toggleSelectedData" role="view">
+          {{ selectedDataDisplay }}
         </Button>
       </div>
     </div>
@@ -208,6 +237,13 @@ onMounted(async () => {
   margin: 0 auto;
   margin-bottom: 50px;
   max-width: 800px; /* Set a maximum width for the chart if needed */
+  transition: opacity 0.3s ease-in-out;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+  }
 }
 
 .chart-toggle {
