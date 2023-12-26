@@ -27,15 +27,17 @@ def seen_article():
         new_index = data.get('index') + 1
         old_index = article.get('reading_index', 0) + 1
         words = article.get('words', [])
-        print(f'updating words for seen article ({old_index} - {new_index})')
+        print(f'updating words for seen article {article.get('title')} ({old_index} - {new_index})')
         for i in range(old_index, min(new_index, len(words))):
             print(f'viewed word {i}:{words[i]}')
             word = words[i]
-            dictionary.update_one({'original': word, 'user_id': ObjectId(current_user.id)}, {'$set': {
+            dictionary.update_one({
+                'original': word,
+                'user_id': ObjectId(current_user.id),
+                'status': 'known'
+            }, {'$set': {
                 'last_viewed': datetime.utcnow(),
             }})
-            new_word = dictionary.find_one({'original': word, 'user_id': ObjectId(current_user.id)})
-            print(f'updated word {i}:{new_word}')
 
     index = data.get('index', article.get('reading_index', 0))
 

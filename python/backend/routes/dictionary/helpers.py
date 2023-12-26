@@ -1,4 +1,5 @@
 from flask import jsonify
+from utils.casing import camel_to_snake
 
 known_level = 4
 
@@ -20,7 +21,7 @@ def serialize(word):
 def serialize_many(words):
 	return jsonify([select(word) for word in words])
 
-def update_word(word, data):
+def update_word_data(word, data):
 	if 'translations' in data:
 		word['needs_retranslate'] = False
 		word['needs_clustering'] = True
@@ -39,7 +40,7 @@ def update_word(word, data):
 	if 'status' in data:
 		review_level = word.get('review_level', 0)
 		if data['status'] == 'new':
-			review_level = 0
+			word['review_level'] = 0
 		if data['status'] == 'seen' and review_level < 1:
 			word['review_level'] = 1
 		if data['status'] == 'seen' and review_level > known_level - 1:
