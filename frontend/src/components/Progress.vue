@@ -219,7 +219,7 @@ watch(selectedData, async (newValue: string) => {
           {{ showClusterData ? 'Word groups' : 'Words'}}
         </Button>
         <Button @click="toggleRelativeData" role="view">
-          {{ showRelativeData ? 'Per Day' : 'Overall'}}
+          {{ showRelativeData ? 'New' : 'Total'}}
         </Button>
         <Button @click="toggleSelectedData" role="view">
           {{ selectedDataDisplay }}
