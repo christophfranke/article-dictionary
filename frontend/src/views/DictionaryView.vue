@@ -31,6 +31,7 @@ const tableDisplayConfig = {
     original: true,
     translations: true,
     status: true,
+    lastSeen: true,
     actions: true,
     frequency: true,
   },

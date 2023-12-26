@@ -10,7 +10,7 @@ from .helpers import serialize_many
 def list_words():
     dictionary_collection = get_collection('dictionary')
 
-    words_cursor = dictionary_collection.find({'user_id': ObjectId(current_user.id)}, {'_id': 1, 'original': 1, 'translations': 1, 'frequency': 1, 'status': 1})
+    words_cursor = dictionary_collection.find({'user_id': ObjectId(current_user.id)})
 
     words_list = list(words_cursor)
     return serialize_many(words_list)

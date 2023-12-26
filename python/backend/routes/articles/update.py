@@ -51,8 +51,25 @@ def update_article(slug):
         else:
             article_data['reading_index'] = 0
 
+        if article_data['status'] == 'read':
+            article_data['last_read'] = datetime.utcnow()
+
 
     collection.update_one({'_id': article['_id']}, {'$set': article_data})
-
     updated_article = collection.find_one({'_id': article['_id']})
+
+    if 'status' in article_data:
+        if article_data['status'] == 'read':
+            new_index = len(updated_article.get('words', []))
+            old_index = updated_article.get('reading_index', 0)
+
+            dictionary = get_collection('dictionary')
+            for i in range(old_index, new_index):
+                if i in article['words']:
+                    word = article['words'][i]
+                    dictionary.update_one({'original': word, user_id: ObjectId(current_user.id)}, {'$set': {
+                        'last_viewed': datetime.utcnow(),
+                    }})
+
+
     return serialize(updated_article, current_user.id), 200

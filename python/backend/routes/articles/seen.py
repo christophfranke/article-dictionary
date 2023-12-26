@@ -22,6 +22,21 @@ def seen_article():
     if not article:
         return jsonify({'error': 'Article not found'}), 404
 
+    if 'index' in data:
+        dictionary = get_collection('dictionary')
+        new_index = data.get('index') + 1
+        old_index = article.get('reading_index', 0) + 1
+        words = article.get('words', [])
+        print(f'updating words for seen article ({old_index} - {new_index})')
+        for i in range(old_index, min(new_index, len(words))):
+            print(f'viewed word {i}:{words[i]}')
+            word = words[i]
+            dictionary.update_one({'original': word, 'user_id': ObjectId(current_user.id)}, {'$set': {
+                'last_viewed': datetime.utcnow(),
+            }})
+            new_word = dictionary.find_one({'original': word, 'user_id': ObjectId(current_user.id)})
+            print(f'updated word {i}:{new_word}')
+
     index = data.get('index', article.get('reading_index', 0))
 
     # update last read field
@@ -33,4 +48,5 @@ def seen_article():
 
     article['status'] = 'seen'
     article['last_read'] = datetime.utcnow()
+    article['reading_index'] = index
     return serialize(article, current_user.id), 200

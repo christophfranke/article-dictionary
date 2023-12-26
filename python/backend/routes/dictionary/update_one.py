@@ -3,7 +3,7 @@ from utils.mongo import get_collection
 from flask_login import login_required, current_user
 from bson import ObjectId
 
-from .helpers import serialize
+from .helpers import serialize, update_word
 
 @login_required
 def update_word(id):
@@ -20,12 +20,7 @@ def update_word(id):
     if not data:
         return jsonify({'error': 'No data provided for update'}), 400
 
-    if 'translations' in data:
-        word['needs_retranslate'] = False
-        word['needs_clustering'] = True
-
-    for key, value in data.items():
-        word[key] = value
+    word = update_word(word, data)
 
     dictionary_collection.replace_one({'_id': _id}, word)
     if word['cluster_id'] is not None:

@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import datetime
 
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
@@ -18,6 +19,8 @@ def repair():
     add_src_and_target_lang()
     remove_no_original()
     add_cluster_id()
+    add_review_level_and_last_reviewed()
+    add_translation_origin()
 
 
 def reset_word_frequency():
@@ -125,6 +128,7 @@ def retranslate_word():
             word['translations'] = translations
             word['needs_retranslate'] = False
             word['needs_clustering'] = True
+            word['translation_origin'] = 'google'
             if word['original'] in translations:
                 word['status'] = 'ignore'
             dictionary.replace_one({'_id': word['_id']}, word)
@@ -288,3 +292,38 @@ def update_clusters():
         leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
         cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
         print(f'Updated cluster: {updated_word['original']} -> {leader_word['original']} ({cluster_size})')
+
+def add_review_level_and_last_reviewed():
+    dictionary = get_collection('dictionary')
+
+    query = {
+        'review_level': {'$exists': False},
+        'last_viewed': {'$exists': False},
+    }
+
+    words = dictionary.find(query)
+
+    for word in words:
+        review_level = 0
+        if word['status'] == 'seen':
+            review_level = 1
+        elif word['status'] == 'known':
+            review_level = 4
+        word['review_level'] = review_level
+        word['last_viewed'] = datetime.now() if review_level > 0 else None
+        dictionary.replace_one({'_id': word['_id']}, word)
+        print('Added review_level and last_viewed to word: ' + word['original'])
+
+def add_translation_origin():
+    dictionary = get_collection('dictionary')
+
+    query = {
+        'translation_origin': {'$exists': False},
+    }
+
+    words = dictionary.find(query)
+
+    for word in words:
+        word['translation_origin'] = 'google'
+        dictionary.replace_one({'_id': word['_id']}, word)
+        print('Added translation_origin to word: ' + word['original'])

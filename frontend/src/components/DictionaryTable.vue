@@ -40,6 +40,7 @@ const props = defineProps({
         translations: true,
         frequency: true,
         status: true,
+        lastSeen: true,
         actions: true,
       },
       action: {
@@ -148,6 +149,11 @@ const addWord = async (): Promise<void> => {
             @click="sortTable('status')"
             v-if="display.col.status"
             title="Sort by status">Status
+          </th>
+          <th
+            @click="sortTable('lastViewed', 'desc')"
+            v-if="display.col.lastSeen"
+            title="Sort by last seen">Last&nbsp;seen
           </th>
           <th v-if="display.col.actions" class="no-sort">Actions</th>
         </tr>

@@ -20,6 +20,7 @@ def retranslate(id):
     word['translations'] = translate_single_word(word['original'], source_language, target_language)
     word['needs_retranslate'] = False
     word['needs_clustering'] = True
+    word['translation_origin'] = 'google'
 
     dictionary_collection.replace_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)}, word)
 

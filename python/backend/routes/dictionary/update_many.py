@@ -25,13 +25,9 @@ def update_many():
     words = list(dictionary_collection.find({'_id': {'$in': ids}, 'user_id': ObjectId(current_user.id)}))
 
     for word in words:
-        if 'translations' in data:
-            word['needs_retranslate'] = False
-            word['needs_clustering'] = True
-        for key, value in update.items():
-            word[key] = value
-            dictionary_collection.replace_one({'_id': word['_id']}, word)
-        if word['cluster_id'] is not None:
+        new_word = update_word(word, update)
+        dictionary_collection.replace_one({'_id': new_word['_id']}, new_word)
+        if new_word['cluster_id'] is not None:
             get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
 
     return serialize_many(words)

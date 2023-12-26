@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, computed } from 'vue';
 
 import type { PropType } from 'vue';
 import type { Word, Profile } from '@/types';
@@ -73,6 +73,49 @@ const setStatus = async (word: Word, status: string): Promise<void> => {
   await updateWord(word.id, { status });
 };
 
+const now = ref(new Date())
+const timeAgo = (dateString: string): string => {
+    const date = new Date(dateString);
+    const seconds = Math.round((now.value - date) / 1000);
+    const minutes = Math.round(seconds / 60);
+    const hours = Math.round(minutes / 60);
+    const days = Math.round(hours / 24);
+    const weeks = Math.round(days / 7);
+
+    if (seconds < 60) {
+      setTimeout(() => {
+        now.value = new Date();
+      }, 1000);
+        return 'just now';
+    } else if (minutes < 60) {
+      setTimeout(() => {
+        now.value = new Date();
+      }, 1000 * 60);
+        return `${minutes} min`;
+    } else if (hours < 24) {
+      setTimeout(() => {
+        now.value = new Date();
+      }, 1000 * 60 * 60);
+        return `${hours}h`;
+    } else if (days < 7) {
+        return `${days} day${days > 1 ? 's' : ''}`;
+    } else {
+        return `${weeks} week${weeks > 1 ? 's' : ''}`;
+    }
+}
+
+const lastSeen = computed(() => {
+  if (!props.display.col.lastSeen) {
+    return
+  }
+
+  if (!props.word.lastViewed) {
+    return ''
+  }
+
+  return timeAgo(props.word.lastViewed);
+});
+
 
 const statusOptions: string[] = ['new', 'seen', 'known'];
 const nextStatus = (status: string): string => {
@@ -142,8 +185,9 @@ const retranslateWord = props.dictionary.retranslate;
       @click="changeStatus(word)"
       :title="display.action.status ? `Change status to ${nextStatus(word.status)}` : undefined"
       :class="{ 'status-column': display.action.status }"
-    >{{ word.status }}
+    >{{ word.status }}&nbsp;({{ word.reviewLevel }})
     </td>
+    <td v-if="display.col.lastSeen">{{ lastSeen }}</td>
     <td v-if="display.col.actions" class="actions-column">
       <div>
         <Button

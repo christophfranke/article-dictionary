@@ -28,6 +28,13 @@ export default (props: any) => {
 	      const propertyA = (a as any)[sortedBy.value];
 	      const propertyB = (b as any)[sortedBy.value];
 
+	      // Check if the property is a date string
+	      if (sortedBy.value === 'lastViewed') {
+	        const dateA = new Date(propertyA);
+	        const dateB = new Date(propertyB);
+	        return dateA > dateB ? order : -order;
+	      }
+
 	      // Use localeCompare for string comparison with locale awareness
 	      if (typeof propertyA === 'string' && typeof propertyB === 'string') {
 	        return propertyA.localeCompare(propertyB) * order;
