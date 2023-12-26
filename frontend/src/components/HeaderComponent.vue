@@ -10,6 +10,7 @@ import LogoutLink from './LogoutLink.vue';
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/articles">Articles</RouterLink>
         <RouterLink to="/dictionary">Dictionary</RouterLink>
+        <RouterLink to="/dictionary/review">Review</RouterLink>
         <ProfileLink class="profile-link" />
         <LogoutLink />
       </nav>

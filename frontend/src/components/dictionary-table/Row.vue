@@ -76,7 +76,7 @@ const setStatus = async (word: Word, status: string): Promise<void> => {
 const now = ref(new Date())
 const timeAgo = (dateString: string): string => {
     const date = new Date(dateString);
-    const seconds = Math.round((now.value - date) / 1000);
+    const seconds = Math.round((now.value as any - (date as any)) / 1000);
     const minutes = Math.round(seconds / 60);
     const hours = Math.round(minutes / 60);
     const days = Math.round(hours / 24);
