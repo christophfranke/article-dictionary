@@ -30,34 +30,18 @@ def add_words(words, user_id, dictionary_collection, user_collection):
                 {'$set': {'needs_recount': True}}
             )
 
-    # Assuming translate function returns a dictionary
-    try:
-        if len(new_words) > 0:
-            translations = translate_words(new_words, source_language, target_language)
-        else:
-            translations = {}
-    except Exception as e:
-        print(f'Error translating words: {e}')
-        translations = {}
-
-    if not set(new_words).issubset(translations.keys()):
-        print(f'Translations do not cover all new words: {translations}')
-
     # Iterate over the translations dictionary and add each word to the dictionary
-    for original_word, translation_possibilities in translations.items():
-        trans = translation_possibilities or []
-        primary = trans[0] if len(trans) > 0 else original_word
-        status = 'new' if (len(trans) > 0 and original_word != primary) or len(trans) == 0 else 'ignore'
+    for original in new_words:
         new_word = {
-            'original': original_word,
-            'translations': [primary],
-            'status': status,
+            'original': original,
+            'translations': [original],
+            'status': 'new',
             'last_viewed': None,
             'review_level': 0,
             'needs_retranslate': True,
             'needs_recount': True,
             'needs_clustering': True,
-            'translation_origin': 'google-chunked',
+            'translation_origin': None,
             'cluster_id': None,
             'frequency': 1,
             'source_language': source_language,
