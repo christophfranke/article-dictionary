@@ -144,7 +144,7 @@ const sanitizedHighlight = computed(() => {
 
 const phase = ref('recall');
 
-const RECENTLY_SHOWN_LIMIT = 10
+const RECENTLY_SHOWN_LIMIT = 15
 const markRecentlyShown = (word: WordDetail) => {
 	recentlyShown.push(word.id);
 	if (recentlyShown.length > RECENTLY_SHOWN_LIMIT) {
