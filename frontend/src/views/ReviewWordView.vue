@@ -213,11 +213,13 @@ const setIgnore = () => {
 }
 
 const handleKeyPress = (event: KeyboardEvent) => {
+	if (event.key === 'ArrowRight') {
+    skipWord(); // Call skipWord function when the right arrow key is pressed
+  }
+
   if (phase.value === 'recall') {
     if (event.key === 'Enter') {
       showTranslation();
-    } else if (event.key === 'ArrowRight') {
-      skipWord(); // Call skipWord function when the right arrow key is pressed
     }
   } else if (phase.value === 'review') {
     if (Object.keys(responses).includes(event.key)) {
@@ -270,6 +272,12 @@ onUnmounted(() => {
 	      <div class="response-buttons">
 	      	<Button v-for="(response, key) in responses" :key="key" @click="recordResponse(key)">{{ response.label }} ({{ key }})</Button>
 	      </div>
+	      <div class="show-buttons">
+	      	<Button @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
+		      <Button role="view" @click="skipWord">
+		      	Skip&nbsp;&#8594;
+		      </Button>
+		    </div>
 	    </div>
 	  </div>
     <Tooltip :highlighted="sanitizedHighlight" :dictionary="dictionary" :display="tooltipDisplay" />
