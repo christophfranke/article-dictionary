@@ -27,7 +27,7 @@ database.export()
 # statistics.repair()
 # user.repair()
 # articles.repair()
-# dictionary.repair()
+dictionary.repair()
 
 # Initialize the scheduler
 scheduler = BlockingScheduler()
