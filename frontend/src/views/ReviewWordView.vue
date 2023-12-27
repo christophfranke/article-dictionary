@@ -93,7 +93,7 @@ const findWordForReview = (): string | null => {
 const pickSentence = (sentences: { text: string, words: string[] }[]): number => {
 	const scores = sentences.map(sentence => {
 		const words = sentence.words.map(word => dictionary.find(word));
-		const score = words.reduce((acc, w) => acc + (w.id === word.id ? 6 : w?.reviewLevel || 0), 0);
+		const score = words.reduce((acc, w) => acc + (w?.id === word.value?.id ? 6 : w?.reviewLevel || 0), 0);
 		return score / words.length;
 	});
 
@@ -110,8 +110,12 @@ const pickSentence = (sentences: { text: string, words: string[] }[]): number =>
 
 const wordId = ref<string | null>(null);
 const word = computed<WordDetail | null>(() => {
-	const original = dictionary.findById(wordId.value)?.original
-	return wordId.value && original && dictionary.detail(original).value || null
+	if (wordId.value) {		
+		const original = dictionary.findById(wordId.value)?.original
+		return wordId.value && original && dictionary.detail(original).value || null
+	}
+
+	return null;
 });
 const sentence = computed(() => {
 	if (!word.value || !word.value.sentences || !word.value.sentences.length) {
@@ -131,10 +135,10 @@ watch(wordId, async () => {
 	}
 });
 
-const highlight = ref({ word: null, index: null});
+const highlight = ref({ word: '', index: -1});
 const sanitizedHighlight = computed(() => {
 	return !highlight.value || highlight.value?.word === word.value?.original
-		? { word: null, index: null }
+		? { word: '', index: -1 }
 		: highlight.value
 });
 
@@ -154,7 +158,12 @@ const showTranslation = () => {
   phase.value = 'review';
 }
 
-const responses = {
+type LevelFn = (x: number) => number
+type Response = {
+	label: string,
+	fn: LevelFn,
+}
+const responses: { [key: string]: Response } = {
 	'1': {
 		label: 'No chance',
 		fn: level => 1,
@@ -184,7 +193,7 @@ const skipWord = () => {
 	markRecentlyShown(word.value!);
 	nextWord();	
 }
-const recordResponse = async (response: string) => {
+const recordResponse = async (response: string | number) => {
   let reviewLevel = word.value!.reviewLevel || 1;
 
   reviewLevel = responses[response]?.fn(reviewLevel) || 1;
@@ -198,7 +207,9 @@ const recordResponse = async (response: string) => {
 }
 
 const setIgnore = () => {
-	dictionary.updateOne(word.value.id, { status: 'ignore' });	
+	if (word.value) {
+		dictionary.updateOne(word.value.id, { status: 'ignore' });	
+	}
 }
 
 const handleKeyPress = (event: KeyboardEvent) => {
