@@ -280,7 +280,7 @@ onUnmounted(() => {
 @import '@/style/global.scss';
 
 .container {
-  max-width: 650px;
+  max-width: 750px;
   margin: 0 auto;
   padding: 20px;
   padding-bottom: 100px;

@@ -29,9 +29,6 @@ database.export()
 # articles.repair()
 # dictionary.repair()
 
-print("Repairing dictionary ...")
-dictionary.repair()
-
 # Initialize the scheduler
 scheduler = BlockingScheduler()
 
