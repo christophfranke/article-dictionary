@@ -27,6 +27,9 @@ database.export()
 # statistics.repair()
 # user.repair()
 # articles.repair()
+# dictionary.repair()
+
+print("Repairing dictionary ...")
 dictionary.repair()
 
 # Initialize the scheduler
