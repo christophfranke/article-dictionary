@@ -102,16 +102,16 @@ services:
   #   depends_on:
   #     - mongodb
 
-  nosqlclient:
-    image: mongoclient/mongoclient:latest
-    platform: linux/amd64
-    environment:
-      MONGOCLIENT_AUTH: "false"
-      MONGO_URL: "mongodb://root:example@mongodb:27017"
-    ports:
-      - "9303:3000"
-    depends_on:
-      - mongodb
+  # nosqlclient:
+  #   image: mongoclient/mongoclient:latest
+  #   platform: linux/amd64
+  #   environment:
+  #     MONGOCLIENT_AUTH: "false"
+  #     MONGO_URL: "mongodb://root:example@mongodb:27017"
+  #   ports:
+  #     - "9303:3000"
+  #   depends_on:
+  #     - mongodb
 
   backup:
     build:

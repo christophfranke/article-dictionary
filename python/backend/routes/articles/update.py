@@ -7,7 +7,7 @@ from utils.mongo import get_collection
 from utils.casing import camel_to_snake
 from text_processing.language import get_languages
 from text_processing.extract import extract_words, get_unique_words
-from text_processing.dictionary import add_text
+from text_processing.dictionary import add_words
 from text_processing.characters import slugify
 
 from .helpers import serialize
@@ -31,14 +31,15 @@ def update_article(slug):
         if article['title'] != title and collection.find_one({'title': title, 'user_id': ObjectId(current_user.id)}):
             return jsonify({'error': 'Title already taken'}), 409
 
-    article_data = {camel_to_snake(key): data[key] for key in data if key in ['title', 'content', 'last_read', 'status']}
+    article_data = {camel_to_snake(key): data[key] for key in data if key in ['title', 'content', 'lastRead', 'status']}
 
 
     if 'content' in article_data:
         content = article_data['content']
         article_data['words'] = extract_words(content)
-        article_data['unique_words'] = get_unique_words(content)
-        add_text(article_data['content'], current_user.id, get_collection('dictionary'), get_collection('users'))
+        article_data['unique_words'] = get_unique_words(article_data['words'])
+        article_data['reading_index'] = 0
+        add_words(article_data['unique_words'], current_user.id, get_collection('dictionary'), get_collection('users'))
 
     if 'title' in article_data:
         title = data['title']
@@ -55,7 +56,7 @@ def update_article(slug):
             article_data['last_read'] = datetime.utcnow()
 
 
-    collection.update_one({'_id': article['_id']}, {'$set': article_data})
+    collection.update_one({'_id': ObjectId(article['_id'])}, {'$set': article_data})
     updated_article = collection.find_one({'_id': article['_id']})
 
     if 'status' in article_data:
