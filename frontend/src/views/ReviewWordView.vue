@@ -61,12 +61,12 @@ const findWordForReview = (): string | null => {
 
     if (word.reviewLevel === 1) {
     	// for first review level, score is 1 if last viewed today, 0 if last viewed more than a day ago
-      return (1 - timeSinceLastViewed) / 1;
+      return (1 - timeSinceLastViewed);
     }
 
     // Calculate ideal review time
     // level 2 -> 3.5 days, doubles with each level
-    const idealReviewTime = 3.5 * Math.pow(2, word.reviewLevel - 2);
+    const idealReviewTime = 1.75 * Math.pow(2, word.reviewLevel - 2);
 
     // Calculate score based on how close we are to ideal review time
     return timeSinceLastViewed * (2 - timeSinceLastViewed) / idealReviewTime;

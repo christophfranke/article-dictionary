@@ -1,7 +1,7 @@
 from flask import jsonify
 from utils.casing import camel_to_snake
 
-known_level = 4
+known_level = 5
 
 def select(word):
 	return {
