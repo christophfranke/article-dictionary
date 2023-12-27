@@ -72,7 +72,7 @@ const findWordForReview = (): string | null => {
     return timeSinceLastViewed * (2 - timeSinceLastViewed) / idealReviewTime;
   };
 
-  let highestScore = -Infinity;
+  let highestScore = 0; // do not select words with less then 0 score
   let wordToReview: any | null = null;
 
   for (const word of dictionary.items.value) {
