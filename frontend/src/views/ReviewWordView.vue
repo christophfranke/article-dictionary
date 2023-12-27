@@ -94,7 +94,8 @@ const pickSentence = (sentences: { text: string, words: string[] }[]): number =>
 	const scores = sentences.map(sentence => {
 		const words = sentence.words.map(word => dictionary.find(word));
 		const score = words.reduce((acc, w) => acc + (w?.id === word.value?.id ? 6 : w?.reviewLevel || 0), 0);
-		return score / words.length;
+		const random = 1 + Math.random()
+		return random * score / words.length;
 	});
 
 	// find index with maximum score
