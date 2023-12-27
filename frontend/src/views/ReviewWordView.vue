@@ -78,7 +78,7 @@ const findWordForReview = (): string | null => {
   for (const word of dictionary.items.value) {
   	const importance = calculateImportance(word);
   	const due = calculateScore(word);
-  	const random = 0.5 * Math.random();
+  	const random = 0.2 * Math.random();
     const score = importance * due + random;
     if (score > highestScore) {
     	console.log(`Found new highest score for ${word.original}: ${score.toFixed(3)} (${importance.toFixed(2)}x${due.toFixed(2)} + ${random.toFixed(2)})`);
