@@ -81,7 +81,7 @@ const findWordForReview = (): string | null => {
   	const random = 0.5 * Math.random();
     const score = importance * due + random;
     if (score > highestScore) {
-    	// console.log(`Found new highest score for ${word.original}: ${score.toFixed(3)} (${importance.toFixed(2)}x${due.toFixed(2)} + ${random.toFixed(2)})`);
+    	console.log(`Found new highest score for ${word.original}: ${score.toFixed(3)} (${importance.toFixed(2)}x${due.toFixed(2)} + ${random.toFixed(2)})`);
       highestScore = score;
       wordToReview = word;
     }
