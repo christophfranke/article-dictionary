@@ -185,7 +185,7 @@ const retranslateWord = props.dictionary.retranslate;
       @click="changeStatus(word)"
       :title="display.action.status ? `Change status to ${nextStatus(word.status)}` : undefined"
       :class="{ 'status-column': display.action.status }"
-    >{{ word.status }}&nbsp;({{ word.reviewLevel }})
+    >{{ word.status }}
     </td>
     <td v-if="display.col.lastSeen">{{ lastSeen }}</td>
     <td v-if="display.col.actions" class="actions-column">

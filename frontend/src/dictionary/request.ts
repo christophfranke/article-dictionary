@@ -63,8 +63,8 @@ export default (apiRequest: FetchFn): DictionaryApi => {
     });
   }
 
-  const get = async function* (id: string): AsyncGenerator<PartialWord | null, void, unknown> {
-    // not implemented yet
+  const get = async function* (original: string): AsyncGenerator<PartialWord | null, void, unknown> {
+    yield await apiRequest(`/api/dictionary/${original}`);
   }
 
   return {
