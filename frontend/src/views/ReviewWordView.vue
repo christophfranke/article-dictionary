@@ -65,7 +65,7 @@ const findWordForReview = (): string | null => {
     }
 
     // Calculate ideal review time
-    // level 2 -> 3.5 days, doubles with each level
+    // level 3 -> 3.5 days, doubles with each level
     const idealReviewTime = 1.75 * Math.pow(2, word.reviewLevel - 2);
 
     // Calculate score based on how close we are to ideal review time
@@ -210,6 +210,8 @@ const setIgnore = () => {
 	if (word.value) {
 		dictionary.updateOne(word.value.id, { status: 'ignore' });	
 	}
+
+	nextWord();
 }
 
 const handleKeyPress = (event: KeyboardEvent) => {
