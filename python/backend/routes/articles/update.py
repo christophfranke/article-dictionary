@@ -12,6 +12,8 @@ from text_processing.characters import slugify
 
 from .helpers import serialize
 
+MAX_CONTENT_LENGTH = 50000
+
 
 @login_required
 def update_article(slug):
@@ -25,6 +27,9 @@ def update_article(slug):
 
     if not article:
         return jsonify({'error': 'Article not found'}), 404
+
+    if 'content' in data and len(data.get('content')) > MAX_CONTENT_LENGTH:
+        return jsonify({'error': f'Content too long. Keep it under {MAX_CONTENT_LENGTH} characters.'}), 413
 
     if 'title' in data:
         title = data['title']
@@ -43,8 +48,8 @@ def update_article(slug):
 
     if 'title' in article_data:
         title = data['title']
-        from_lang, src_lang = get_languages(get_collection('users'), current_user.id)
-        article_data['slug'] = slugify(title, from_lang, src_lang)
+        src_lang, target_lang = get_languages(get_collection('users'), current_user.id)
+        article_data['slug'] = slugify(title, src_lang, target_lang)
 
     if 'status' in article_data:
         if article_data['status'] == 'seen':
@@ -65,12 +70,15 @@ def update_article(slug):
             old_index = updated_article.get('reading_index', 0)
 
             dictionary = get_collection('dictionary')
-            for i in range(old_index, new_index):
-                if i in article['words']:
-                    word = article['words'][i]
-                    dictionary.update_one({'original': word, user_id: ObjectId(current_user.id)}, {'$set': {
-                        'last_viewed': datetime.utcnow(),
-                    }})
-
+            words = updated_article.get('words', [])
+            for i in range(old_index, min(new_index, len(words))):
+                word = words[i]
+                dictionary.update_one({
+                    'original': word,
+                    'user_id': ObjectId(current_user.id),
+                    'status': 'known'
+                }, {'$set': {
+                    'last_viewed': datetime.utcnow(),
+                }})
 
     return serialize(updated_article, current_user.id), 200

@@ -11,6 +11,9 @@ from text_processing.characters import slugify
 
 from .helpers import serialize
 
+
+MAX_CONTENT_LENGTH = 50000
+
 @login_required
 def create_article():
     data = request.json
@@ -41,6 +44,9 @@ def create_article():
 
     if not content:
         return jsonify({'error': 'Content is a required field'}), 400
+
+    if len(content) > MAX_CONTENT_LENGTH:
+        return jsonify({'error': f'Content too long. Keep it under {MAX_CONTENT_LENGTH} characters.'}), 413
 
     if not privacy:
         return jsonify({'error': 'Privacy is a required field'}), 400
