@@ -104,14 +104,17 @@ const wordIndexMap = computed(() => {
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
 const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton, errorMessage } = useApi();
+
+const scrollToTop = async () => {
+  await new Promise(resolve => setTimeout(resolve, 50));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 const markArticleAsRead = async () => {
   const slug = article.value?.slug
   if (slug) {
     await articles.updateOne(slug, { status: 'read' });
 
     currentPage.value = 1;
-    await new Promise(resolve => setTimeout(resolve, 100));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
@@ -157,6 +160,7 @@ onBeforeUnmount(() => {
       <div :class="{ content: true, 'no-dictionary': !showDictionary }">
         <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
         <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
+        <Headline type="h3" class="title" v-else>{{ article.title }} ({{ currentPage }}/{{ numberOfPages }})</Headline>
         <Paragraph>
           <ProcessedContent :words="paginatedWords" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="relativeIndex.page === currentPage ? relativeIndex.index : 0" :key="currentPage" />
         </Paragraph>
@@ -165,6 +169,8 @@ onBeforeUnmount(() => {
           class="bottom-pagination"
           v-model:currentPage="currentPage" 
           :numberOfPages="numberOfPages"
+          v-if="numberOfPages > 1"
+          @change="scrollToTop"
         />
         <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
       </div>

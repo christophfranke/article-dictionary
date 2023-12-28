@@ -17,25 +17,29 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:currentPage']);
+const emit = defineEmits(['update:currentPage', 'change']);
 
 const goToFirstPage = () => {
   emit('update:currentPage', 1);
+  emit('change');
 };
 
 const goToLastPage = () => {
   emit('update:currentPage', props.numberOfPages);
+  emit('change');
 };
 
 const goToNextPage = () => {
   if (props.numberOfPages > props.currentPage) {
     emit('update:currentPage', props.currentPage + 1);
+    emit('change');
   }
 };
 
 const goToPreviousPage = () => {
   if (props.currentPage > 1) {
     emit('update:currentPage', props.currentPage - 1);
+    emit('change');
   }
 };
 </script>

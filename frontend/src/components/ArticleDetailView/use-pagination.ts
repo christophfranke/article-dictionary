@@ -2,6 +2,8 @@ import { ref, computed, watchEffect } from 'vue';
 import type { Ref } from 'vue';
 import type { ArticleDetail } from '@/types';
 
+
+const CHARACTERS_IN_PAGE = 2000;
 const splitChars = ['\n\n', '.\n','\n', '. ', '.', ' '];
 export const splitContentIntoPages = (content: string, pageLength: number, errorMargin: number): number[] => {
   const splitChars = ['\n\n', '\n', '.', ' '];
@@ -107,7 +109,7 @@ export const getPageWords = (words: string[], wordSplits: number[]): string[][] 
 
 export default (article: Ref<ArticleDetail | undefined>) => {
   // Constants and Refs
-  const pageLength = ref(2000); // Example page length
+  const pageLength = ref(CHARACTERS_IN_PAGE); // Example page length
   const errorPercentage = ref(10); // Error percentage
 
   let splitDetails = ref<{
