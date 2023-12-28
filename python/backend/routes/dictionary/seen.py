@@ -19,9 +19,15 @@ def seen_word(id):
 
     updated_word = word.copy()
     updated_word['last_viewed'] = datetime.utcnow()
+    if updated_word['status'] == 'new':
+        updated_word['status'] = 'seen'
+    if updated_word.get('review_level', 0) == 0:
+        updated_word['review_level'] = 1
     dictionary_collection.update_one({'_id': _id}, {
         '$set': {
             'last_viewed': updated_word['last_viewed'],
+            'status': updated_word['status'],
+            'review_level': updated_word['review_level'],
         }
     })
 

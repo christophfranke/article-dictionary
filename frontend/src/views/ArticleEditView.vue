@@ -36,7 +36,6 @@ const submitForm = async (): Promise<void> => {
 
 onMounted(async () => {
   article.value = articles.detail(slug.value).value || await articles.get(slug.value);
-  console.log(article.value);
 
   if (!article.value) {
     router.push('/404-not-found');

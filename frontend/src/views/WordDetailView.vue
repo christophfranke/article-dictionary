@@ -84,6 +84,7 @@ watchEffect(() => {
         <p><strong>Original:</strong> {{ word.original }}</p>
         <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
         <p><strong>Status:</strong> {{ word.status }}</p>
+        <p><strong>Review level:</strong> {{ word.reviewLevel }}</p>
         <p><strong>Frequency:</strong> {{ word.frequency }}</p>
         <p><strong>Similar words:</strong>&nbsp;
           <ProcessedContent v-if="word.similar.length > 0" :words="word.similar" :dictionary="dictionary" :display="similarDisplay" v-model="highlighted" @click="navigate" :key="word.original" />
