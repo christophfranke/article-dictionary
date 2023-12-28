@@ -27,6 +27,7 @@ import Button from '@/elements/Button.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 import ErroMessage from '@/elements/ErrorMessage.vue';
 import Paragraph from '@/elements/Paragraph.vue';
+import Pagination from '@/elements/Pagination.vue';
 
 import NotFoundView from '@/views/NotFoundView.vue';
 
@@ -54,25 +55,6 @@ const {
   paginatedWords,
   relativeIndex,
 } = usePagination(article);
-
-watchEffect(() => {
-  console.log(paginatedContent.value)
-})
-
-const canGoToNextPage = computed(() => currentPage.value < numberOfPages.value);
-const canGoToPreviousPage = computed(() => currentPage.value > 1);
-
-const goToNextPage = () => {
-  if (canGoToNextPage.value) {
-    currentPage.value++;
-  }
-};
-
-const goToPreviousPage = () => {
-  if (canGoToPreviousPage.value) {
-    currentPage.value--;
-  }
-};
 
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
@@ -116,6 +98,7 @@ const markArticleAsRead = async () => {
   if (slug) {
     await articles.updateOne(slug, { status: 'read' });
 
+    currentPage.value = 1;
     await new Promise(resolve => setTimeout(resolve, 100));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -134,13 +117,7 @@ let SECOND = 1000;
 onMounted(async () => {
   dictionary.load();
   await articles.get(slug.value);
-
-  // const splits = splitContentIntoPages(article.value?.content ?? '', 500, 10);
-  // console.log(splits);
-  // const pages = pageContents(article.value?.content ?? '', splits);
-  // const wordSplits = calculateWordSplits(article.value?.content ?? '', article.value?.words || [], splits);
-  // const words = pageWords(article.value?.words || [], wordSplits);
-  // console.log(pages[0], words[0]);
+  currentPage.value = relativeIndex.value.page
 
 
   if(article.value?.status === 'read') {
@@ -170,17 +147,17 @@ onBeforeUnmount(() => {
     <template v-if="article">
       <div :class="{ content: true, 'no-dictionary': !showDictionary }">
         <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
-        <Headline class="title">{{ article.title }}</Headline>
+        <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
         <Paragraph>
-          <ProcessedContent :words="paginatedWords" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" :key="currentPage" />
+          <ProcessedContent :words="paginatedWords" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="relativeIndex.page === currentPage ? relativeIndex.index : 0" :key="currentPage" />
         </Paragraph>
+        <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" v-if="currentPage === numberOfPages" />
+        <Pagination 
+          class="bottom-pagination"
+          v-model:currentPage="currentPage" 
+          :numberOfPages="numberOfPages"
+        />
         <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
-        <div class="pagination">
-          <button @click="goToPreviousPage" :disabled="!canGoToPreviousPage">Previous</button>
-          <span>Page {{ currentPage }} of {{ numberOfPages }}</span>
-          <button @click="goToNextPage" :disabled="!canGoToNextPage">Next</button>
-        </div>
-        <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" />
       </div>
       <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" />
     </template>
@@ -228,5 +205,9 @@ onBeforeUnmount(() => {
 .title {
   clear: both;
   margin-bottom: 20px;
+}
+
+.bottom-pagination {
+  margin-top: 50px;
 }
 </style>

@@ -1,7 +1,9 @@
 import { ref, computed, watchEffect } from 'vue';
+import type { Ref } from 'vue';
+import type { ArticleDetail } from '@/types';
 
 const splitChars = ['\n\n', '.\n','\n', '. ', '.', ' '];
-export const splitContentIntoPages = (content, pageLength, errorMargin) => {
+export const splitContentIntoPages = (content: string, pageLength: number, errorMargin: number): number[] => {
   const splitChars = ['\n\n', '\n', '.', ' '];
   let splitIndices = [0]; // Start with the first index as 0
   let currentIndex = 0;
@@ -52,15 +54,15 @@ export const splitContentIntoPages = (content, pageLength, errorMargin) => {
 };
 
 
-export const getPageContents = (content, splitIndices) => {
+export const getPageContents = (content: string, splitIndices: number[]): string[] => {
   return splitIndices.map((pageStart, i) => {
     const pageEnd = splitIndices[i + 1] || content.length;
     return content.slice(pageStart, pageEnd);
   });
 }
 
-export const calculateWordSplits = (content, words, splitIndices) => {
-  const result = []; // Start with the first index as 0
+export const calculateWordSplits = (content: string, words: string[], splitIndices: number[]): number[] => {
+  const result: number[] = []; // Start with the first index as 0
   let index = 0;
 
   splitIndices.forEach((pageStart, i) => {
@@ -91,19 +93,24 @@ export const calculateWordSplits = (content, words, splitIndices) => {
   return result;
 }
 
-export const getPageWords = (words, wordSplits) => {
+export const getPageWords = (words: string[], wordSplits: number[]): string[][] => {
   return wordSplits.map((pageStart, i) => {
     const pageEnd = wordSplits[i + 1] || words.length;
     return words.slice(pageStart, pageEnd);
   });
 }
 
-export default (article) => {
+export default (article: Ref<ArticleDetail | undefined>) => {
   // Constants and Refs
-  const pageLength = ref(1000); // Example page length
+  const pageLength = ref(2000); // Example page length
   const errorPercentage = ref(10); // Error percentage
 
-  let splitDetails = ref({
+  let splitDetails = ref<{
+    splitIndices: number[];
+    pageContent: string[];
+    wordSplits: number[];
+    pageWords: string[][];
+  }>({
     splitIndices: [],
     pageContent: [],
     wordSplits: [],
@@ -143,7 +150,10 @@ export default (article) => {
   // Compute relativeIndex
   const relativeIndex = computed(() => {
     // Translate readingIndex to relative index for currentPage or return -1
-    return -1;
+    return {
+      page: 1,
+      index: 0
+    };
   });
 
   return {
