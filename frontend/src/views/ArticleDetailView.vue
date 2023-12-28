@@ -16,6 +16,10 @@ import Statistics from '@/components/Statistics.vue';
 import Tooltip from '@/components/Tooltip.vue';
 import ProcessedContent from '@/components/ProcessedContent.vue';
 
+import ArticleTopBar from '@/components/ArticleDetailView/TopBar.vue';
+import ArticleBottomBar from '@/components/ArticleDetailView/BottomBar.vue';
+import DictionarySidebar from '@/components/ArticleDetailView/DictionarySidebar.vue';
+
 import Headline from '@/elements/Headline.vue';
 import Button from '@/elements/Button.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
@@ -147,7 +151,6 @@ onBeforeUnmount(() => {
     clearTimeout(timeoutId);
   }
 });
-
 </script>
 
 
@@ -158,34 +161,15 @@ onBeforeUnmount(() => {
   <div class="article-page" v-else>
     <template v-if="article">
       <div :class="{ content: true, 'no-dictionary': !showDictionary }">
-        <div class="statistics-container">
-          <ButtonLink class="edit-article" :to="`/articles/${article.slug}/edit`">
-            Edit Article
-          </ButtonLink>
-          <Statistics :article="article" :dictionary="dictionary" showPercentage />
-        </div>
-        <p class="status-description">{{ statusDescription }}</p>
+        <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
         <Headline class="title">{{ article.title }}</Headline>
         <Paragraph>
           <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" />
         </Paragraph>
-        <Button
-          v-if="article.status !== 'read'"
-          :disabled="isLoadingButton"
-          class="mark-as-read"
-          @click="markArticleAsRead"
-        >Mark as read</Button>
-        <ErroMessage :message="errorMessage" />
+        <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
+        <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" />
       </div>
-      <div class="dictionary-container" :class="{ hidden: !showDictionary}">
-        <Button class="toggle-dictionary-button" @click="toggleShowDictionary" role="view">
-          <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !showDictionary}" />
-        </Button>
-        <div class="dictionary-scoller">
-          <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" sort="number" :highlight="highlighted.word" />
-        </div>
-      </div>
-      <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
+      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :tableDisplayConfig="tableDisplayConfig" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" />
     </template>
     <NotFoundView v-else />
   </div>
@@ -228,72 +212,8 @@ onBeforeUnmount(() => {
   }
 }
 
-.status-description {
-  margin-bottom: 40px;
-  font-size: 14px;
-}
-
 .title {
   clear: both;
   margin-bottom: 20px;
 }
-
-.mark-as-read {
-  margin-top: 30px;
-}
-
-
-.dictionary-container {
-  background-color: $background-100;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  max-height: calc(100vh - 40px);
-  max-width: 550px;
-  padding-bottom: 20px;
-  /* do not clip horizontal overflow */
-  overflow-x: visible;
-
-  transition: transform 0.3s ease;
-}
-
-.dictionary-container.hidden {
-  transform: translateX(100%); /* Slide out to the right when hidden */
-}
-
-.dictionary-scoller {
-  max-height: calc(100vh - 40px);
-  overflow-y: auto; /* Enable vertical scroll for the dictionary */
-}
-
-.toggle-dictionary-button {
-  position: absolute;
-  top: 0;
-  left: -10px;
-  transform: translateX(-100%);
-  padding: 10px;
-
-  svg {
-    transition: transform 0.3s ease;
-  }
-  .rotate {
-    transform: rotate(180deg);
-  }
-}
-
-
-.statistics-container {
-  float: right;
-  margin-left: 20px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.edit-article {
-  display: block;
-  margin-right: 20px;
-}
-
 </style>
