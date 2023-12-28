@@ -152,14 +152,38 @@ export default (article: Ref<ArticleDetail | undefined>) => {
     return splitDetails.value.pageContent.length;
   });
 
+
   // Compute relativeIndex
   const relativeIndex = computed(() => {
-    // Translate readingIndex to relative index for currentPage or return -1
-    return {
-      page: 1,
-      index: 0
-    };
+    if (!article.value || article.value.readingIndex === undefined) {
+      return { page: -1, index: -1 };
+    }
+
+    const readingIndex = article.value.readingIndex;
+    const wordSplits = splitDetails.value.wordSplits;
+
+    // Find the page number for the readingIndex
+    const pageIndex = wordSplits.findIndex((splitIndex, index) => {
+      const nextPageSplitIndex = wordSplits[index + 1] || article.value!.words.length;
+      return readingIndex >= splitIndex && readingIndex < nextPageSplitIndex;
+    });
+
+    if (pageIndex === -1) {
+      return { page: -1, index: -1 }; // ReadingIndex is out of range
+    }
+
+    // Calculate the relative index of the word on the found page
+    const relativeWordIndex = readingIndex - wordSplits[pageIndex];
+
+    return { page: pageIndex + 1, index: relativeWordIndex };
   });
+
+  const getAbsoluteIndex = (index: number): number => {
+    const wordSplits = splitDetails.value.wordSplits;
+    const pageIndex = currentPage.value - 1;
+
+    return wordSplits[pageIndex] + index;
+  }
 
   return {
     currentPage,
@@ -167,5 +191,6 @@ export default (article: Ref<ArticleDetail | undefined>) => {
     paginatedWords,
     numberOfPages,
     relativeIndex,
+    getAbsoluteIndex,
   }
 }

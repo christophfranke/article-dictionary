@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watchEffect } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -54,7 +54,14 @@ const {
   paginatedContent,
   paginatedWords,
   relativeIndex,
+  getAbsoluteIndex,
 } = usePagination(article);
+
+watch(() => article.value?.content, () => {
+  if (relativeIndex.value.page > 0) {
+    currentPage.value = relativeIndex.value.page  
+  }
+});
 
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
@@ -68,6 +75,10 @@ const highlighted = ref<{ word: string; index: number }>({
   word: '',
   index: -1,
 });
+const absoluteHighlighted = computed(() => ({
+  ...highlighted.value,
+  index: getAbsoluteIndex(highlighted.value?.index ?? -1),
+}));
 
 const statusDescription = computed(() => {
   if (article.value?.status === 'read') {
@@ -117,8 +128,6 @@ let SECOND = 1000;
 onMounted(async () => {
   dictionary.load();
   await articles.get(slug.value);
-  currentPage.value = relativeIndex.value.page
-
 
   if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {
@@ -157,7 +166,7 @@ onBeforeUnmount(() => {
           v-model:currentPage="currentPage" 
           :numberOfPages="numberOfPages"
         />
-        <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
+        <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
       </div>
       <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" />
     </template>
