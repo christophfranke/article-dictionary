@@ -50,6 +50,11 @@ export const splitContentIntoPages = (content: string, pageLength: number, error
     }
   }
 
+  if (content.length - splitIndices[splitIndices.length - 1] < (pageLength * errorMargin / 100)) {
+    // If the last page is too short, merge it with the previous page
+    splitIndices.pop();
+  }
+
   return splitIndices;
 };
 

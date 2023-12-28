@@ -19,6 +19,14 @@ const props = defineProps({
 
 const emit = defineEmits(['update:currentPage']);
 
+const goToFirstPage = () => {
+  emit('update:currentPage', 1);
+};
+
+const goToLastPage = () => {
+  emit('update:currentPage', props.numberOfPages);
+};
+
 const goToNextPage = () => {
   if (props.numberOfPages > props.currentPage) {
     emit('update:currentPage', props.currentPage + 1);
@@ -34,13 +42,23 @@ const goToPreviousPage = () => {
 
 <template>
   <div class="pagination">
-    <Button size="small" role="view" @click="goToPreviousPage" :disabled="currentPage <= 1">
-      <FontAwesomeIcon icon="chevron-left" />
-    </Button>
+    <div class="buttons">
+      <Button size="small" role="view" @click="goToFirstPage" :disabled="currentPage <= 1">
+        <FontAwesomeIcon icon="angles-left" />
+      </Button>
+      <Button size="small" role="view" @click="goToPreviousPage" :disabled="currentPage <= 1">
+        <FontAwesomeIcon icon="angle-left" />
+      </Button>
+    </div>
     <span>Page {{ currentPage }} of {{ numberOfPages }}</span>
-    <Button size="small" role="view" @click="goToNextPage" :disabled="currentPage >= numberOfPages">
-      <FontAwesomeIcon icon="chevron-right" />
-    </Button>
+    <div class="buttons">
+      <Button size="small" role="view" @click="goToNextPage" :disabled="currentPage >= numberOfPages">
+        <FontAwesomeIcon icon="angle-right" />
+      </Button>
+      <Button size="small" role="view" @click="goToLastPage" :disabled="currentPage >= numberOfPages">
+        <FontAwesomeIcon icon="angles-right" />
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -51,7 +69,10 @@ const goToPreviousPage = () => {
   align-items: center;
 }
 
+.buttons {  
+  margin: 0 8px;
+}
 .pagination button {
-  margin: 0 10px;
+  margin: 0 2px;
 }
 </style>
