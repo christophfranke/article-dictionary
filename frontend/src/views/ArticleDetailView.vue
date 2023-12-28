@@ -61,7 +61,8 @@ watch(() => article.value?.content, () => {
   if (relativeIndex.value.page > 0) {
     currentPage.value = relativeIndex.value.page  
   }
-});
+}, { immediate: true });
+
 
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
@@ -117,6 +118,12 @@ const markArticleAsRead = async () => {
     currentPage.value = 1;
   }
 }
+const changePage = async () => {
+  await scrollToTop();
+  if (article.value) {
+    await articles.updateOne(article.value.slug, { readingIndex: getAbsoluteIndex(0) });
+  }
+}
 
 const showDictionary = ref(true);
 const toggleShowDictionary = () => {
@@ -170,7 +177,7 @@ onBeforeUnmount(() => {
           v-model:currentPage="currentPage" 
           :numberOfPages="numberOfPages"
           v-if="numberOfPages > 1"
-          @change="scrollToTop"
+          @change="changePage"
         />
         <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
       </div>
@@ -219,7 +226,7 @@ onBeforeUnmount(() => {
 
 .title {
   clear: both;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 }
 
 .bottom-pagination {
