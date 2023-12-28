@@ -8,6 +8,8 @@ import type { PartialWord, ArticleDetail } from '../types';
 import { useDictionaryView } from '@/use/dictionary';
 import { useArticleView } from '@/use/articles';
 
+import usePagination from '@/components/ArticleDetailView/use-pagination';
+
 import useApi from '@/use/api';
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 
@@ -29,38 +31,6 @@ import Paragraph from '@/elements/Paragraph.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 
 
-
-const tableDisplayConfig = computed(() => ({
-  header: true,
-  limit: 0,
-  sortBy: 'order',
-  sortOrder: 'asc',
-  col: {
-    number: true,
-    original: true,
-    translations: true,
-    status: false,
-    actions: true,
-    frequency: false,
-  },
-  action: {
-    known: false,
-    ignore: true,
-    add: false,
-    sort: true,
-    edit: true,
-    retranslate: true,
-    status: false,
-    glosbe: true,
-    detail: false,
-    link: true,
-  },
-  behaviour: {
-    highlight: showDictionary.value,
-    scroll: showDictionary.value,
-  }
-}));
-
 const contentDisplayConfig = {
   padding: true,
   click: true,
@@ -77,9 +47,37 @@ const slug = ref(typeof route.params.slug === 'string' ? route.params.slug : (ro
 const { articles, isLoading } = useArticleView();
 const article = articles.detail(slug.value)
 
+const {
+  currentPage,
+  numberOfPages,
+  paginatedContent,
+  paginatedWords,
+  relativeIndex,
+} = usePagination(article);
+
+watchEffect(() => {
+  console.log(paginatedContent.value)
+})
+
+const canGoToNextPage = computed(() => currentPage.value < numberOfPages.value);
+const canGoToPreviousPage = computed(() => currentPage.value > 1);
+
+const goToNextPage = () => {
+  if (canGoToNextPage.value) {
+    currentPage.value++;
+  }
+};
+
+const goToPreviousPage = () => {
+  if (canGoToPreviousPage.value) {
+    currentPage.value--;
+  }
+};
+
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
   && (word.status === 'new' || word.status === 'seen')
+  && paginatedWords.value.includes(word.original)
 );
 
 const { dictionary } = useDictionaryView(displayFilter);
@@ -137,6 +135,14 @@ onMounted(async () => {
   dictionary.load();
   await articles.get(slug.value);
 
+  // const splits = splitContentIntoPages(article.value?.content ?? '', 500, 10);
+  // console.log(splits);
+  // const pages = pageContents(article.value?.content ?? '', splits);
+  // const wordSplits = calculateWordSplits(article.value?.content ?? '', article.value?.words || [], splits);
+  // const words = pageWords(article.value?.words || [], wordSplits);
+  // console.log(pages[0], words[0]);
+
+
   if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {
       if (article.value) {
@@ -151,6 +157,8 @@ onBeforeUnmount(() => {
     clearTimeout(timeoutId);
   }
 });
+
+
 </script>
 
 
@@ -164,12 +172,17 @@ onBeforeUnmount(() => {
         <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
         <Headline class="title">{{ article.title }}</Headline>
         <Paragraph>
-          <ProcessedContent :words="article.words" :content="article.content" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" />
+          <ProcessedContent :words="paginatedWords" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="article.readingIndex" :key="currentPage" />
         </Paragraph>
         <Tooltip :dictionary="dictionary" :highlighted="highlighted" :article="article" />
+        <div class="pagination">
+          <button @click="goToPreviousPage" :disabled="!canGoToPreviousPage">Previous</button>
+          <span>Page {{ currentPage }} of {{ numberOfPages }}</span>
+          <button @click="goToNextPage" :disabled="!canGoToNextPage">Next</button>
+        </div>
         <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" />
       </div>
-      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :tableDisplayConfig="tableDisplayConfig" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" />
+      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" />
     </template>
     <NotFoundView v-else />
   </div>

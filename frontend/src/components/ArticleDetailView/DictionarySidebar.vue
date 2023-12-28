@@ -1,17 +1,51 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { PropType } from 'vue';
 import type { DictionaryView } from '@/dictionary/view';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import DictionaryTable from '@/components/DictionaryTable.vue';
 import Button from '@/elements/Button.vue';
 
+
 const props = defineProps({
   showDictionary: Boolean,
   dictionary: Object as PropType<DictionaryView>,
-  tableDisplayConfig: Object,
   highlightedWord: String,
   toggleShowDictionary: Function,
 });
+
+
+const tableDisplayConfig = computed(() => ({
+  header: true,
+  limit: 0,
+  sortBy: 'order',
+  sortOrder: 'asc',
+  col: {
+    number: true,
+    original: true,
+    translations: true,
+    status: false,
+    actions: true,
+    frequency: false,
+  },
+  action: {
+    known: false,
+    ignore: true,
+    add: false,
+    sort: true,
+    edit: true,
+    retranslate: true,
+    status: false,
+    glosbe: true,
+    detail: false,
+    link: true,
+  },
+  behaviour: {
+    highlight: props.showDictionary,
+    scroll: props.showDictionary,
+  }
+}));
+
 </script>
 
 <template>
@@ -20,7 +54,7 @@ const props = defineProps({
       <FontAwesomeIcon icon="chevron-right" :class="{ rotate: !props.showDictionary}" />
     </Button>
     <div class="dictionary-scoller">
-      <DictionaryTable :dictionary="props.dictionary" :display="props.tableDisplayConfig" sort="number" :highlight="props.highlightedWord" />
+      <DictionaryTable :dictionary="props.dictionary" :display="tableDisplayConfig" sort="number" :highlight="props.highlightedWord" />
     </div>
   </div>
 </template>
