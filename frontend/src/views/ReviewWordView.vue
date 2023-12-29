@@ -48,25 +48,35 @@ const generalFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(
 
 // bias towards words that are close to the readingIndex of the article
 const wordIndexMap = computed(() => article.value?.words.reduce((acc, word, index) => {
-	acc[word] = index;
+	if (!acc[word]) {
+		acc[word] = [index]
+	} else {
+		acc[word].push(index)
+	}
 	return acc;
-}, {} as { [key: string]: number }) || {});
+}, {} as { [key: string]: number[] }) || {});
 
 const articleBiasFn = (x: number, word: PartialWord): number => {
-	const wordIndex = wordIndexMap.value[word.original];
-	if (!wordIndex) {
+	const wordIndices = wordIndexMap.value[word.original];
+	const readingIndex = article.value?.readingIndex
+	const length = article.value?.words.length;
+	if (!wordIndices || !length && (!readingIndex && readingIndex !== 0)) {
 		return 0;
 	}
 
-	const bias = 1 - Math.abs(wordIndex - article.value.readingIndex) / article.value.words.length;
+	const bias = wordIndices.reduce(
+		(max, wordIndex) =>
+			Math.max(max, 1 - Math.abs(wordIndex - readingIndex!) / length!),
+		0
+	);
 	return (1 + bias) * x;
 }
 const articleFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(word.id)
 	&& ['seen', 'new'].includes(word.status)
-	&& (wordIndexMap.value[word.original] === 0 || wordIndexMap.value[word.original] > 0)
+	&& !!wordIndexMap.value[word.original]
 
 const recentlyShown: string[] = [];
-const { dictionary, isLoading } = useDictionaryView(name === 'word-review' ? generalFilterFn : articleFilterFn);
+const { dictionary } = useDictionaryView(name === 'word-review' ? generalFilterFn : articleFilterFn);
 const { pickSentence, findWordForReview } = useReview(dictionary, name === 'word-review' ? generalBiasFn : articleBiasFn);
 
 const wordId = ref<string | null>(null);
@@ -199,6 +209,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 }
 
+const isInitializing = ref(true);
 onMounted(async () => {
   document.addEventListener('keydown', handleKeyPress);
 
@@ -213,6 +224,8 @@ onMounted(async () => {
   if (!wordId.value) {
 	  wordId.value = findWordForReview();
   }
+
+  isInitializing.value = false;
 });
 
 onUnmounted(() => {
@@ -223,10 +236,13 @@ onUnmounted(() => {
 
 <template>
 	<div class="container">
-		<div v-if="!word">
+		<div v-if="isInitializing">
 			<Headline type="h2">Loading...</Headline>
 		</div>
-	  <div class="flashcard" v-else>
+		<div v-if="!isInitializing && !wordId">
+			<Headline class="done">No words to review!</Headline>
+		</div>
+	  <div class="flashcard" v-if="word">
 	  		<span class="level">{{ word.status }} ({{ word.reviewLevel }})</span>
 	      <Headline class="original" type="h2">{{ word.original }}</Headline>
 	      <Paragraph class="example-sentence" v-if="sentence">
@@ -331,5 +347,10 @@ onUnmounted(() => {
 		margin: 0 5px;
 	}
 
+}
+
+.done {
+	text-align: center;
+	margin-top: 150px;
 }
 </style>
