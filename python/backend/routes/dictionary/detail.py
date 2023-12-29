@@ -50,5 +50,6 @@ def get_detail(original):
         'status': word['status'],
         'sentences': sentences,
         'reviewLevel': word.get('review_level', 0),
+        'lastViewed': word.get('last_viewed', None),
         'similar': [word['original'] for word in similar if word['original'] != original]
     })

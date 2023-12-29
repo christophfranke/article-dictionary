@@ -7,6 +7,8 @@ import type { WordDetail } from '@/types'
 import { useFetchAuthorized } from '@/use/api';
 import { useDictionaryView } from '@/use/dictionary'
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
+import useTime from '@/use/time';
+import { calculateIdealReviewInterval } from '@/use/review';
 
 import ProcessedContent from '@/components/ProcessedContent.vue';
 import Tooltip from '@/components/Tooltip.vue';
@@ -27,6 +29,21 @@ const original = computed(() => route.params.original);
 
 const { dictionary } = useDictionaryView()
 const toggleStatusSeen = useToggleStatusSeen(dictionary);
+
+const { timeAgo, describeTimeInterval } = useTime();
+const reviewIntervalDescription = computed(() => {
+  if (!word.value) {
+    return '';
+  }
+
+  const interval = calculateIdealReviewInterval(word.value.reviewLevel);
+  if (!interval) {
+    return 'no review';
+  }
+  return `every ${describeTimeInterval(interval)}`;
+});
+
+
 
 const fetchWord = async () => {
   const data = await fetchAuthorized<WordDetail>(`/api/dictionary/${original.value}`);
@@ -84,7 +101,8 @@ watchEffect(() => {
         <p><strong>Original:</strong> {{ word.original }}</p>
         <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
         <p><strong>Status:</strong> {{ word.status }}</p>
-        <p><strong>Review level:</strong> {{ word.reviewLevel }}</p>
+        <p><strong>Review level:</strong> {{ word.reviewLevel }} ({{ reviewIntervalDescription }})</p>
+        <p><strong>Last seen:</strong> {{ timeAgo(word.lastViewed) }}</p>
         <p><strong>Frequency:</strong> {{ word.frequency }}</p>
         <p><strong>Similar words:</strong>&nbsp;
           <ProcessedContent v-if="word.similar.length > 0" :words="word.similar" :dictionary="dictionary" :display="similarDisplay" v-model="highlighted" @click="navigate" :key="word.original" />

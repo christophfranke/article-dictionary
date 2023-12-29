@@ -2,17 +2,17 @@ import type { PartialWord } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
 
 
-export const calculateIdealReviewInterval = (word: PartialWord): number | null => {
-	if (word.reviewLevel === 0) {
+export const calculateIdealReviewInterval = (reviewLevel: number): number | null => {
+	if (reviewLevel === 0) {
 		return null;
 	}
 
-	if (word.reviewLevel === 1) {
+	if (reviewLevel === 1) {
 		return 0
 	}
 
 	// level 3 -> 3.5 days, doubles with each level
-	return 1.75 * Math.pow(2, word.reviewLevel - 2);
+	return 1.75 * Math.pow(2, reviewLevel - 2) * 1000 * 3600 * 24;
 };
 
 export const calculateNextDue = (word: PartialWord): Date | null => {
