@@ -96,22 +96,27 @@ type Response = {
 const responses: { [key: string]: Response } = {
 	'1': {
 		label: 'No chance',
+		tooltip: () => 'Set level back to 1',
 		fn: level => 1,
 	},
 	'2': {
 		label: 'Almost',
-		fn: level => level - 1,
+		tooltip: newLevel => `Decrease level to ${newLevel}`,
+		fn: level => level > 1 ? level - 1 : 1,
 	},
 	'3': {
-		label: 'Barely',
+		label: 'Keep level',
+		tooltip: newLevel => `Keep level at ${newLevel}`,
 		fn: level => level,
 	} ,
 	'4': {
 		label: 'Got it',
+		tooltip: newLevel => `Increase level to ${newLevel}`,
 		fn: level => level + 1,
 	},
 	'5': {
 		label: 'Too easy',
+		tooltip: newLevel => `Increase level by 2 to ${newLevel}`,
 		fn: level => level + 2,
 	}
 };
@@ -184,32 +189,29 @@ onUnmounted(() => {
 			<Headline type="h2">Loading...</Headline>
 		</div>
 	  <div class="flashcard" v-else>
+	  		<span class="level">{{ word.status }} ({{ word.reviewLevel }})</span>
 	      <Headline class="original" type="h2">{{ word.original }}</Headline>
 	      <Paragraph class="example-sentence" v-if="sentence">
 	      	<ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlight" :key="word.id" />
 	      </Paragraph>
 	    <div v-if="phase === 'recall'">
-	      <div class="show-buttons">
-	      	<Button @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
-		      <Button role="view" @click="showTranslation">Show Translation&nbsp;&#8629;</Button>
-		      <Button role="view" @click="skipWord">
-		      	Skip&nbsp;&#8594;
-		      </Button>
-		    </div>
 	    </div>
 	    <div v-else>
 	      <ul class="translations">
 	        <li v-for="translation in word.translations" :key="translation">{{ translation }}</li>
 	      </ul>
 	      <div class="response-buttons">
-	      	<Button v-for="(response, key) in responses" :key="key" @click="recordResponse(key)">{{ response.label }} ({{ key }})</Button>
+	      	<Button v-for="(response, key) in responses" :key="key" :title="response.tooltip(response.fn(word.reviewLevel))" @click="recordResponse(key)">{{ response.label }} ({{ key }})</Button>
 	      </div>
-	      <div class="show-buttons">
-	      	<Button @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
-		      <Button role="view" @click="skipWord">
-		      	Skip&nbsp;&#8594;
-		      </Button>
-		    </div>
+	    </div>
+      <div class="show-buttons">
+      	<Button title="Ignore word in dictionary" @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
+	      <Button role="view" @click="showTranslation" v-if="phase === 'recall'">
+	      	Show Translation&nbsp;&#8629;
+	      </Button>
+	      <Button title="Skip word for now" role="view" @click="skipWord">
+	      	Skip&nbsp;&#8594;
+	      </Button>
 	    </div>
 	  </div>
     <Tooltip :highlighted="sanitizedHighlight" :dictionary="dictionary" :display="tooltipDisplay" />
@@ -220,7 +222,7 @@ onUnmounted(() => {
 @import '@/style/global.scss';
 
 .container {
-  max-width: 750px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   padding-bottom: 100px;
@@ -228,6 +230,7 @@ onUnmounted(() => {
 
 
 .flashcard {
+	position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -241,6 +244,13 @@ onUnmounted(() => {
 
 .flashcard > div {
   width: 100%;
+}
+
+.level {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 14px;
 }
 
 .original {
