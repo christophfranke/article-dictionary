@@ -16,7 +16,7 @@ export const calculateIdealReviewInterval = (reviewLevel: number): number | null
 };
 
 export const calculateNextDue = (word: PartialWord): Date | null => {
-	const idealReviewInterval = calculateIdealReviewInterval(word);
+	const idealReviewInterval = calculateIdealReviewInterval(word.reviewLevel);
 	if (idealReviewInterval === null) {
 		return null;
 	}
