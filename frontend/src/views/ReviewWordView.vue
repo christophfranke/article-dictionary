@@ -89,9 +89,11 @@ const showTranslation = () => {
 }
 
 type LevelFn = (x: number) => number
+type TooltipFn = (x: number) => string
 type Response = {
 	label: string,
 	fn: LevelFn,
+	tooltip: TooltipFn
 }
 const responses: { [key: string]: Response } = {
 	'1': {
