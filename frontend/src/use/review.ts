@@ -30,8 +30,9 @@ const calculateDue = (word: PartialWord): number => {
   const lastViewed = new Date(word.lastViewed);
   const timeSinceLastViewed = (now.getTime() - lastViewed.getTime()) / (1000 * 3600 * 24); // in days
 
-  if (word.reviewLevel === 0 || word.status === 'ignore') {
-    return 0;
+  if (word.reviewLevel === 0) {
+  	// it is always due if it has never been reviewed
+    return 1;
   }
 
   if (word.reviewLevel === 1) {
@@ -56,21 +57,20 @@ const calculateImportance = (word: PartialWord, maxFrequency: number): number =>
   return 1 + Math.log(frequency) / Math.log(maxFrequency);
 };
 
-
-export default (dictionary: DictionaryView) => {
+type BiasFunction = (score: number, word: PartialWord) => number;
+export default (dictionary: DictionaryView, biasFn: BiasFunction = x => x) => {
 	const findWordForReview = (): string | null => {
 		const maxFreq = Math.max(...dictionary.all.value.map(word => word.frequency));
 
 	  let highestScore = 0; // do not select words with 0 score or less
-	  let wordToReview: any | null = null;
+	  let wordToReview: PartialWord | null = null;
 
 	  for (const word of dictionary.items.value) {
 	  	const importance = calculateImportance(word, maxFreq);
 	  	const due = calculateDue(word);
-	  	const random = 0.2 * Math.random();
-	    const score = importance * due + random;
+	    const score = biasFn(importance * due, word);
 	    if (score > highestScore) {
-	    	console.log(`Found new highest score for ${word.original}: ${score.toFixed(3)} (${importance.toFixed(2)}x${due.toFixed(2)} + ${random.toFixed(2)})`);
+	    	console.log(`Found new highest score for ${word.original}: ${score.toFixed(3)} (${importance.toFixed(2)}x${due.toFixed(2)})`);
 	      highestScore = score;
 	      wordToReview = word;
 	    }

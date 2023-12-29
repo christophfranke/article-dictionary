@@ -55,6 +55,11 @@ const router = createRouter({
       component: () => import('@/views/ArticleEditView.vue'),
     },
     {
+      path: '/articles/:slug/review',
+      name: 'article-word-review',
+      component: () => import('@/views/ReviewWordView.vue'),
+    },
+    {
       path: '/articles/:slug',
       name: 'article-detail',
       component: () => import('@/views/ArticleDetailView.vue'),

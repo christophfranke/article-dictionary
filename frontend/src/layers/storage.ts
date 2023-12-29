@@ -11,7 +11,11 @@ export default <T extends { id: string }>(request: StreamApi<T>, key: string): S
         collection[item.id] = item;
       }
     });
-    localStorage.setItem(key, JSON.stringify(collection));
+    try {
+      localStorage.setItem(key, JSON.stringify(collection));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const list = async function* (): AsyncGenerator<T[], void, unknown> {

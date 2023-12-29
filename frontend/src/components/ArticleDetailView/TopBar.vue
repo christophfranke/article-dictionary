@@ -14,6 +14,7 @@ const props = defineProps({
 
 <template>
   <div class="statistics-container" v-if="props.article && props.dictionary">
+    <ButtonLink class="review" :to="`/articles/${props.article.slug}/review`">Review Words</ButtonLink>
     <ButtonLink class="edit-article" :to="`/articles/${props.article.slug}/edit`">Edit Article</ButtonLink>
     <Statistics :article="props.article" :dictionary="props.dictionary" showPercentage />
   </div>
@@ -28,10 +29,11 @@ const props = defineProps({
   justify-content: space-between;
   align-items: flex-start;
 }
-
 .edit-article {
-  display: block;
   margin-right: 20px;
+}
+.review {
+  margin-right: 10px;
 }
 
 .status-description {

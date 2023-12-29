@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue';
+import { useRoute } from 'vue-router';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import type { WordDetail, PartialWord } from '@/types';
+import type { WordDetail, PartialWord, ArticleDetail } from '@/types';
 import { useDictionaryView } from '@/use/dictionary';
+import { useArticleView } from '@/use/articles';
 import useReview from '@/use/review';
 
 import ProcessedContent from '@/components/ProcessedContent.vue';
@@ -33,11 +35,40 @@ const tooltipDisplay = {
   }	
 }
 
+const route = useRoute();
+const name = route.name;
+const slug = route.params.slug as string;
+
+const { articles } = useArticleView();
+const article = computed<ArticleDetail | null | undefined>(() => slug ? articles.detail(slug).value : null);
+
+const generalBiasFn = (x: number): number => x + 0.2 * Math.random()
+const generalFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(word.id)
+	&& ['seen', 'known'].includes(word.status)
+
+// bias towards words that are close to the readingIndex of the article
+const wordIndexMap = computed(() => article.value?.words.reduce((acc, word, index) => {
+	acc[word] = index;
+	return acc;
+}, {} as { [key: string]: number }) || {});
+
+const articleBiasFn = (x: number, word: PartialWord): number => {
+	const wordIndex = wordIndexMap.value[word.original];
+	if (!wordIndex) {
+		return 0;
+	}
+
+	const bias = 1 - Math.abs(wordIndex - article.value.readingIndex) / article.value.words.length;
+	return (1 + bias) * x;
+}
+const articleFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(word.id)
+	&& ['seen', 'new'].includes(word.status)
+	&& (wordIndexMap.value[word.original] === 0 || wordIndexMap.value[word.original] > 0)
+
 const recentlyShown: string[] = [];
-const { dictionary, isLoading } = useDictionaryView(
-	word => !recentlyShown.includes(word.id)
-);
-const { pickSentence, findWordForReview } = useReview(dictionary);
+const { dictionary, isLoading } = useDictionaryView(name === 'word-review' ? generalFilterFn : articleFilterFn);
+const { pickSentence, findWordForReview } = useReview(dictionary, name === 'word-review' ? generalBiasFn : articleBiasFn);
+
 const wordId = ref<string | null>(null);
 const word = computed<WordDetail | null>(() => {
 	if (wordId.value) {		
@@ -47,6 +78,7 @@ const word = computed<WordDetail | null>(() => {
 
 	return null;
 });
+
 const sentence = computed(() => {
 	if (!word.value || !word.value.sentences || !word.value.sentences.length) {
 		return null;
@@ -172,6 +204,10 @@ onMounted(async () => {
 
   if (!dictionary.items.value.length) {
 		await dictionary.load();
+	}
+
+	if (slug && !article.value) {
+		await articles.get(slug);
 	}
 
   if (!wordId.value) {
