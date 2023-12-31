@@ -31,8 +31,8 @@ const calculateDue = (word: PartialWord): number => {
   const timeSinceLastViewed = (now.getTime() - lastViewed.getTime()) / (1000 * 3600 * 24); // in days
 
   if (word.reviewLevel === 0) {
-  	// it is always due if it has never been reviewed
-    return 1;
+  	// too soon to review
+    return 0;
   }
 
   if (word.reviewLevel === 1) {
@@ -48,6 +48,56 @@ const calculateDue = (word: PartialWord): number => {
   return timeSinceLastViewed * (2 - timeSinceLastViewed) / idealReviewTime;
 };
 
+const calculateDueNeverTooLate = (word: PartialWord): number => {
+  const now = new Date();
+
+	if (word.reviewLevel === 0) {
+		// too soon
+		return 0;
+	}
+		
+	if (word.reviewLevel === 1) {
+		// the ideal time is now
+		return 1;
+	}
+
+  const lastViewed = new Date(word.lastViewed);
+  const timeSinceLastViewed = (now.getTime() - lastViewed.getTime()) / (1000 * 3600 * 24); // in days
+  const idealReviewTime = 1.75 * Math.pow(2, word.reviewLevel - 2);
+
+  // The ideal time has passed, so we are late
+  if (timeSinceLastViewed > idealReviewTime) {
+		return 1;
+	}
+
+	return timeSinceLastViewed * (2 - timeSinceLastViewed) / idealReviewTime;
+}
+
+const calculateDueNeverTooSoon = (word: PartialWord): number => {
+	const now = new Date();
+
+	if (word.reviewLevel === 0) {
+		// cannot be too soon
+		return 1;
+	}
+
+  const lastViewed = new Date(word.lastViewed);
+  const timeSinceLastViewed = (now.getTime() - lastViewed.getTime()) / (1000 * 3600 * 24); // in days
+
+	if (word.reviewLevel === 1) {
+    return (1 - timeSinceLastViewed);
+	}
+
+  const idealReviewTime = 1.75 * Math.pow(2, word.reviewLevel - 2);
+
+  // It is never too soon
+  if (timeSinceLastViewed < idealReviewTime) {
+		return 1;
+	}
+
+	return timeSinceLastViewed * (2 - timeSinceLastViewed) / idealReviewTime;
+}
+
 const calculateImportance = (word: PartialWord, maxFrequency: number): number => {
 	const frequency = word.frequency
   if (frequency === 0) return 0;
@@ -57,8 +107,15 @@ const calculateImportance = (word: PartialWord, maxFrequency: number): number =>
   return 1 + Math.log(frequency) / Math.log(maxFrequency);
 };
 
-type BiasFunction = (score: number, word: PartialWord) => number;
-export default (dictionary: DictionaryView, biasFn: BiasFunction = x => x) => {
+export type ScoreMap = {
+	importance: number;
+	due: number;
+	dueNeverTooLate: number;
+	dueNeverTooSoon: number;
+}
+export type ScoreFunction = (scores: ScoreMap, word: PartialWord) => number;
+const plainScore: ScoreFunction = (score: ScoreMap) => score.importance * score.due;
+export default (dictionary: DictionaryView, scoreFn: ScoreFunction = plainScore) => {
 	const findWordForReview = (): string | null => {
 		const maxFreq = Math.max(...dictionary.all.value.map(word => word.frequency));
 
@@ -68,7 +125,14 @@ export default (dictionary: DictionaryView, biasFn: BiasFunction = x => x) => {
 	  for (const word of dictionary.items.value) {
 	  	const importance = calculateImportance(word, maxFreq);
 	  	const due = calculateDue(word);
-	    const score = biasFn(importance * due, word);
+	  	const dueNeverTooLate = calculateDueNeverTooLate(word);
+	  	const dueNeverTooSoon = calculateDueNeverTooSoon(word);
+	    const score = scoreFn({
+	    	importance,
+	    	due,
+	    	dueNeverTooLate,
+	    	dueNeverTooSoon,
+	    }, word);
 	    if (score > highestScore) {
 	    	console.log(`Found new highest score for ${word.original}: ${score.toFixed(3)} (${importance.toFixed(2)}x${due.toFixed(2)})`);
 	      highestScore = score;

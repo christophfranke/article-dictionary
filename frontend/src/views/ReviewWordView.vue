@@ -8,6 +8,7 @@ import type { WordDetail, PartialWord, ArticleDetail } from '@/types';
 import { useDictionaryView } from '@/use/dictionary';
 import { useArticleView } from '@/use/articles';
 import useReview from '@/use/review';
+import type { ScoreFunction, ScoreMap } from '@/use/review';
 
 import ProcessedContent from '@/components/ProcessedContent.vue';
 import Tooltip from '@/components/Tooltip.vue';
@@ -42,7 +43,7 @@ const slug = route.params.slug as string;
 const { articles } = useArticleView();
 const article = computed<ArticleDetail | null | undefined>(() => slug ? articles.detail(slug).value : null);
 
-const generalBiasFn = (x: number): number => x + 0.2 * Math.random()
+const generalScoreFn = (scores: ScoreMap): number => scores.due * scores.importance + 0.2 * Math.random()
 const generalFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(word.id)
 	&& ['seen', 'known'].includes(word.status)
 
@@ -56,7 +57,7 @@ const wordIndexMap = computed(() => article.value?.words.reduce((acc, word, inde
 	return acc;
 }, {} as { [key: string]: number[] }) || {});
 
-const articleBiasFn = (x: number, word: PartialWord): number => {
+const articleScoreFn = (scores: ScoreMap, word: PartialWord): number => {
 	const wordIndices = wordIndexMap.value[word.original];
 	const readingIndex = article.value?.readingIndex
 	const length = article.value?.words.length;
@@ -69,7 +70,7 @@ const articleBiasFn = (x: number, word: PartialWord): number => {
 			Math.max(max, 1 - Math.abs(wordIndex - readingIndex!) / length!),
 		0
 	);
-	return (1 + bias) * x;
+	return (1 + bias) * scores.importance;
 }
 const articleFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(word.id)
 	&& ['seen', 'new'].includes(word.status)
@@ -77,7 +78,7 @@ const articleFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(
 
 const recentlyShown: string[] = [];
 const { dictionary } = useDictionaryView(name === 'word-review' ? generalFilterFn : articleFilterFn);
-const { pickSentence, findWordForReview } = useReview(dictionary, name === 'word-review' ? generalBiasFn : articleBiasFn);
+const { pickSentence, findWordForReview } = useReview(dictionary, name === 'word-review' ? generalScoreFn : articleScoreFn);
 
 const wordId = ref<string | null>(null);
 const word = computed<WordDetail | null>(() => {
