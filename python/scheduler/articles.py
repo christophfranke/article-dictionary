@@ -9,6 +9,7 @@ from utils.mongo_external import get_collection
 def jobs():
     pass
 
+
 def repair():
     add_reading_index()
     add_words()
@@ -18,6 +19,7 @@ def repair():
     add_privacy()
     add_owner()
     remove_dictionary()
+
 
 def remove_words():
     collection = get_collection('articles')
@@ -50,6 +52,7 @@ def add_words():
         get_collection('articles').replace_one({'_id': article['_id']}, article)
         print('Added words to article: ' + article['title'] + f' ({len(words)})')
 
+
 def add_language():
     collection = get_collection('articles')
 
@@ -63,6 +66,7 @@ def add_language():
         article['language'] = 'el'
         collection.replace_one({'_id': article['_id']}, article)
         print('Added language to article: ' + article['title'])
+
 
 def add_dates():
     collection = get_collection('articles')

@@ -1,5 +1,3 @@
-import type { FetchFn } from '@/types';
-
 export interface Api<T> {
   list: () => Promise<T[]>;
   get: (id: string) => Promise<T | null>;

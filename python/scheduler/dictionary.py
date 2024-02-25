@@ -13,6 +13,7 @@ def jobs():
     update_word_frequency()
     update_clusters()
 
+
 def repair():
     remove_src_is_target()
     remove_duplicates()
@@ -215,6 +216,7 @@ def remove_duplicates():
             collection.delete_one({'_id': duplicate['_id']})
             print('Removed duplicate word: ' + duplicate['original'] + ' lang: ' + word['source_language'] + ' -> ' + word['target_language'])
 
+
 def remove_src_is_target():
     collection = get_collection('dictionary')
 
@@ -229,6 +231,7 @@ def remove_src_is_target():
         if word['source_language'] == word['target_language']:
             collection.delete_one({'_id': word['_id']})
             print('Removed malformat word: ' + word['original'] + ' lang: ' + word['source_language'] + ' -> ' + word['target_language'])
+
 
 def add_cluster_id():
     dictionary = get_collection('dictionary')
