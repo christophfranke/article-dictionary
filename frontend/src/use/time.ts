@@ -16,7 +16,7 @@ const describeTime = (milliseconds: number, refresh?: RefreshFn): string => {
     return 'just now';
   } else if (minutes < 60) {
     if (refresh) {
-      setTimeout(() => refresh, 1000 * 60);
+      setTimeout(refresh, 1000 * 60);
     }
     return `${minutes} min`;
   } else if (hours < 24) {
@@ -45,7 +45,7 @@ const describeTimeInterval = (milliseconds: number, refresh?: RefreshFn): string
     return 'second';
   } else if (minutes < 60) {
     if (refresh) {
-      setTimeout(() => refresh, 1000 * 60);
+      setTimeout(refresh, 1000 * 60);
     }
     if (minutes === 1) {
       return 'minute';
