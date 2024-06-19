@@ -3,10 +3,12 @@ import subprocess
 
 app = Flask(__name__)
 
+
 @app.route('/export')
 def export():
     subprocess.run(["/scripts/export.sh"])
     return "Export started."
+
 
 if __name__ == '__main__':
     print("Starting backup service...")
