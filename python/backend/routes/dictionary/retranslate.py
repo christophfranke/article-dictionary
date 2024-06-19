@@ -7,6 +7,7 @@ from bson import ObjectId
 
 from .helpers import serialize
 
+
 @login_required
 def retranslate(id):
     dictionary_collection = get_collection('dictionary')
@@ -17,7 +18,12 @@ def retranslate(id):
         return jsonify({'error': f'Word not found: {id}'}), 404
 
     source_language, target_language = get_languages(get_collection('users'), ObjectId(current_user.id))
-    word['translations'] = translate_single_word(word['original'], source_language, target_language)
+    word['translations'] = translate_single_word(
+        word['original'],
+        source_language,
+        target_language,
+        get_collection('translations')
+    )
     word['needs_retranslate'] = False
     word['needs_clustering'] = True
     word['translation_origin'] = 'google'

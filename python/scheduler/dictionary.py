@@ -123,7 +123,12 @@ def retranslate_word():
 
         if word:
             # Translate
-            translations = translate_single_word(word['original'], word['source_language'], word['target_language'])
+            translations = translate_single_word(
+                word['original'],
+                word['source_language'],
+                word['target_language'],
+                get_collection('translations')
+            )
 
             # Update entry with translations
             word['translations'] = translations
@@ -140,6 +145,7 @@ def retranslate_word():
     except Exception as e:
         print('Error retranslating word: ' + str(e))
 
+
 def remove_zero_frequency():
     dictionary = get_collection('dictionary')
 
@@ -154,6 +160,7 @@ def remove_zero_frequency():
         if word['cluster_id'] is not None:
             get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
         print(f'Removed word: {word['original']} ({word['frequency']})')
+
 
 def remove_no_original():
     dictionary = get_collection('dictionary')
@@ -261,6 +268,7 @@ def add_cluster_id():
         dictionary.replace_one({'_id': word['_id']}, word)
         print('Added cluster_id to word: ' + word['original'])
 
+
 def reset_clusters():
     dictionary = get_collection('dictionary')
     cluster = get_collection('cluster')
@@ -276,6 +284,7 @@ def reset_clusters():
             }
         })
     print('Reset clusters')
+
 
 def update_clusters():
     dictionary = get_collection('dictionary')
@@ -294,7 +303,8 @@ def update_clusters():
         updated_word = dictionary.find_one({'_id': word['_id']})
         leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
         cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
-        print(f'Updated cluster: {updated_word['original']} -> {leader_word['original']} ({cluster_size})')
+        print(f'Updated cluster: {updated_word['original']} -> {leader_word['original']} (size: {cluster_size})')
+
 
 def add_review_level_and_last_reviewed():
     dictionary = get_collection('dictionary')
@@ -316,6 +326,7 @@ def add_review_level_and_last_reviewed():
         word['last_viewed'] = datetime.now() if review_level > 0 else None
         dictionary.replace_one({'_id': word['_id']}, word)
         print('Added review_level and last_viewed to word: ' + word['original'])
+
 
 def add_translation_origin():
     dictionary = get_collection('dictionary')

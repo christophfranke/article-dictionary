@@ -68,4 +68,4 @@ def update_aggregate_attributes():
         }
 
         cluster.update_one({'_id': entry['_id']}, {'$set': data})
-        print(f'Updated cluster data: {str(originals)} -> {str(translations)} ({frequency}, {status})')
+        print(f'Updated cluster data: {str(originals)} -> {str(translations)} (freq: {frequency}, status: {status})')
