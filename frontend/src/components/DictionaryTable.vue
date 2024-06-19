@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watchEffect, reactive } from 'vue';
+import { ref, computed, watchEffect, reactive, onMounted } from 'vue';
 import type { PropType } from 'vue';
 
 import type { DictionaryView } from '@/dictionary/view';
@@ -66,6 +66,13 @@ const props = defineProps({
 useScroll(props);
 const { sortTable, sortedWords } = useSort(props);
 const { profile } = useProfile();
+
+const isReady = ref<boolean>(false)
+const usedWords = computed(() => isReady.value ? sortedWords.value : [])
+onMounted(async () => {
+  await new Promise(resolve => requestAnimationFrame(resolve))
+  isReady.value = true
+})
 
 const highlightedWord = computed(() => {
   return (props.display.behaviour.highlight || props.display.behaviour.highlight)
@@ -159,7 +166,7 @@ const addWord = async (): Promise<void> => {
         </tr>
       </thead>
       <tbody>
-        <Row v-for="(word) in sortedWords" :key="word.id" :word="word" :isHighlighed="isWordHighlighted[word.original]" :display="props.display" :dictionary="props.dictionary" :profile="profile" />
+        <Row v-for="(word) in usedWords" :key="word.id" :word="word" :isHighlighed="isWordHighlighted[word.original]" :display="props.display" :dictionary="props.dictionary" :profile="profile" />
       </tbody>
     </table>
   </div>

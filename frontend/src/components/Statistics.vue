@@ -21,6 +21,7 @@ const { dictionary, article, showPercentage } = defineProps({
   },
 });
 
+
 const statistics = useStatistics({ dictionary, article: article && ref(article) });
 </script>
 

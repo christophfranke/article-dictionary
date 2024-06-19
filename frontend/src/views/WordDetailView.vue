@@ -9,6 +9,9 @@ import { useDictionaryView } from '@/use/dictionary'
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 import useTime from '@/use/time';
 import { calculateIdealReviewInterval } from '@/use/review';
+import useWordCache from '@/use/word-cache';
+
+import NotFoundView from '@/views/NotFoundView.vue';
 
 import ProcessedContent from '@/components/ProcessedContent.vue';
 import Tooltip from '@/components/Tooltip.vue';
@@ -18,6 +21,7 @@ import Paragraph from '@/elements/Paragraph.vue';
 
 
 const word = ref<WordDetail | null>(null);
+const isLoading = ref<boolean>(true);
 const highlighted = ref<{ word: string; index: number }>({
   word: '',
   index: -1
@@ -44,12 +48,27 @@ const reviewIntervalDescription = computed(() => {
 });
 
 
-
+const wordCache = useWordCache()
 const fetchWord = async () => {
-  const data = await fetchAuthorized<WordDetail>(`/api/dictionary/${original.value}`);
+  // try cache first
+  const newWord = original.value
+  word.value = wordCache.get(newWord)
+  isLoading.value = false
 
-  if (data) {
-    word.value = data;
+  if (!word.value) {
+    isLoading.value = true
+    const data = await fetchAuthorized<WordDetail>(`/api/dictionary/${newWord}`);
+
+    if (data) {
+      if (newWord === original.value) {
+        word.value = data;
+      }
+      wordCache.add(newWord, data)
+    }
+
+    if (newWord === original.value) {
+      isLoading.value = false
+    }
   }
 };
 
@@ -84,6 +103,8 @@ const tooltipDisplay = {
 
 const router = useRouter()
 const navigate = (params: { word: string }) => {
+  highlighted.value.word = ''
+  highlighted.value.index = -1
   router.push(`/dictionary/${params.word}`)
 };
 
@@ -95,7 +116,10 @@ watchEffect(() => {
 
 <template>
   <div class="main">
-    <div v-if="word">
+    <div class="loading" v-if="isLoading">
+      Loading {{original}}...
+    </div>
+    <div v-if="!isLoading && word">
       <div class="stats">
         <Headline type="h2" class="headline">{{ word?.original }}</Headline>
         <p><strong>Original:</strong> {{ word.original }}</p>
@@ -125,6 +149,7 @@ watchEffect(() => {
     </div>
     <Tooltip :dictionary="dictionary" :highlighted="highlighted" :display="tooltipDisplay" />
   </div>
+  <NotFoundView v-if="!isLoading && !word" />
 </template>
 
 <style scoped>
@@ -132,6 +157,10 @@ watchEffect(() => {
   font-size: 18px;
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.loading {
+  margin-top: 50px;
 }
 
 .headline {

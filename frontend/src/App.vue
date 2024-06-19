@@ -2,6 +2,9 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
+import useApi from '@/use/api'
+
+const api = useApi()
 </script>
 
 <template>
@@ -31,5 +34,6 @@ a, a:visited {
 p, h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
+
 
 </style>

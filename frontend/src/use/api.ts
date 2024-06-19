@@ -50,13 +50,13 @@ interface UseApi {
   isLoading: ComputedRef<boolean>;
 }
 
+const loadingCounter = ref<number>(0);
+const isLoading = computed<boolean>(() => loadingCounter.value > 0);
 export default (): UseApi => {
   const router = useRouter();
   const route = useRoute();
 
   const errorMessage = ref<string | null>(null);
-  const loadingCounter = ref<number>(0);
-  const isLoading = computed<boolean>(() => loadingCounter.value > 0);
 
   const fetchAuthorized = async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
     try {

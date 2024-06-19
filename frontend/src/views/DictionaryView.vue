@@ -69,8 +69,10 @@ const filterFn = (word: PartialWord) => {
   return true;
 };
 
-
-const { dictionary, isLoading } = useDictionaryView(filterFn);
+let isLoadingView = null
+let dictionary = null
+const isLoading = computed(() => !isLoadingView || isLoadingView.value)
+const isDictionaryReady = ref<boolean>(false)
 const filter = ref<string>('');
 const statusFilters = ref({
   new: true,
@@ -79,7 +81,14 @@ const statusFilters = ref({
   ignore: false,
 } as { [key: string]: boolean });
 
-onMounted(() => {
+onMounted(async () => {
+  await new Promise(resolve => requestAnimationFrame(resolve))
+  const view = useDictionaryView(filterFn);
+  dictionary = view.dictionary
+  isLoadingView = view.isLoading
+
+  await new Promise(resolve => requestAnimationFrame(resolve))
+  isDictionaryReady.value = true
   dictionary.load();
 });
 </script>
@@ -88,7 +97,7 @@ onMounted(() => {
   <div class="dictionary-view">
     <Headline>Dictionary View</Headline>
 
-    <p v-if="isLoading && dictionary.all.value.length === 0">
+    <p v-if="isLoading && !isDictionaryReady">
       Loading dictionary...
     </p>
 
@@ -97,7 +106,7 @@ onMounted(() => {
         <Label for="filter">Filter:</Label>
         <Input v-model="filter" id="filter" placeholder="Search for..." />
       </div>
-      <Statistics :dictionary="dictionary" class="statistics" />
+      <Statistics :dictionary="dictionary" class="statistics" v-if="isDictionaryReady" />
 
       <div class="status-filters">
         <Label for="newCheckbox">
@@ -121,7 +130,7 @@ onMounted(() => {
         </Label>
       </div>
 
-      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" />
+      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" v-if="isDictionaryReady" />
     </template>
   </div>
 </template>
