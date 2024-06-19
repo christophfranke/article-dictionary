@@ -51,7 +51,7 @@ const reviewIntervalDescription = computed(() => {
 const wordCache = useWordCache()
 const fetchWord = async () => {
   // try cache first
-  const newWord = original.value
+  const newWord: string = typeof original.value === 'string' ? original.value : original.value[0]
   word.value = wordCache.get(newWord)
   isLoading.value = false
 

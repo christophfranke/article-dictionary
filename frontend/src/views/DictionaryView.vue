@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 
 import type { PartialWord } from '../types';
+import type { DictionaryView } from '@/dictionary/view';
 
 import DictionaryTable from '../components/DictionaryTable.vue';
 import Statistics from '../components/Statistics.vue';
@@ -69,8 +70,8 @@ const filterFn = (word: PartialWord) => {
   return true;
 };
 
-let isLoadingView = null
-let dictionary = null
+let isLoadingView: any = null
+let dictionary: DictionaryView | null = null
 const isLoading = computed(() => !isLoadingView || isLoadingView.value)
 const isDictionaryReady = ref<boolean>(false)
 const filter = ref<string>('');
@@ -106,7 +107,7 @@ onMounted(async () => {
         <Label for="filter">Filter:</Label>
         <Input v-model="filter" id="filter" placeholder="Search for..." />
       </div>
-      <Statistics :dictionary="dictionary" class="statistics" v-if="isDictionaryReady" />
+      <Statistics :dictionary="dictionary!" class="statistics" v-if="isDictionaryReady" />
 
       <div class="status-filters">
         <Label for="newCheckbox">
@@ -130,7 +131,7 @@ onMounted(async () => {
         </Label>
       </div>
 
-      <DictionaryTable :dictionary="dictionary" :display="tableDisplayConfig" v-if="isDictionaryReady" />
+      <DictionaryTable :dictionary="dictionary!" :display="tableDisplayConfig" v-if="isDictionaryReady" />
     </template>
   </div>
 </template>
