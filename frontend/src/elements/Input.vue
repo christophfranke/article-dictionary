@@ -5,7 +5,7 @@ const props = defineProps({
   modelValue: [String, Boolean]
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'change']);
 
 // Reactive reference for the input value
 const valueRef = ref(props.modelValue);
