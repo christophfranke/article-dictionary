@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, watchEffect, watch } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import { useProfile, useUpdateProfile } from '@/use/user';
 import { useSupportedLanguages } from '@/use/language';
 import { setTheme } from '@/themes';
@@ -27,6 +28,7 @@ const form = reactive({
 const languages = useSupportedLanguages()
 const { profile } = useProfile();
 const { updateProfile, errorMessage, isLoading } = useUpdateProfile();
+const isDirty = ref<boolean>(false)
 
 watchEffect(() => {
   if (!form.email) {
@@ -57,6 +59,7 @@ const submitForm = async () => {
   if (await updateProfile(formData)) {
     form.newPassword = '';
     form.confirmPassword = '';
+    isDirty.value = false;
   }
 };
 
@@ -67,6 +70,24 @@ watchEffect(() => {
 onBeforeUnmount(() => {
   setTheme(profile.theme);
 });
+
+const setDirty = () => {
+  isDirty.value = true
+}
+
+onBeforeRouteLeave((to, from, next) => {
+  if (isDirty.value) {
+    const answer = window.confirm('You have unsaved changes. Do you really want to leave?');
+    if (answer) {
+      next();
+    } else {
+      next(false);
+    }
+  } else {
+    next();
+  }
+});
+
 
 const themes = {
   'bright': 'Light',
@@ -82,28 +103,28 @@ const themes = {
     <Form @submit.prevent="submitForm" class="settings-form">
       <FormGroup>
         <Label for="email">Email:</Label>
-        <Input type="email" id="email" v-model="form.email" required />
+        <Input type="email" id="email" v-model="form.email" @change="setDirty" required />
       </FormGroup>
 
       <FormGroup>
         <Label for="name">Name:</Label>
-        <Input type="text" id="name" v-model="form.name" />
+        <Input type="text" id="name" v-model="form.name" @change="setDirty" />
       </FormGroup>
 
       <FormGroup>
         <Label for="theme">Theme:</Label>
-        <Select v-model="form.theme" :options="themes">
+        <Select v-model="form.theme" :options="themes" @change="setDirty">
         </Select>
       </FormGroup>
 
       <FormGroup>
         <Label for="newPassword">New Password:</Label>
-        <Input type="password" id="newPassword" v-model="form.newPassword" />
+        <Input type="password" id="newPassword" v-model="form.newPassword" @change="setDirty" />
       </FormGroup>
 
       <FormGroup>
         <Label for="confirmPassword">Confirm New Password:</Label>
-        <Input type="password" id="confirmPassword" v-model="form.confirmPassword" />
+        <Input type="password" id="confirmPassword" v-model="form.confirmPassword" @change="setDirty" />
       </FormGroup>
 
       <FormGroup>
@@ -120,7 +141,7 @@ const themes = {
         </Select>
       </FormGroup>
 
-      <Button type="submit" class="save-button" :disabled="isLoading">Save Changes</Button>
+      <Button type="submit" class="save-button" :disabled="isLoading || !isDirty">Save Changes</Button>
     </Form>
     <ErrorMessage :message="errorMessage" />
   </div>

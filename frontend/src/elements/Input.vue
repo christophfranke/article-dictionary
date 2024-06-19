@@ -18,6 +18,7 @@ watch(() => props.modelValue, (newVal) => {
 // Watch for changes in valueRef and emit update event
 watch(valueRef, (newValue) => {
   emit('update:modelValue', newValue);
+  emit('change', newValue)
 });
 </script>
 
