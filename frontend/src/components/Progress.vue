@@ -3,7 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { Line } from 'vue-chartjs';
 import type { ChartData, Point, ChartOptions } from 'chart.js';
 import type { Progress } from '@/types';
-import { useFetchAuthorized } from '@/use/api';
+import useApi from '@/use/api';
 
 import Button from '@/elements/Button.vue';
 import Headline from '@/elements/Headline.vue';
@@ -150,11 +150,14 @@ const hasEnoughData = computed(() => {
   return chartData.value.labels.length > 1;
 });
 
-const fetchAuthorized = useFetchAuthorized();
+const { fetchAuthorized } = useApi();
+const isLoading = ref<boolean>(true)
 const fetchData = async (dataType: string) => {
+  isLoading.value = true
   const data = await fetchAuthorized<Progress[]>(`/api/statistics/${dataType}`);
+  isLoading.value = false
 
-  if (data) {      
+  if (data && data.length > 1) {
     // sort data by date
     data.sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -211,7 +214,7 @@ watch(selectedData, async (newValue: string) => {
 
 </script>
 <template>
-  <div :class="{ 'chart-container': true, disabled: !hasEnoughData }">
+  <div :class="{ 'chart-container': true, disabled: !hasEnoughData }" v-if="hasEnoughData || isLoading">
     <div class="chart-toggle">
       <Headline type="h2">Progress</Headline>
       <div class="buttons">

@@ -59,7 +59,9 @@ const tableDisplayConfig = computed(() => ({
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/style/global.scss";
+
 .dictionary-container {
   background-color: $background-100;
   position: fixed;

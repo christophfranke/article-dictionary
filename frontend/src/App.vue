@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HeaderComponent from '@/components/HeaderComponent.vue'
+import Spinner from '@/elements/Spinner.vue'
 
-import useApi from '@/use/api'
-
-const api = useApi()
 </script>
 
 <template>
   <div>
     <HeaderComponent />
     <RouterView />
+    <Spinner />
   </div>
 </template>
 

@@ -9,7 +9,7 @@ import { useArticleView } from '@/use/articles';
 
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import ArticlePreviewList from '@/components/ArticlePreviewList.vue';
-import ProgresseComponent from '@/components/Progress.vue';
+import ProgressComponent from '@/components/Progress.vue';
 
 import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
@@ -102,7 +102,7 @@ onMounted(() => {
 
 <template>
   <main class="container">
-    <ProgresseComponent />
+    <ProgressComponent />
 
     <template v-if="isLoading && !articles.previews.value.length">
       <div class="no-articles">

@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import type { WordDetail } from '@/types'
 
-import { useFetchAuthorized } from '@/use/api';
+import useApi from '@/use/api';
 import { useDictionaryView } from '@/use/dictionary'
 import { useToggleStatusSeen } from '@/use/toggle-status-seen';
 import useTime from '@/use/time';
@@ -26,7 +26,7 @@ const highlighted = ref<{ word: string; index: number }>({
   word: '',
   index: -1
 });
-const fetchAuthorized = useFetchAuthorized();
+const { fetchAuthorized } = useApi();
 
 const route = useRoute();
 const original = computed(() => route.params.original);

@@ -8,7 +8,6 @@ import useApi from '@/use/api';
 import { useArticleView } from '@/use/articles';
 
 import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
-import ProgresseComponent from '@/components/Progress.vue';
 
 import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
