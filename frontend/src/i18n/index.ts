@@ -1,28 +1,29 @@
+import { profile } from '@/use/user'
 import en from './en'
 import de from './de'
 
-const languages = {
+const languages: Record<string, Record<string, string>> = {
     en,
     de
 }
 
-const currentLanguage = 'de'
+const currentLanguage = () => profile.interfaceLanguage || 'en'
 
-export const supportedLanguages = {
+export const supportedLanguages: Record<string, string> = {
     'en': 'English',
     'de': 'Deutsch',
 }
 
 
 const translate = (key: string): string => {
-    const table = languages[currentLanguage]
+    const table = languages[currentLanguage()]
     if (!table) {
-        console.error('Language not supported:', currentLanguage)
+        console.error('Language not supported:', currentLanguage())
         return key
     }
     const translation = table[key]
     if (!translation) {
-        console.warn('key not found with current language', currentLanguage, key)
+        console.warn('key not found with current language', currentLanguage(), key)
         return key
     }
 

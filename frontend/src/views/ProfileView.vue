@@ -136,7 +136,7 @@ const themes = {
 
       <FormGroup>
         <Label for="interfaceLanguage">{{ __('Interface language:') }}</Label>
-        <Select id="interfaceLanguage" v-model="form.interfaceLanguage">
+        <Select id="interfaceLanguage" v-model="form.interfaceLanguage" @change="setDirty">
           <option v-for="(label, value) in interfaces" :key="value" :value="value">{{ label }}</option>
         </Select>
       </FormGroup>
