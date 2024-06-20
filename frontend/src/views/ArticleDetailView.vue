@@ -30,6 +30,7 @@ import Paragraph from '@/elements/Paragraph.vue';
 import Pagination from '@/elements/Pagination.vue';
 
 import NotFoundView from '@/views/NotFoundView.vue';
+import __ from '@/i18n'
 
 
 const contentDisplayConfig = {
@@ -160,7 +161,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="article-page" v-if="!article && isLoading">
-    <Headline type="h2">Loading...</Headline>
+    <Headline type="h2">{{ __('Loading...') }}</Headline>
   </div>
   <div class="article-page" v-else>
     <template v-if="article">

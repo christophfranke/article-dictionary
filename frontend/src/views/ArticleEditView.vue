@@ -7,6 +7,7 @@ import type { ArticleData } from '@/types';
 
 import Headline from '@/elements/Headline.vue';
 import ArticleEditForm from '@/components/ArticleEditForm.vue'; // Import the new component
+import __ from '@/i18n'
 
 const article = ref<ArticleData | null>(null);
 
@@ -37,10 +38,11 @@ onMounted(async () => {
 
 <template>
   <div class="create-article" v-if="article">
-    <Headline>Edit Article</Headline>
+    <Headline>{{ __('Edit Article') }}</Headline>
     <ArticleEditForm :article="article" :isLoading="isLoading" :errorMessage="errorMessage" @submit="submitForm" />
   </div>
 </template>
+
 
 <style scoped lang="scss">
 @import "@/style/global.scss";

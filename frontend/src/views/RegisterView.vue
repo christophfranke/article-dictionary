@@ -12,6 +12,8 @@ import Select from '@/elements/Select.vue';
 import Button from '@/elements/Button.vue';
 import ErrorMessage from '@/elements/ErrorMessage.vue';
 
+import __ from '@/i18n'
+
 
 const { email,
   name,
@@ -45,35 +47,36 @@ const otherLanguages = computed(() => {
 <template>
   <Form @submit.prevent="registerAndRedirect" class="register-form">
     <FormGroup>
-      <Label for="email">Email:</Label>
+      <Label for="email">{{ __('Email:') }}</Label>
       <Input type="email" id="email" v-model="email" required />
     </FormGroup>
     <FormGroup>
-      <Label for="name">Name:</Label>
+      <Label for="name">{{ __('Name:') }}</Label>
       <Input type="text" id="name" v-model="name" />
     </FormGroup>
     <FormGroup>
-      <Label for="password">Password:</Label>
+      <Label for="password">{{ __('Password:') }}</Label>
       <Input type="password" id="password" v-model="password" required />
     </FormGroup>
 
     <FormGroup>
-      <Label for="sourceLanguage">I want to learn:</Label>
+      <Label for="sourceLanguage">{{ __('I want to learn:') }}</Label>
       <Select id="sourceLanguage" v-model="sourceLanguage" :options="languages" required />
     </FormGroup>
 
     <FormGroup>
-      <Label for="targetLanguage">My language is:</Label>
+      <Label for="targetLanguage">{{ __('My language is:') }}</Label>
       <Select id="targetLanguage" v-model="targetLanguage" :options="otherLanguages" required />
     </FormGroup>
 
     <FormGroup>
-      <Button type="submit" :disabled="isLoading">Register</Button>
+      <Button type="submit" :disabled="isLoading">{{ __('Register') }}</Button>
     </FormGroup>
 
     <ErrorMessage :message="errorMessage" />
   </Form>
 </template>
+
 
 <style scoped lang="scss">
 .register-form {

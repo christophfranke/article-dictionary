@@ -8,6 +8,8 @@ import type { ArticleData } from '@/types';
 import Headline from '@/elements/Headline.vue';
 import ArticleEditForm from '@/components/ArticleEditForm.vue'; // Import the new component
 
+import __ from '@/i18n'
+
 const article = ref<ArticleData>({
   title: '',
   content: '',
@@ -28,10 +30,11 @@ const submitForm = async (): Promise<void> => {
 
 <template>
   <div class="create-article">
-    <Headline>Create Article</Headline>
+    <Headline>{{ __('Create Article') }}</Headline>
     <ArticleEditForm :article="article" :isLoading="isLoading" :errorMessage="errorMessage" @submit="submitForm" />
   </div>
 </template>
+
 
 <style scoped lang="scss">
 .create-article {

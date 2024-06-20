@@ -1,4 +1,26 @@
-export default (key: string, ...args: string[]): string => {
-    const translation = key
-    return args.reduce((text, arg, index) => text.replace(`$${index+1}`, arg), translation)
+import en from './en'
+
+const languages = {
+    en
+}
+
+const currentLanguage = 'en'
+
+const translate = (key: string): string => {
+    const table = languages[currentLanguage]
+    if (!table) {
+        console.error('Language not supported:', currentLanguage)
+        return key
+    }
+    const translation = table[key]
+    if (!translation) {
+        console.warn('key not found with current language', currentLanguage, key)
+        return key
+    }
+
+    return translation
+}
+
+export default (key: string, ...args: (string | number)[]): string => {
+    return args.reduce((text: string, arg, index) => text.replace(`$${index+1}`, `${arg}`), translate(key))
 }

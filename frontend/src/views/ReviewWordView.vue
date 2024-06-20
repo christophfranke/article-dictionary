@@ -17,6 +17,9 @@ import Headline from '@/elements/Headline.vue';
 import Paragraph from '@/elements/Paragraph.vue';
 import Button from '@/elements/Button.vue';
 
+import __ from '@/i18n'
+
+
 const contentDisplay = {
   padding: true,
   click: false,
@@ -236,42 +239,43 @@ onUnmounted(() => {
 
 
 <template>
-	<div class="container">
-		<div v-if="isInitializing">
-			<Headline type="h2">Loading...</Headline>
-		</div>
-		<div v-if="!isInitializing && !wordId">
-			<Headline class="done">No words to review!</Headline>
-		</div>
-	  <div class="flashcard" v-if="word">
-	  		<span class="level">{{ word.status }} ({{ word.reviewLevel }})</span>
-	      <Headline class="original" type="h2">{{ word.original }}</Headline>
-	      <Paragraph class="example-sentence" v-if="sentence">
-	      	<ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlight" :key="word.id" />
-	      </Paragraph>
-	    <div v-if="phase === 'recall'">
-	    </div>
-	    <div v-else>
-	      <ul class="translations">
-	        <li v-for="translation in word.translations" :key="translation">{{ translation }}</li>
-	      </ul>
-	      <div class="response-buttons">
-	      	<Button v-for="(response, key) in responses" :key="key" :title="response.tooltip(response.fn(word.reviewLevel))" @click="recordResponse(key)">{{ response.label }} ({{ key }})</Button>
-	      </div>
-	    </div>
+  <div class="container">
+    <div v-if="isInitializing">
+      <Headline type="h2">{{ __('Loading...') }}</Headline>
+    </div>
+    <div v-if="!isInitializing && !wordId">
+      <Headline class="done">{{ __('No words to review!') }}</Headline>
+    </div>
+    <div class="flashcard" v-if="word">
+      <span class="level">{{ word.status }} ({{ word.reviewLevel }})</span>
+      <Headline class="original" type="h2">{{ word.original }}</Headline>
+      <Paragraph class="example-sentence" v-if="sentence">
+        <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlight" :key="word.id" />
+      </Paragraph>
+      <div v-if="phase === 'recall'">
+      </div>
+      <div v-else>
+        <ul class="translations">
+          <li v-for="translation in word.translations" :key="translation">{{ translation }}</li>
+        </ul>
+        <div class="response-buttons">
+          <Button v-for="(response, key) in responses" :key="key" :title="response.tooltip(response.fn(word.reviewLevel))" @click="recordResponse(key)">{{ response.label }} ({{ key }})</Button>
+        </div>
+      </div>
       <div class="show-buttons">
-      	<Button title="Ignore word in dictionary" @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
-	      <Button role="view" @click="showTranslation" v-if="phase === 'recall'">
-	      	Show Translation&nbsp;&#8629;
-	      </Button>
-	      <Button title="Skip word for now" role="view" @click="skipWord">
-	      	Skip&nbsp;&#8594;
-	      </Button>
-	    </div>
-	  </div>
+        <Button title="{{ __('Ignore word in dictionary') }}" @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
+        <Button role="view" @click="showTranslation" v-if="phase === 'recall'">
+          {{ __('Show Translation') }}&nbsp;&#8629;
+        </Button>
+        <Button title="{{ __('Skip word for now') }}" role="view" @click="skipWord">
+          {{ __('Skip') }}&nbsp;&#8594;
+        </Button>
+      </div>
+    </div>
     <Tooltip :highlighted="sanitizedHighlight" :dictionary="dictionary" :display="tooltipDisplay" />
-	</div>
+  </div>
 </template>
+
 
 <style scoped lang="scss">
 @import '@/style/global.scss';

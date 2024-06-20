@@ -14,6 +14,8 @@ import Button from '@/elements/Button.vue';
 import Select from '@/elements/Select.vue';
 import ErrorMessage from '@/elements/ErrorMessage.vue';
 
+import __ from '@/i18n'
+
 
 const form = reactive({
   email: '',
@@ -98,54 +100,55 @@ const themes = {
 
 <template>
   <div class="profile-settings">
-    <Headline>Profile Settings</Headline>
+    <Headline>{{ __('Profile Settings') }}</Headline>
 
     <Form @submit.prevent="submitForm" class="settings-form">
       <FormGroup>
-        <Label for="email">Email:</Label>
+        <Label for="email">{{ __('Email:') }}</Label>
         <Input type="email" id="email" v-model="form.email" @change="setDirty" required />
       </FormGroup>
 
       <FormGroup>
-        <Label for="name">Name:</Label>
+        <Label for="name">{{ __('Name:') }}</Label>
         <Input type="text" id="name" v-model="form.name" @change="setDirty" />
       </FormGroup>
 
       <FormGroup>
-        <Label for="theme">Theme:</Label>
+        <Label for="theme">{{ __('Theme:') }}</Label>
         <Select v-model="form.theme" :options="themes" @change="setDirty">
         </Select>
       </FormGroup>
 
       <FormGroup>
-        <Label for="newPassword">New Password:</Label>
+        <Label for="newPassword">{{ __('New Password:') }}</Label>
         <Input type="password" id="newPassword" v-model="form.newPassword" @change="setDirty" />
       </FormGroup>
 
       <FormGroup>
-        <Label for="confirmPassword">Confirm New Password:</Label>
+        <Label for="confirmPassword">{{ __('Confirm New Password:') }}</Label>
         <Input type="password" id="confirmPassword" v-model="form.confirmPassword" @change="setDirty" />
       </FormGroup>
 
       <FormGroup>
-        <Label for="sourceLanguage">I want to learn:</Label>
+        <Label for="sourceLanguage">{{ __('I want to learn:') }}</Label>
         <Select id="sourceLanguage" v-model="form.sourceLanguage" disabled>
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
         </Select>
       </FormGroup>
 
       <FormGroup>
-        <Label for="targetLanguage">My language is:</Label>
+        <Label for="targetLanguage">{{ __('My language is:') }}</Label>
         <Select id="targetLanguage" v-model="form.targetLanguage" disabled>
           <option v-for="(label, value) in languages" :key="value" :value="value">{{ label }}</option>
         </Select>
       </FormGroup>
 
-      <Button type="submit" class="save-button" :disabled="isLoading || !isDirty">Save Changes</Button>
+      <Button type="submit" class="save-button" :disabled="isLoading || !isDirty">{{ __('Save Changes') }}</Button>
     </Form>
     <ErrorMessage :message="errorMessage" />
   </div>
 </template>
+
 
 <style scoped>
 .profile-settings {

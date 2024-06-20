@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import Headline from '@/elements/Headline.vue';
 import InternalLink from '@/elements/InternalLink.vue';
-
+import __ from '@/i18n'
 
 </script>
 
 <template>
   <div class="container">
-    <Headline>404 - Not Found</Headline>
-    <p>The page you are looking for does not exist.</p>
-    <InternalLink to="/" class="link">Back to home page</InternalLink>
+    <Headline>{{ __('404 - Not Found') }}</Headline>
+    <p>{{ __('The page you are looking for does not exist.') }}</p>
+    <InternalLink to="/" class="link">{{ __('Back to home page') }}</InternalLink>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 .container {

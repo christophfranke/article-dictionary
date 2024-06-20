@@ -11,6 +11,8 @@ import Button from '@/elements/Button.vue';
 import ErrorMessage from '@/elements/ErrorMessage.vue';
 import InternalLink from '@/elements/InternalLink.vue';
 
+import __ from '@/i18n'
+
 
 const router = useRouter();
 
@@ -30,20 +32,21 @@ const loginAndRedirect = async () => {
 <template>
   <Form @submit.prevent="loginAndRedirect" class="login-form">
     <FormGroup>
-      <Label for="email">Email:</Label>
+      <Label for="email">{{ __('Email:') }}</Label>
       <Input type="email" id="email" v-model="email" required />
     </FormGroup>
     <FormGroup>
-      <Label for="password">Password:</Label>
+      <Label for="password">{{ __('Password:') }}</Label>
       <Input type="password" id="password" v-model="password" required />
     </FormGroup>
     <FormGroup>
-      <Button type="submit" :disabled="isLoading" role="view">Login</Button>
-      <InternalLink to="/register" class="register-link">Don't have an account? Register here</InternalLink>
+      <Button type="submit" :disabled="isLoading" role="view">{{ __('Login') }}</Button>
+      <InternalLink to="/register" class="register-link">{{ __("Don't have an account? Register here") }}</InternalLink>
     </FormGroup>
     <ErrorMessage :message="errorMessage" />
   </Form>
 </template>
+
 
 <style scoped lang="scss">
 .login-form {

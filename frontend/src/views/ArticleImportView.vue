@@ -9,6 +9,8 @@ import ErrorMessage from '@/elements/ErrorMessage.vue';
 import Paragraph from '@/elements/Paragraph.vue';
 import Headline from '@/elements/Headline.vue';
 
+import __ from '@/i18n'
+
 
 const route = useRoute();
 const id = route.params.id as string;
@@ -29,10 +31,11 @@ onMounted(importArticle)
 </script>
 
 <template>
-	<Headline class="title">Importing article...</Headline>
-  <Paragrph>Translating the article word by word. This may take a minute.</Paragrph>
-  <ErrorMessage :message="errorMessage" />
+    <Headline class="title">{{ __('Importing article...') }}</Headline>
+    <Paragraph>{{ __('Translating the article word by word. This may take a minute.') }}</Paragraph>
+    <ErrorMessage :message="errorMessage" />
 </template>
+
 
 <style scoped>
 .title {

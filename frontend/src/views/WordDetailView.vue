@@ -19,6 +19,8 @@ import Tooltip from '@/components/Tooltip.vue';
 import Headline from '@/elements/Headline.vue';
 import Paragraph from '@/elements/Paragraph.vue';
 
+import __ from '@/i18n'
+
 
 const word = ref<WordDetail | null>(null);
 const isLoading = ref<boolean>(true);
@@ -29,7 +31,7 @@ const highlighted = ref<{ word: string; index: number }>({
 const { fetchAuthorized } = useApi();
 
 const route = useRoute();
-const original = computed(() => route.params.original);
+const original = computed(() => typeof route.params.original === 'string' ? route.params.original : route.params.original[0]);
 
 const { dictionary } = useDictionaryView()
 const toggleStatusSeen = useToggleStatusSeen(dictionary);
@@ -51,7 +53,7 @@ const reviewIntervalDescription = computed(() => {
 const wordCache = useWordCache()
 const fetchWord = async () => {
   // try cache first
-  const newWord: string = typeof original.value === 'string' ? original.value : original.value[0]
+  const newWord: string = original.value
   word.value = wordCache.get(newWord)
   isLoading.value = false
 
@@ -117,25 +119,25 @@ watchEffect(() => {
 <template>
   <div class="main">
     <div class="loading" v-if="isLoading">
-      Loading {{original}}...
+      {{ __('Loading $1...', original) }}
     </div>
     <div v-if="!isLoading && word">
       <div class="stats">
         <Headline type="h2" class="headline">{{ word?.original }}</Headline>
-        <p><strong>Original:</strong> {{ word.original }}</p>
-        <p><strong>Translations:</strong> {{ word.translations.join(', ') }}</p>
-        <p><strong>Status:</strong> {{ word.status }}</p>
-        <p><strong>Review level:</strong> {{ word.reviewLevel }} ({{ reviewIntervalDescription }})</p>
-        <p><strong>Last seen:</strong> {{ timeAgo(word.lastViewed) }}</p>
-        <p><strong>Frequency:</strong> {{ word.frequency }}</p>
-        <p><strong>Similar words:</strong>&nbsp;
+        <p><strong>{{ __('Original') }}:</strong> {{ word.original }}</p>
+        <p><strong>{{ __('Translations') }}:</strong> {{ word.translations.join(', ') }}</p>
+        <p><strong>{{ __('Status') }}:</strong> {{ word.status }}</p>
+        <p><strong>{{ __('Review level') }}:</strong> {{ word.reviewLevel }} ({{ reviewIntervalDescription }})</p>
+        <p><strong>{{ __('Last seen') }}:</strong> {{ timeAgo(word.lastViewed) }}</p>
+        <p><strong>{{ __('Frequency') }}:</strong> {{ word.frequency }}</p>
+        <p><strong>{{ __('Similar words') }}:</strong>&nbsp;
           <ProcessedContent v-if="word.similar.length > 0" :words="word.similar" :dictionary="dictionary" :display="similarDisplay" v-model="highlighted" @click="navigate" :key="word.original" />
-          <span v-else>None</span>
+          <span v-else>{{ __('None') }}</span>
         </p>
       </div>
       <div v-if="word.sentences.length > 0" class="sentences">
         <ul>
-          <li><strong>Sentences:</strong></li>
+          <li><strong>{{ __('Sentences') }}:</strong></li>
           <li v-for="(sentence, index) in word.sentences" :key="`${word.id}-${index}`">
             <Paragraph>
               <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlighted" @click="navigate" />
@@ -144,13 +146,14 @@ watchEffect(() => {
         </ul>
       </div>
       <div v-else>
-        <p>No sentences available.</p>
+        <p>{{ __('No sentences available.') }}</p>
       </div>
     </div>
     <Tooltip :dictionary="dictionary" :highlighted="highlighted" :display="tooltipDisplay" />
   </div>
   <NotFoundView v-if="!isLoading && !word" />
 </template>
+
 
 <style scoped>
 .main {

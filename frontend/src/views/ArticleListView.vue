@@ -12,6 +12,8 @@ import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 
+import __ from '@/i18n'
+
 
 const { articles, isLoading } = useArticleView();
 const router = useRouter();
@@ -48,32 +50,33 @@ onMounted(() => {
 <template>
   <main class="container">
     <template v-if="isLoading && !articles.previews.value.length">
-      <Headline type="h2">Loading Articles...</Headline>
+      <Headline type="h2">{{ __('Loading Articles...') }}</Headline>
     </template>
     <template v-else>
       <div class="title">
-        <Headline>Your Articles</Headline>
-        <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
+        <Headline>{{ __('Your Articles') }}</Headline>
+        <ButtonLink to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
       </div>
       <div v-if="newestArticles.length > 0" class="article-list">
         <ArticlePreviewComponent v-for="article in newestArticles" :key="article.id" :article="article as any" />
       </div>
 
       <div v-else class="no-articles">
-        <p>No articles available.</p>
+        <p>{{ __('No articles available.') }}</p>
       </div>
 
       <template v-if="publicArticles.length > 0">
         <div class="title">
-          <Headline>Public Articles</Headline>
+          <Headline>{{ __('Public Articles') }}</Headline>
         </div>
         <div class="article-list">
-          <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id"  :article="article as any" />
+          <ArticlePreviewComponent v-for="article in publicArticles" :key="article.id" :article="article as any" />
         </div>
       </template>
     </template>
   </main>
 </template>
+
 
 <style scoped>
 .container {

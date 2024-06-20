@@ -14,6 +14,8 @@ import ProgressComponent from '@/components/Progress.vue';
 import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 
+import __ from '@/i18n'
+
 const { articles, isLoading } = useArticleView();
 const router = useRouter();
 
@@ -106,42 +108,44 @@ onMounted(() => {
 
     <template v-if="isLoading && !articles.previews.value.length">
       <div class="no-articles">
-        <Headline class="title">Loading...</Headline>
+        <Headline class="title">{{ __('Loading...') }}</Headline>
       </div>
     </template>
     <template v-else>
       <div v-if="articles.previews.value.length === 0" class="no-articles">
-        <Headline class="title">You have no articles yet.</Headline>
-        <ButtonLink to="/create" class="create-link">Create New Article</ButtonLink>
+        <Headline class="title">{{ __('You have no articles yet.') }}</Headline>
+        <ButtonLink to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
       </div>
 
       <ArticlePreviewList
-        title="Continue Reading"
+        :title="__('Continue Reading')"
         :articleList="continueReadingArticles" />
 
       <ArticlePreviewList
-        title="Suggested Articles"
+        :title="__('Suggested Articles')"
         :articleList="suggestedArticles" />
 
       <ArticlePreviewList
-        title="New Articles"
+        :title="__('New Articles')"
         :articleList="newArticles" />
 
       <ArticlePreviewList
-        title="Public Articles"
+        :title="__('Public Articles')"
         :articleList="publicArticles"
         :showCreateButton="false" />
 
       <ArticlePreviewList
-        title="Read again"
+        :title="__('Read again')"
         :articleList="readArticles" />
 
       <ArticlePreviewList
-        title="More Articles"
+        :title="__('More Articles')"
         :articleList="remainingArticles" />
     </template>
   </main>
 </template>
+
+
 
 <style scoped lang="scss">
 .container {

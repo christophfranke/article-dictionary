@@ -13,6 +13,7 @@ import Headline from '@/elements/Headline.vue';
 import Label from '@/elements/Label.vue';
 import Input from '@/elements/Input.vue';
 
+import __ from '@/i18n'
 
 
 interface StatusFilters {
@@ -96,38 +97,38 @@ onMounted(async () => {
 
 <template>
   <div class="dictionary-view">
-    <Headline>Dictionary View</Headline>
+    <Headline>{{ __('Dictionary View') }}</Headline>
 
     <p v-if="isLoading && !isDictionaryReady">
-      Loading dictionary...
+      {{ __('Loading dictionary...') }}
     </p>
 
     <template v-else>
       <div class="filter-section">
-        <Label for="filter">Filter:</Label>
-        <Input v-model="filter" id="filter" placeholder="Search for..." />
+        <Label for="filter">{{ __('Filter:') }}</Label>
+        <Input v-model="filter" id="filter" :placeholder="__('Search for...')" />
       </div>
       <Statistics :dictionary="dictionary!" class="statistics" v-if="isDictionaryReady" />
 
       <div class="status-filters">
         <Label for="newCheckbox">
           <Input id="newCheckbox" type="checkbox" v-model="statusFilters.new" />
-          New
+          {{ __('New') }}
         </Label>
 
         <Label for="seenCheckbox">
           <Input id="seenCheckbox" type="checkbox" v-model="statusFilters.seen" />
-          Seen
+          {{ __('Seen') }}
         </Label>
 
         <Label for="knownCheckbox">
           <Input id="knownCheckbox" type="checkbox" v-model="statusFilters.known" />
-          Known
+          {{ __('Known') }}
         </Label>
 
         <Label for="ignoreCheckbox">
           <Input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
-          Ignore
+          {{ __('Ignore') }}
         </Label>
       </div>
 
@@ -135,6 +136,8 @@ onMounted(async () => {
     </template>
   </div>
 </template>
+
+
 
 <style scoped lang="scss">
 .dictionary-view {
