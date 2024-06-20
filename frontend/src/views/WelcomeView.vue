@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import InternalLink from '@/elements/InternalLink.vue';
-import __ from '@/i18n'
+import __ from '@/i18n';
 </script>
 <template>
     <div class="container">
