@@ -31,33 +31,33 @@ const difficultyScore = computed(() => 100 - familiarityScore.value);
 
 const scoreDescription = computed(() => {
   if (familiarityScore.value < 50) {
-    return 'Very Hard';
+    return __('Very Hard');
   } else if (familiarityScore.value < 62) {
-    return 'Hard';
+    return __('Hard');
   } else if (familiarityScore.value < 74) {
-    return 'Medium'
+    return __('Medium');
   } else if (familiarityScore.value < 86) {
-    return 'Easy';
+    return __('Easy');
   } else if (familiarityScore.value < 98) {
-    return 'Very Easy'
+    return __('Very Easy');
   } else {
-    return 'Too Easy';
+    return __('Too Easy');
   }
 });
 
 const lengthDescription = computed(() => {
   if (props.article.statistics.total < 150) {
-    return 'Very Short';
+    return __('Very Short');
   } else if (props.article.statistics.total < 500) {
-    return 'Short';
+    return __('Short');
   } else if (props.article.statistics.total < 2000) {
-    return 'Medium'
+    return __('Medium');
   } else if (props.article.statistics.total < 5000) {
-    return 'Long';
+    return __('Long');
   } else if (props.article.statistics.total < 10000) {
-    return 'Very Long'
+    return __('Very Long');
   } else {
-    return 'Epic';
+    return __('Epic');
   }
 
 });

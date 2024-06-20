@@ -30,6 +30,18 @@ export default {
     '$1 known words': '$1 bekannte Wörter',
     'Estimated difficulty: $1 ($2% unknown words)': 'Geschätzte Schwierigkeit: $1 ($2% unbekannte Wörter)',
     '$1 words total': '$1 Wörter insgesamt',
+    'Very Hard': 'Sehr schwer',
+    'Hard': 'Schwer',
+    'Medium': 'Mittel',
+    'Easy': 'Leicht',
+    'Very Easy': 'Sehr leicht',
+    'Too Easy': 'Zu einfach',
+    'Very Short': 'Sehr kurz',
+    'Short': 'Kurz',
+    // 'Medium': 'Mittel',
+    'Long': 'Lang',
+    'Very Long': 'Sehr lang',
+    'Epic': 'Episch',
 
     // article preview list
     'Create New Article': 'Neuen Artikel erstellen',
@@ -82,8 +94,8 @@ export default {
     'Loading...': 'Laden...',
 
     // Article detail view
-    'You have read this article.': 'Du hast diesen Artikel gelesen.',
-    'You have been reading this article.': 'Du liest diesen Artikel gerade.',
+    'You have read this article.': 'Du hast diesen Artikel zuende gelesen.',
+    'You have been reading this article.': 'Du hast diesen Artikel angefangen zu lesen.',
     'New article': 'Neuer Artikel',
 
     // Edit article view
@@ -118,7 +130,7 @@ export default {
     'You have no articles yet.': 'Du hast noch keine Artikel.',
     // 'Create New Article': 'Neuen Artikel erstellen',
     'Continue Reading': 'Weiterlesen',
-    'Suggested Articles': 'Vorgeschlagene Artikel',
+    'Suggested Articles': 'Empfohlene Artikel',
     'New Articles': 'Neue Artikel',
     // 'Public Articles': 'Öffentliche Artikel',
     'Read again': 'Erneut lesen',
@@ -162,6 +174,16 @@ export default {
     'Show Translation': 'Übersetzung anzeigen',
     'Skip word for now': 'Wort vorübergehend überspringen',
     'Skip': 'Überspringen',
+    'No chance': 'Keine Chance',
+    'Set level back to 1': 'Auf Stufe 1 zurücksetzen',
+    'Almost': 'Beinahe',
+    'Decrease level to $1': 'Auf Stufe $1 verringern',
+    'Keep level': 'Stufe beibehalten',
+    'Keep level at $1': 'Stufe $1 beibehalten',
+    'Got it': 'Verstanden',
+    'Increase level to $1': 'Auf Stufe $1 erhöhen',
+    'Too easy': 'Zu einfach',
+    'Increase level by 2 to $1': 'Um 2 auf Stufe $1 erhöhen',
 
     // Word detail view
     'Loading $1...': '$1 wird geladen...',

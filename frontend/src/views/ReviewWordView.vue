@@ -143,28 +143,28 @@ type Response = {
 }
 const responses: { [key: string]: Response } = {
 	'1': {
-		label: 'No chance',
-		tooltip: () => 'Set level back to 1',
+		label: __('No chance'),
+		tooltip: () => __('Set level back to 1'),
 		fn: level => 1,
 	},
 	'2': {
-		label: 'Almost',
-		tooltip: newLevel => `Decrease level to ${newLevel}`,
-		fn: level => level > 1 ? level - 1 : 1,
+		label: __('Almost'),
+		tooltip: newLevel => __('Decrease level to $1', newLevel),
+		fn: level => (level > 1 ? level - 1 : 1),
 	},
 	'3': {
-		label: 'Keep level',
-		tooltip: newLevel => `Keep level at ${newLevel}`,
+		label: __('Keep level'),
+		tooltip: newLevel => __('Keep level at $1', newLevel),
 		fn: level => level,
-	} ,
+	},
 	'4': {
-		label: 'Got it',
-		tooltip: newLevel => `Increase level to ${newLevel}`,
+		label: __('Got it'),
+		tooltip: newLevel => __('Increase level to $1', newLevel),
 		fn: level => level + 1,
 	},
 	'5': {
-		label: 'Too easy',
-		tooltip: newLevel => `Increase level by 2 to ${newLevel}`,
+		label: __('Too easy'),
+		tooltip: newLevel => __('Increase level by 2 to $1', newLevel),
 		fn: level => level + 2,
 	}
 };
@@ -247,7 +247,7 @@ onUnmounted(() => {
       <Headline class="done">{{ __('No words to review!') }}</Headline>
     </div>
     <div class="flashcard" v-if="word">
-      <span class="level">{{ word.status }} ({{ word.reviewLevel }})</span>
+      <span class="level">{{ __(word.status) }} ({{ word.reviewLevel }})</span>
       <Headline class="original" type="h2">{{ word.original }}</Headline>
       <Paragraph class="example-sentence" v-if="sentence">
         <ProcessedContent
