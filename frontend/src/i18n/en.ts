@@ -82,6 +82,9 @@ export default {
     'Words': 'Words',
     'New': 'New',
     'Total': 'Total',
+    'This Week': 'This Week',
+    'This Month': 'This Month',
+    'This Year': 'This Year',
 
     // Article statistics
     'Words in this article': 'Words in this article',

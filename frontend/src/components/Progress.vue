@@ -56,9 +56,9 @@ const toggleSelectedData = () => {
 }
 
 const selectedDataDisplay = computed(() => ({
-  week: 'This Week',
-  month: 'This Month',
-  year: 'This Year',
+  week: __('This Week'),
+  month: __('This Month'),
+  year: __('This Year'),
 }[selectedData.value]) ?? 'All');
 
 let lastData: ChartData<"line", Point[], unknown> | null = null;

@@ -81,6 +81,9 @@ export default {
     'Words': 'Λέξεις',
     'New': 'Νέα',
     'Total': 'Σύνολο',
+    'This Week': 'Αυτή την εβδομάδα',
+    'This Month': 'Αυτόν τον μήνα',
+    'This Year': 'Αυτό το έτος',
 
     // Article statistics
     'Words in this article': 'Λέξεις σε αυτό το άρθρο',
