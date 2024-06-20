@@ -84,7 +84,7 @@ const setDirty = () => {
 
 onBeforeRouteLeave((to, from, next) => {
   if (isDirty.value) {
-    const answer = window.confirm('You have unsaved changes. Do you really want to leave?');
+    const answer = window.confirm(__('You have unsaved changes. Do you really want to leave?'));
     if (answer) {
       next();
     } else {

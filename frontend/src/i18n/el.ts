@@ -161,6 +161,7 @@ export default {
     'I want to learn:': 'Θέλω να μάθω:',
     'My language is:': 'Η γλώσσα μου είναι:',
     'Save Changes': 'Αποθήκευση αλλαγών',
+    'You have unsaved changes. Do you really want to leave?': 'Έχετε μη αποθηκευμένες αλλαγές. Θέλετε πραγματικά να αποχωρήσετε;',
 
     // Register view
     // 'Email:': 'E-Mail:',

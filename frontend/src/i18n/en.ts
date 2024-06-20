@@ -162,6 +162,7 @@ export default {
     'I want to learn:': 'I want to learn:',
     'My language is:': 'My language is:',
     'Save Changes': 'Save Changes',
+    'You have unsaved changes. Do you really want to leave?': 'You have unsaved changes. Do you really want to leave?',
 
     // Register view
     // 'Email:': 'Email:',

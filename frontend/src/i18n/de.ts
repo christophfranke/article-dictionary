@@ -161,6 +161,7 @@ export default {
     'I want to learn:': 'Ich möchte lernen:',
     'My language is:': 'Meine Sprache ist:',
     'Save Changes': 'Änderungen speichern',
+    'You have unsaved changes. Do you really want to leave?': 'Sie haben nicht gespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
 
     // Register view
     // 'Email:': 'E-Mail:',
