@@ -81,6 +81,7 @@ export interface ProfilePreview {
 export interface Profile extends ProfilePreview {
   sourceLanguage: string;
   targetLanguage: string;
+  interfaceLanguage: string;
   theme: string;
 }
 

@@ -1,4 +1,5 @@
 import { ref, onMounted } from 'vue';
+import { supportedLanguages } from '@/i18n';
 
 export const useSupportedLanguages = () => {  
   const languages = ref<{ [key: string]: string } | null>(null);
@@ -10,4 +11,8 @@ export const useSupportedLanguages = () => {
   });
 
   return languages
+}
+
+export const useSupportedInterfaces = () => {
+  return supportedLanguages
 }

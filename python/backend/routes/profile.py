@@ -26,6 +26,7 @@ def preview():
             'email': user_data.get('email'),
             'theme': user_data.get('theme', 'bright'),
             'sourceLanguage': user_data.get('source_language', ''),
+            'interfaceLanguage': user_data.get('interface_language', 'en'),
         }
 
         return jsonify(response_data), 200
@@ -42,14 +43,21 @@ def update():
     users = get_collection('users')
 
     # Only include fields that are provided in the data
-    new_data = {camel_to_snake(key): data[key] for key in data if key in ['name', 'email', 'sourceLanguage', 'targetLanguage', 'theme']}
+    new_data = {camel_to_snake(key): data[key] for key in data if key in [
+        'name',
+        'email',
+        'sourceLanguage',
+        'targetLanguage',
+        'interfaceLanguage',
+        'theme'
+    ]}
 
     if 'source_language' in new_data or 'target_language' in new_data:
         return jsonify({'error': 'Source and target language cannot be updated at this moment'}), 400
 
     # Hash the password if provided in the data
     if 'newPassword' in data:
-        if not 'confirmPassword' in data:
+        if 'confirmPassword' not in data:
             return jsonify({'error': 'Confirm password not provided'}), 400
         if data['newPassword'] != data['confirmPassword']:
             return jsonify({'error': 'Passwords do not match'}), 400
@@ -63,6 +71,7 @@ def update():
         'name': updated_user.get('name', ''),
         'sourceLanguage': updated_user.get('source_language', ''),
         'targetLanguage': updated_user.get('target_language', ''),
+        'interfaceLanguage': updated_user.get('interface_language', 'en'),
         'theme': updated_user.get('theme', 'bright'),
     }
     return jsonify(response_data), 200
@@ -84,6 +93,7 @@ def settings():
         'name': user_data.get('name', ''),
         'sourceLanguage': user_data.get('source_language', ''),
         'targetLanguage': user_data.get('target_language', ''),
+        'interfaceLanguage': user_data.get('interface_language', 'en'),
         'theme': user_data.get('theme', 'bright'),
     }
 

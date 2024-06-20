@@ -250,24 +250,35 @@ onUnmounted(() => {
       <span class="level">{{ word.status }} ({{ word.reviewLevel }})</span>
       <Headline class="original" type="h2">{{ word.original }}</Headline>
       <Paragraph class="example-sentence" v-if="sentence">
-        <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlight" :key="word.id" />
+        <ProcessedContent
+          :content="sentence.text"
+          :words="sentence.words"
+          :dictionary="dictionary"
+          :mark="word.original"
+          :display="contentDisplay"
+          v-model="highlight"
+          :key="word.id"
+        />
       </Paragraph>
       <div v-if="phase === 'recall'">
+        <!-- Recall phase content if any -->
       </div>
       <div v-else>
         <ul class="translations">
           <li v-for="translation in word.translations" :key="translation">{{ translation }}</li>
         </ul>
         <div class="response-buttons">
-          <Button v-for="(response, key) in responses" :key="key" :title="response.tooltip(response.fn(word.reviewLevel))" @click="recordResponse(key)">{{ response.label }} ({{ key }})</Button>
+          <Button v-for="(response, key) in responses" :key="key" :title="response.tooltip(response.fn(word.reviewLevel))" @click="recordResponse(key)">
+            {{ response.label }} ({{ key }})
+          </Button>
         </div>
       </div>
       <div class="show-buttons">
-        <Button title="{{ __('Ignore word in dictionary') }}" @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
+        <Button :title="__('Ignore word in dictionary')" @click="setIgnore"><FontAwesomeIcon icon="ban" /></Button>
         <Button role="view" @click="showTranslation" v-if="phase === 'recall'">
           {{ __('Show Translation') }}&nbsp;&#8629;
         </Button>
-        <Button title="{{ __('Skip word for now') }}" role="view" @click="skipWord">
+        <Button :title="__('Skip word for now')" role="view" @click="skipWord">
           {{ __('Skip') }}&nbsp;&#8594;
         </Button>
       </div>
@@ -275,6 +286,7 @@ onUnmounted(() => {
     <Tooltip :highlighted="sanitizedHighlight" :dictionary="dictionary" :display="tooltipDisplay" />
   </div>
 </template>
+
 
 
 <style scoped lang="scss">

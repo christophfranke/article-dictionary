@@ -82,6 +82,11 @@ export default {
     // View
     'Loading...': 'Loading...',
 
+    // Article detail view
+    'You have read this article.': 'You have read this article.',
+    'You have been reading this article.': 'You have been reading this article.',
+    'New article': 'New article',
+
     // Edit article view
     // 'Edit Article': 'Edit Article',
 
@@ -138,6 +143,7 @@ export default {
     'Theme:': 'Theme:',
     'New Password:': 'New Password:',
     'Confirm New Password:': 'Confirm New Password:',
+    'Interface language:': 'Interface language:',
     'I want to learn:': 'I want to learn:',
     'My language is:': 'My language is:',
     'Save Changes': 'Save Changes',
@@ -159,7 +165,7 @@ export default {
     'Skip': 'Skip',
 
     // Word detail view
-    'Loading {original}...': 'Loading {original}...',
+    'Loading $1...': 'Loading $1...',
     // 'Original': 'Original',
     // 'Translations': 'Translations',
     // 'Status': 'Status',

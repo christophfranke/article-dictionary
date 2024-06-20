@@ -1,10 +1,18 @@
 import en from './en'
+import de from './de'
 
 const languages = {
-    en
+    en,
+    de
 }
 
-const currentLanguage = 'en'
+const currentLanguage = 'de'
+
+export const supportedLanguages = {
+    'en': 'English',
+    'de': 'Deutsch',
+}
+
 
 const translate = (key: string): string => {
     const table = languages[currentLanguage]

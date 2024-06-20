@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount, watchEffect, watch } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { useProfile, useUpdateProfile } from '@/use/user';
-import { useSupportedLanguages } from '@/use/language';
+import { useSupportedLanguages, useSupportedInterfaces } from '@/use/language';
 import { setTheme } from '@/themes';
 
 import Headline from '@/elements/Headline.vue';
@@ -24,10 +24,12 @@ const form = reactive({
   confirmPassword: '',
   sourceLanguage: '',
   targetLanguage: '',
+  interfaceLanguage: '',
   theme: '',
 });
 
 const languages = useSupportedLanguages()
+const interfaces = useSupportedInterfaces()
 const { profile } = useProfile();
 const { updateProfile, errorMessage, isLoading } = useUpdateProfile();
 const isDirty = ref<boolean>(false)
@@ -44,6 +46,9 @@ watchEffect(() => {
   }
   if (!form.targetLanguage) {
     form.targetLanguage = profile.targetLanguage;
+  }
+  if (!form.interfaceLanguage) {
+    form.interfaceLanguage = profile.interfaceLanguage;
   }
   if (!form.theme) {
     form.theme = profile.theme;
@@ -127,6 +132,13 @@ const themes = {
       <FormGroup>
         <Label for="confirmPassword">{{ __('Confirm New Password:') }}</Label>
         <Input type="password" id="confirmPassword" v-model="form.confirmPassword" @change="setDirty" />
+      </FormGroup>
+
+      <FormGroup>
+        <Label for="interfaceLanguage">{{ __('Interface language:') }}</Label>
+        <Select id="interfaceLanguage" v-model="form.interfaceLanguage">
+          <option v-for="(label, value) in interfaces" :key="value" :value="value">{{ label }}</option>
+        </Select>
       </FormGroup>
 
       <FormGroup>
