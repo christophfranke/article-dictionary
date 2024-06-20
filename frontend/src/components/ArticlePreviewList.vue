@@ -4,6 +4,7 @@ import ArticlePreviewComponent from '@/components/ArticlePreview.vue';
 
 import Headline from '@/elements/Headline.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
+import __ from '@/i18n'
 
 
 const props = defineProps({
@@ -29,7 +30,7 @@ const props = defineProps({
       <ArticlePreviewComponent v-for="article in props.articleList" :key="article.id" :article="article" />
     </div>
 
-    <ButtonLink v-if="props.showCreateButton" to="/create" class="create-link">Create New Article</ButtonLink>
+    <ButtonLink v-if="props.showCreateButton" to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
   </template>
 </template>
 

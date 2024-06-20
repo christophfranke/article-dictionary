@@ -3,6 +3,8 @@ import type { PropType } from 'vue';
 import Button from '@/elements/Button.vue';
 import ErroMessage from '@/elements/ErrorMessage.vue';
 
+import __ from '@/i18n'
+
 const props = defineProps({
   articleStatus: String,
   isLoadingButton: Boolean,
@@ -23,7 +25,7 @@ const onMarkAsRead = () => {
       :disabled="props.isLoadingButton"
       class="mark-as-read"
       @click="onMarkAsRead"
-    >Mark as read</Button>
+    >{{__('Mark as read')}}</Button>
     <ErroMessage :message="props.errorMessage" />
   </div>
 </template>

@@ -7,6 +7,8 @@ import type { ArticlePreview } from '@/types';
 import Headline from '@/elements/Headline.vue';
 import Excerpt from '@/elements/Excerpt.vue'
 
+import __ from '@/i18n'
+
 const props = defineProps({
   article: {
     type: Object as PropType<ArticlePreview>,
@@ -72,24 +74,24 @@ const link = (article: ArticlePreview): string => article.owned
         <Headline type="h3" class="title">{{ props.article.title }}</Headline>
         <Excerpt class="excerpt">{{ props.article.excerpt }}...</Excerpt>
         <div class="statistics">
-          <span :title="`${props.article.statistics.new.words} new words`">
+          <span :title="__('$1 new words', props.article.statistics.new.words)">
             <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
           </span>
-          <span :title="`${props.article.statistics.seen.words} seen words`">
+          <span :title="__('$1 seen words', props.article.statistics.seen.words)">
             <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen.words }}
           </span>
-          <span :title="`${props.article.statistics.known.words} known words`">
+          <span :title="__('$1 known words', props.article.statistics.known.words)">
             <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known.words }}
           </span>
         </div>
 
         <div class="difficulty">
-          <div class="left" :title="`Estimated difficulty: ${scoreDescription} (${difficultyScore}% unknown words)`">
+          <div class="left" :title="__('Estimated difficulty: $1 ($2% unknown words)', scoreDescription, difficultyScore)">
             <span>{{ scoreDescription }}</span>
             <span><FontAwesomeIcon icon="lightbulb" /></span>
             <span>{{ difficultyScore }}%</span>
           </div>
-          <div class="right" :title="`${props.article.statistics.total} words total`">
+          <div class="right" :title="__('$1 words total', props.article.statistics.total)">
             <span>{{ props.article.statistics.total }}</span>
             <span><FontAwesomeIcon icon="database" /></span>
             <span>{{ lengthDescription }}</span>
@@ -99,6 +101,7 @@ const link = (article: ArticlePreview): string => article.owned
     </div>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 @import '@/style/global.scss';

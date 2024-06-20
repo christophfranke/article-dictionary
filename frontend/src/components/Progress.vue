@@ -7,6 +7,7 @@ import useApi from '@/use/api';
 
 import Button from '@/elements/Button.vue';
 import Headline from '@/elements/Headline.vue';
+import __ from '@/i18n'
 
 
 import 'chartjs-adapter-moment';
@@ -210,19 +211,18 @@ watch(selectedData, async (newValue: string) => {
     }
   }
 }, { immediate: true });
-
-
 </script>
+
 <template>
   <div :class="{ 'chart-container': true, disabled: !hasEnoughData }" v-if="hasEnoughData || isLoading">
     <div class="chart-toggle">
-      <Headline type="h2">Progress</Headline>
+      <Headline type="h2">{{ __('Progress') }}</Headline>
       <div class="buttons">
         <Button @click="toggleClusterData" role="view">
-          {{ showClusterData ? 'Word groups' : 'Words'}}
+          {{ showClusterData ? __('Word cluster') : __('Words') }}
         </Button>
         <Button @click="toggleRelativeData" role="view">
-          {{ showRelativeData ? 'New' : 'Total'}}
+          {{ showRelativeData ? __('New') : __('Total') }}
         </Button>
         <Button @click="toggleSelectedData" role="view">
           {{ selectedDataDisplay }}
@@ -234,6 +234,7 @@ watch(selectedData, async (newValue: string) => {
     </div>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 .chart-container {

@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import ProfileLink from './ProfileLink.vue';
 import LogoutLink from './LogoutLink.vue';
+import __ from '@/i18n'
 </script>
 
 <template>
   <header>
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/articles">Articles</RouterLink>
-        <RouterLink to="/dictionary">Dictionary</RouterLink>
-        <RouterLink to="/dictionary/review">Review</RouterLink>
+        <RouterLink to="/">{{ __('Home') }}</RouterLink>
+        <RouterLink to="/articles">{{ __('Articles') }}</RouterLink>
+        <RouterLink to="/dictionary">{{ __('Dictionary') }}</RouterLink>
+        <RouterLink to="/dictionary/review">{{ __('Review') }}</RouterLink>
         <ProfileLink class="profile-link" />
         <LogoutLink />
       </nav>

@@ -11,6 +11,8 @@ import ErrorMessage from '@/elements/ErrorMessage.vue';
 import Label from '@/elements/Label.vue';
 import Form from '@/elements/Form.vue';
 
+import __ from '@/i18n'
+
 
 const MAX_LENGTH = 50000;
 
@@ -30,22 +32,26 @@ const onSubmit = () => {
 
 <template>
   <Form @submit.prevent="onSubmit" class="article-form" v-if="article">
-    <Label for="articleName" class="title">Title:</Label>
+    <Label for="articleName" class="title">
+      {{__('Title:')}}
+    </Label>
     <Input id="articleName" v-model="article.title" type="text" required :disabled="isLoading" />
 
-    <Label for="articleContent">Content:</Label>
+    <Label for="articleContent">{{__('Content:')}}</Label>
     <Textarea id="articleContent" v-model="article.content" required :disabled="isLoading" :max-length="MAX_LENGTH" />
     <span class="char-count">
       {{ article.content.length }}/{{ MAX_LENGTH || '∞' }}
     </span>      
 
-    <Label for="articlePrivacy">Privacy:</Label>
+    <Label for="articlePrivacy">{{__('Privacy:')}}</Label>
     <Select id="articlePrivacy" v-model="article.privacy" :disabled="isLoading">
       <option value="public">Public</option>
       <option value="private">Private</option>
     </Select>
 
-    <Button type="submit" class="submit-button" :disabled="isLoading">Submit</Button>
+    <Button type="submit" class="submit-button" :disabled="isLoading">
+      {{__('Submit')}}
+    </Button>
 
     <ErrorMessage class="error" :message="errorMessage" v-if="errorMessage" />
   </Form>

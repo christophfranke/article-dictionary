@@ -16,6 +16,7 @@ import Label from '@/elements/Label.vue';
 import Input from '@/elements/Input.vue';
 import Button from '@/elements/Button.vue';
 
+import __ from '@/i18n'
 
 
 const props = defineProps({
@@ -116,9 +117,9 @@ const addWord = async (): Promise<void> => {
 <template>
   <div class="dictionary-table">
     <div v-if="display.action.add" class="add-word-section">
-      <Label for="newWord">New Entry:</Label>
-      <Input v-model="newWord" id="newWord" placeholder="Add word to dictionary" />
-      <Button @click="addWord">Add</Button>
+      <Label for="newWord">{{ __('New Entry:') }}</Label>
+      <Input v-model="newWord" id="newWord" :placeholder="__('Add word to dictionary')" />
+      <Button @click="addWord">{{ __('Add') }}</Button>
     </div>
 
     <table class="word-table">
@@ -127,42 +128,44 @@ const addWord = async (): Promise<void> => {
           <th
             @click="sortTable('order')"
             v-if="display.col.number"
-            :title="display.action.sort ? 'Sort by appearence in text' : undefined"
+            :title="display.action.sort ? __('Sort by appearence in text') : undefined"
             :class="{ 'no-sort': !display.action.sort }"
           >#
           </th>
           <th
             @click="sortTable('original')"
             v-if="display.col.original"
-            :title="display.action.sort ? 'Sort by original word' : undefined"
+            :title="display.action.sort ? __('Sort by original word') : undefined"
             :class="{ 'no-sort': !display.action.sort }"
-          >Original
+          >{{ __('Original') }}
           </th>
           <th
             @click="sortTable('translations')"
             v-if="display.col.translations"
-            :title="display.action.sort ? 'Sort by translation' : undefined"
+            :title="display.action.sort ? __('Sort by translation') : undefined"
             :class="{ 'no-sort': !display.action.sort }"
-          >Translations
+          >{{ __('Translations') }}
           </th>
           <th
             @click="sortTable('frequency', 'desc')"
             v-if="display.col.frequency"
-            :title="display.action.sort ? 'Sort by word frequency' : undefined"
+            :title="display.action.sort ? __('Sort by word frequency') : undefined"
             :class="{ 'no-sort': !display.action.sort }"
-          >Frequency
+          >{{ __('Frequency') }}
           </th>
           <th
             @click="sortTable('status')"
             v-if="display.col.status"
-            title="Sort by status">Status
+            :title="__('Sort by status')"
+          >{{ __('Status') }}
           </th>
           <th
             @click="sortTable('lastViewed', 'desc')"
             v-if="display.col.lastSeen"
-            title="Sort by last seen">Last&nbsp;seen
+            :title="__('Sort by last seen')"
+          >{{ __('Last seen') }}
           </th>
-          <th v-if="display.col.actions" class="no-sort">Actions</th>
+          <th v-if="display.col.actions" class="no-sort">{{ __('Actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -171,6 +174,7 @@ const addWord = async (): Promise<void> => {
     </table>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 @import "@/style/global.scss";

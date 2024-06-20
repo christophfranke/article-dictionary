@@ -13,6 +13,8 @@ import Button from '@/elements/Button.vue';
 import ButtonLink from '@/elements/ButtonLink.vue';
 import Input from '@/elements/Input.vue';
 
+import __ from '@/i18n'
+
 
 const props = defineProps({
 	word: {
@@ -95,6 +97,7 @@ const nextStatus = (status: string): string => {
   const newIndex: number = (currentIndex + 1) % statusOptions.length;
   return statusOptions[newIndex];
 };
+const nextStatusLabel = (status: string): string => __(nextStatus(status))
 
 const changeStatus = async (word: Word): Promise<void> => {
   if (!props.display.action.status) {
@@ -119,7 +122,7 @@ const retranslateWord = props.dictionary.retranslate;
       <RouterLink
         v-if="display.action.link"
         :to="routerLink(word)"
-        title="Inspect word"
+        :title="__('Inspect word')"
         class="original-link"
       >
         {{ word.original }}
@@ -131,7 +134,7 @@ const retranslateWord = props.dictionary.retranslate;
         @mousedown="editTranslations(word.id)"
         v-if="word.id !== editingTranslationId"
         :class="{ 'edit-column': display.action.edit }"
-        :title="display.action.edit ? 'Edit translations' : undefined"
+        :title="display.action.edit ? __('Edit translations') : undefined"
       >{{ word.translations.join(', ') }}
       </td>
       <td v-else>
@@ -155,7 +158,7 @@ const retranslateWord = props.dictionary.retranslate;
     <td
       v-if="display.col.status"
       @click="changeStatus(word)"
-      :title="display.action.status ? `Change status to ${nextStatus(word.status)}` : undefined"
+      :title="display.action.status ? __('Change status to $1', nextStatus(word.status)) : undefined"
       :class="{ 'status-column': display.action.status }"
     >{{ word.status }}
     </td>
@@ -165,7 +168,7 @@ const retranslateWord = props.dictionary.retranslate;
         <Button
           v-if="display.action.known"
           @click="setStatus(word, 'known')"
-          title="Mark as known"
+          :title="__('Mark as known')"
           size="small"
         >
           <FontAwesomeIcon icon="check-circle" />
@@ -173,7 +176,7 @@ const retranslateWord = props.dictionary.retranslate;
         <Button
           v-if="display.action.ignore"
           @click="setStatus(word, 'ignore')"
-          title="Ignore word"
+          :title="__('Ignore word')"
           size="small"
         >
           <FontAwesomeIcon icon="ban" />
@@ -181,7 +184,7 @@ const retranslateWord = props.dictionary.retranslate;
         <Button
           v-if="display.action.retranslate"
           @click="retranslateWord(word.id)"
-          title="Retranslate word"
+          :title="__('Retranslate word')"
           size="small"
         >
           <FontAwesomeIcon icon="rotate-left" />
@@ -189,7 +192,7 @@ const retranslateWord = props.dictionary.retranslate;
         <ButtonLink
           v-if="display.action.detail"
           :to="routerLink(word)"
-          title="Inspect word"
+          :title="__('Inspect word')"
           size="small"
           class="inspect-word-action"
         >
@@ -199,7 +202,7 @@ const retranslateWord = props.dictionary.retranslate;
           v-if="display.action.glosbe"
           :href="dictionaryLink(word)"
           target="_blank"
-          title="Open Glosbe Dictionary"
+          :title="__('Open Glosbe Dictionary')"
         >
           <Button role="view" size="small"><FontAwesomeIcon icon="globe" /></Button>
         </a>

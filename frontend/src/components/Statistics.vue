@@ -5,6 +5,7 @@ import type { ArticleDetail } from '../types'
 import type { DictionaryView } from '../dictionary/view';
 
 import useStatistics from '../use/statistics';
+import __ from '@/i18n'
 
 const { dictionary, article, showPercentage } = defineProps({
   dictionary: {
@@ -27,31 +28,32 @@ const statistics = useStatistics({ dictionary, article: article && ref(article) 
 
 <template>
   <div class="statistics">
-    <h3 v-if="article">Words in this article</h3>
-    <h3 v-else>Word in dictionary</h3>
+    <h3 v-if="article">{{ __('Words in this article') }}</h3>
+    <h3 v-else>{{ __('Words in dictionary') }}</h3>
     <div class="word-statistics">
       <div class="word-statistic">
         <strong v-if="showPercentage">{{ statistics.newWordsPercentage }}%</strong>
         <strong v-else>{{ statistics.newWords }}</strong>
-        <span>New</span>
+        <span>{{ __('New') }}</span>
       </div>
       <div class="word-statistic">
         <strong v-if="showPercentage">{{ statistics.seenWordsPercentage }}%</strong>
         <strong v-else>{{ statistics.seenWords }}</strong>
-        <span>Seen</span>
+        <span>{{ __('Seen') }}</span>
       </div>
       <div class="word-statistic">
         <strong v-if="showPercentage">{{ statistics.knownWordsPercentage }}%</strong>
         <strong v-else>{{ statistics.knownWords }}</strong>
-        <span>Known</span>
+        <span>{{ __('Known') }}</span>
       </div>
       <div class="word-statistic total">
         <strong>{{ statistics.totalWords }}</strong>
-        <span>Total</span>
+        <span>{{ __('Total') }}</span>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 @import "@/style/global.scss";
