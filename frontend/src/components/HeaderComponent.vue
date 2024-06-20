@@ -19,6 +19,7 @@ import __ from '@/i18n'
       <nav v-else>
         <RouterLink to="/">{{ __('Home') }}</RouterLink>
         <ProfileLink class="profile-link" />
+        <RouterLink to="/register">{{ __('Register') }}</RouterLink>
       </nav>
     </div>
   </header>
