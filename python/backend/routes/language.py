@@ -6,4 +6,4 @@ language = Blueprint('language', __name__)
 
 @language.route('/supported')
 def supported():
-	return jsonify(supported_languages()), 200
+    return jsonify(supported_languages()), 200

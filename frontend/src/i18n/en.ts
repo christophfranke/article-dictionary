@@ -197,5 +197,22 @@ export default {
     'Similar words': 'Similar words',
     'Sentences': 'Sentences',
     'None': 'None',
-    'No sentences available.': 'No sentences available.'
+    'No sentences available.': 'No sentences available.',
+
+    // Time
+    'just now': 'just now',
+    '$1 min': '$1 min',
+    '$1h': '$1h',
+    '1 day': '1 day',
+    '$1 days': '$1 days',
+    '1 week': '1 week',
+    '$1 weeks': '$1 weeks',
+    'second': 'second',
+    'minute': 'minute',
+    '$1 minutes': '$1 minutes',
+    // '$1h': '$1h',
+    // '$1 days': '$1 days',
+    'hour': 'hour',
+    // '$1 weeks': '$1 weeks',
+    'week' : 'week',
 } as Record<string, string>

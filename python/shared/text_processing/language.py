@@ -4,13 +4,13 @@ from bson import ObjectId  # Import ObjectId for converting user_id
 def supported_languages():
     return {
         'en': 'English',
-        'de': 'German',
-        'fr': 'French',
-        'es': 'Spanish',
-        'pt': 'Portuguese',
-        'el': 'Greek',
-        'pl': 'Polish',
-        'ru': 'Russian',
+        'de': 'Deutsch',
+        'fr': 'Français',
+        'es': 'Español',
+        'pt': 'Português',
+        'el': 'Ελληνικά',  # Greek
+        'pl': 'Polski',    # Polish
+        'ru': 'Русский',   # Russian
     }
 
 

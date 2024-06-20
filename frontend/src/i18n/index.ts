@@ -1,10 +1,12 @@
 import { profile } from '@/use/user'
 import en from './en'
 import de from './de'
+import el from './el'
 
 const languages: Record<string, Record<string, string>> = {
     en,
-    de
+    de,
+    el,
 }
 
 const currentLanguage = () => profile.interfaceLanguage || 'en'
@@ -12,6 +14,12 @@ const currentLanguage = () => profile.interfaceLanguage || 'en'
 export const supportedLanguages: Record<string, string> = {
     'en': 'English',
     'de': 'Deutsch',
+    // 'fr': 'Français',
+    // 'es': 'Español',
+    // 'pt': 'Português',
+    'el': 'Ελληνικά',  // Greek
+    // 'pl': 'Polski',    // Polish
+    // 'ru': 'Русский',   // Russian
 }
 
 
