@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { profile } from '@/use/user';
 import ProfileLink from './ProfileLink.vue';
 import LogoutLink from './LogoutLink.vue';
-import __ from '@/i18n'
+import Select from '@/elements/Select.vue';
+import { default as __, supportedLanguages } from '@/i18n'
+
+const lang = ref<string>('en')
 </script>
 
 <template>
@@ -20,6 +24,7 @@ import __ from '@/i18n'
         <RouterLink to="/">{{ __('Home') }}</RouterLink>
         <ProfileLink class="profile-link" />
         <RouterLink to="/register">{{ __('Register') }}</RouterLink>
+        <Select class="interface" type="inline" :options="supportedLanguages" v-model="profile.interfaceLanguage" />
       </nav>
     </div>
   </header>
@@ -44,6 +49,10 @@ header {
 nav {
   display: flex;
   justify-content: flex-start;
+}
+
+.interface {
+  max-width: 80px;
 }
 
 a, a:visited {

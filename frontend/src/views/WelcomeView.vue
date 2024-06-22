@@ -43,6 +43,25 @@ import __ from '@/i18n';
         </section>
 
         <section>
+            <h2>{{ __('For Who is This?') }}</h2>
+            <ul>
+                <li>{{ __('This app is designed for learners who have progressed beyond the basics and are looking to build a sufficient vocabulary to understand most content.') }}</li>
+                <li>{{ __('If you are a complete beginner, this app may not be the best starting point for you.') }}</li>
+                <li>{{ __('If you are bored by the slow progress of apps like Duolingo, you are probably ready for this app.') }}</li>
+                <li>{{ __('Make sure that you know the pronunciation rules of your target language.') }}</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>{{ __('Why Do I Need It?') }}</h2>
+            <ul>
+                <li>{{ __('One of the biggest challenges in language learning is building a vocabulary that is sufficient to understand most content, whether it be reading, watching movies, or series, with or without subtitles.') }}</li>
+                <li>{{ __('Once you reach a certain level of understanding, it becomes easier to progress naturally. However, getting to that point can be a significant challenge.') }}</li>
+                <li>{{ __('This app aims to lower the barrier for reading content that interests you, even if it is currently too difficult to fully enjoy.') }}</li>
+            </ul>
+        </section>
+
+        <section>
             <h2>{{ __('Get Started') }}</h2>
             <ol>
                 <li><InternalLink to="/register">{{ __('Create an account.') }}</InternalLink></li>

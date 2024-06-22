@@ -11,6 +11,10 @@ const props = defineProps({
 		type: String,
 		default: '',
 	},
+  type: {
+    type: String,
+    default: 'default'
+  }
 })
 
 const emit = defineEmits(['update:modelValue']);
@@ -27,7 +31,7 @@ watch(() => props.modelValue, (newVal) => {
 
 </script>
 <template>
-	<select v-if="props.options" v-model="valueRef">
+	<select v-if="props.options" v-model="valueRef" :class="{ inline: props.type === 'inline' }">
 		<option v-for="(label, value) in props.options" :key="value" :value="value">{{ label }}</option>
 		<slot />
 	</select>
@@ -48,6 +52,12 @@ select {
 
   &:disabled {
   	opacity: 0.5;
+  }
+
+  &.inline {
+    font-size: 12px;
+    padding: 2px 8px;
+    display: inline;
   }
 }
 </style>
