@@ -25,7 +25,7 @@ def add_words(words, user_id, dictionary_collection, user_collection):
             new_word = {
                 'original': word,
                 'translations': [word],
-                'status': 'new',
+                'status': 'new' if len(word) > 1 else 'ignore',
                 'last_viewed': None,
                 'review_level': 0,
                 'needs_retranslate': True,
@@ -46,4 +46,3 @@ def add_words(words, user_id, dictionary_collection, user_collection):
                 {'_id': existing_word['_id']},
                 {'$set': {'needs_recount': True}}
             )
-
