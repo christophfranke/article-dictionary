@@ -189,9 +189,9 @@ const recordResponse = async (response: string | number) => {
 	nextWord();
 }
 
-const setIgnore = () => {
+const setIgnore = async () => {
 	if (word.value) {
-		dictionary.updateOne(word.value.id, { status: 'ignore' });	
+		await dictionary.updateOne(word.value.id, { status: 'ignore' });
 	}
 
 	nextWord();
