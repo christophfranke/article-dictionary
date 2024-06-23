@@ -68,6 +68,7 @@ export default {
     'Articles': 'Άρθρα',
     'Dictionary': 'Λεξικό',
     'Review': 'Επανεξέταση',
+    'Introduction': 'Εισαγωγή',
 
     // Logout link
     'Logout': 'Αποσύνδεση',

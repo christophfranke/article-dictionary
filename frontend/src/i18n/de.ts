@@ -68,6 +68,7 @@ export default {
     'Articles': 'Artikel',
     'Dictionary': 'Wörterbuch',
     'Review': 'Wiederholung',
+    'Introduction': 'Einführung',
 
     // Logout link
     'Logout': 'Abmelden',

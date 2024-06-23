@@ -66,6 +66,7 @@ export default {
 
     // Header routes
     'Home': 'Home',
+    'Introduction': 'Introduction',
     'Articles': 'Articles',
     'Dictionary': 'Dictionary',
     'Review': 'Review',
