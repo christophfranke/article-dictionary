@@ -34,7 +34,7 @@ export default {
     'Hard': 'Δύσκολο',
     'Medium': 'Μέτριο',
     'Easy': 'Εύκολο',
-    'Very Easy': 'Πολύ εύκολο',
+    'Very Easy': 'Πιο εύκολο',
     'Too Easy': 'Πολύ εύκολο',
     'Very Short': 'Πολύ σύντομο',
     'Short': 'Σύντομο',
