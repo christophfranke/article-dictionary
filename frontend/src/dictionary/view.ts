@@ -24,7 +24,8 @@ export interface DictionaryView extends View<PartialWord, 'original', 'id'> {
   retranslate: (original: string) => Promise<PartialWord | null>;
   rebuild: () => Promise<PartialWord[] | null>;
   markSeen: (id: string) => Promise<PartialWord | null>;
-  detail: (original: string) => ComputedRef<WordDetail | undefined>;  
+  detail: (original: string) => ComputedRef<WordDetail | undefined>;
+  getWord: (id: string) => Promise<PartialWord | null>;
 }
 
 

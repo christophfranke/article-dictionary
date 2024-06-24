@@ -5,6 +5,8 @@ import type { ArticleBase } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
 import { useArticleView } from '@/use/articles';
 
+import __ from '@/i18n'
+
 
 const props = defineProps({
 	dictionary: {
@@ -37,10 +39,22 @@ const isVisible = computed(() => !!props.highlighted.word
     && showStatus.value.includes(props.dictionary.find(props.highlighted.word || '')?.status || '')
 );
 
-const content = computed(() => isVisible.value
-  ? (props.dictionary.find(props.highlighted.word || '')?.translations.join(', ') || '')
-  : ''
-);
+const content = computed(() => {
+  if (isVisible.value) {
+    const word = props.dictionary.find(props.highlighted.word || '')
+    if (!word) {
+      return ''
+    }
+
+    if (word.needsRetranslate) {
+      return __('translating...')
+    }
+
+    return word.translations.join(', ') || ''
+  }
+
+  return ''
+});
 
 const position = reactive({ x: 0, y: 0 });
 const setTooltipPosition = (event: MouseEvent): void => {
@@ -54,23 +68,25 @@ const markArticleAsSeen = (article: ArticleBase, index: number) => {
 }
 
 
-// time how long a translation is shown
+// time how long a translation must be shown before it counts as seen
 const UPDATE_TIME = 500
 let original = ''
 let timeoutId: ReturnType<typeof setTimeout> | null = null
-watch(isVisible, (newValue, oldValue) => {
+watch(isVisible, async (newValue, oldValue) => {
   if (timeoutId) {
     clearTimeout(timeoutId);
     timeoutId = null;
   }
   if (!oldValue && newValue) {
     original = props.highlighted.word;
+    const word = props.dictionary.find(original)
+    if (word?.needsRetranslate) {
+      await props.dictionary.getWord(word.id)
+    }
+
     timeoutId = setTimeout(() => {
       if (props.display.update.seen) {
         const word = props.dictionary.find(original)
-        if (word?.status === 'new') {
-          props.dictionary.updateOne(word.id, { status: 'seen' });
-        }
         if (word) {
           props.dictionary.markSeen(word.id);
         }

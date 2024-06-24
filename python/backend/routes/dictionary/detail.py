@@ -4,6 +4,7 @@ from bson import ObjectId
 from utils.mongo import get_collection
 from text_processing.extract import extract_sentences, extract_words
 
+
 @login_required
 def get_detail(original):
     dictionary = get_collection('dictionary')
@@ -39,7 +40,7 @@ def get_detail(original):
     similar = dictionary.find({
         'user_id': ObjectId(current_user.id),
         'cluster_id': word['cluster_id']
-    }, { 'original': 1 }) if word['cluster_id'] is not None else []
+    }, {'original': 1}) if word['cluster_id'] is not None else []
 
 
     return jsonify({

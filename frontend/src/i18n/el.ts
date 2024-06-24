@@ -102,6 +102,9 @@ export default {
     'You have been reading this article.': 'Έχεις αρχίσει να διαβάζεις αυτό το άρθρο.',
     'New article': 'Νέο άρθρο',
 
+    // Tooltip
+    'translating...': 'μεταφράζεται...',
+
     // Edit article view
     // 'Edit Article': 'Επεξεργασία Άρθρου',
 

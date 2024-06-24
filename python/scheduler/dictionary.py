@@ -96,7 +96,11 @@ def update_word_frequency():
                 dictionary.replace_one({'_id': word['_id']}, word)
 
                 if word['cluster_id'] is not None:
-                    get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+                    get_collection('cluster').update_one(
+                        {'_id': word['cluster_id']},
+                        {'$set': {'needs_recalculation': True}},
+                        upsert=True
+                    )
                 print(f'Counted frequency for word {word["original"]}: {frequency}')
 
     except Exception as e:
@@ -104,6 +108,8 @@ def update_word_frequency():
 
 
 def retranslate_word():
+    print('skip retranslate')
+    return
     try:
         dictionary = get_collection('dictionary')
 

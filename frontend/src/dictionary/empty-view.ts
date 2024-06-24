@@ -21,5 +21,6 @@ export default (): DictionaryView => {
 		rebuild: () => Promise.resolve(null),
 		markSeen: () => Promise.resolve(null),
 		detail: () => computed(() => undefined),
+		getWord: () => Promise.resolve(null),
 	};
 }

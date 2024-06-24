@@ -114,7 +114,7 @@ const retranslateWord = props.dictionary.retranslate;
 
 <template>
   <tr
-  	:class="{ highlighted: isHighlighed }"
+  	:class="{ highlighted: isHighlighed, needsRetranslate: word.needsRetranslate }"
   	:id="`word-${word.id}`"
   	>
     <td v-if="display.col.number">{{ word.order + 1 }}</td>
@@ -135,7 +135,7 @@ const retranslateWord = props.dictionary.retranslate;
         v-if="word.id !== editingTranslationId"
         :class="{ 'edit-column': display.action.edit }"
         :title="display.action.edit ? __('Edit translations') : undefined"
-      >{{ word.translations.join(', ') }}
+      >{{ word.needsRetranslate ? '' : word.translations.join(', ') }}
       </td>
       <td v-else>
         <form @submit.prevent="updateTranslation" class="edit-form">
@@ -218,6 +218,12 @@ td {
   border: 1px solid $border-color;
   padding: 10px;
   text-align: left;
+
+
+}
+
+.needsRetranslate {
+  opacity: 0.5;
 }
 
 .highlighted {

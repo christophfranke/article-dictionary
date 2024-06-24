@@ -6,6 +6,7 @@ from datetime import datetime
 
 from .helpers import serialize, update_word_data
 
+
 @login_required
 def seen_word(id):
     _id = ObjectId(id)

@@ -6,6 +6,7 @@ export interface PartialWord {
   frequency: number;
   lastViewed: string;
   reviewLevel: number;
+  needsRetranslate: string;
 }
 
 export interface Word extends PartialWord {

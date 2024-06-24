@@ -1,5 +1,3 @@
-import { ref, computed } from 'vue';
-import type { ComputedRef } from 'vue';
 import type { DictionaryApi } from './request';
 import type { PartialWord } from '@/types';
 import type { Collection } from '@/layers/collection';
@@ -9,10 +7,11 @@ export interface DictionaryCollection extends Collection<PartialWord, 'original'
   retranslate: (original: string) => Promise<PartialWord | null>;
   rebuild: () => Promise<PartialWord[] | null>;
   markSeen: (id: string) => Promise<PartialWord | null>;
+  getWord: (id: string) => Promise<PartialWord | null>;
 }
 
 
-export default (request: DictionaryApi, words: PartialWord[] = []): DictionaryCollection => {
+export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryCollection => {
   const collection = createCollection<PartialWord, 'original', 'id'>(request, 'original', 'id');
 
   const retranslate = async (id: string): Promise<PartialWord | null> => {
@@ -44,10 +43,23 @@ export default (request: DictionaryApi, words: PartialWord[] = []): DictionaryCo
     return result;
   };
 
+  const getWord = async (id: string): Promise<PartialWord | null> => {
+    let result = null;
+    for await (const word of request.getWord(id)) {
+      if (word) {
+        collection.updateLocal([word]);
+        result = word;
+      }
+    }
+
+    return result;
+  }
+
   return {
     ...collection,
     markSeen,
     retranslate,
     rebuild,
+    getWord,
   }
 }
