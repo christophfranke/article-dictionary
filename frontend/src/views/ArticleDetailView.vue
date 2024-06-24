@@ -105,19 +105,24 @@ const wordIndexMap = computed(() => {
 });
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
-const { fetchAuthorized: fetchAuthorizedButton, isLoading: isLoadingButton, errorMessage } = useApi();
+const { fetchAuthorized: fetchAuthorizedButton, errorMessage } = useApi();
 
 const scrollToTop = async () => {
   await new Promise(resolve => setTimeout(resolve, 50));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+const isLoadingButton = ref<boolean>(false)
 const markArticleAsRead = async () => {
+  isLoadingButton.value = true
   const slug = article.value?.slug
   if (slug) {
     await articles.updateOne(slug, { status: 'read' });
 
     currentPage.value = 1;
   }
+
+  isLoadingButton.value = false
 }
 const changePage = async () => {
   await scrollToTop();

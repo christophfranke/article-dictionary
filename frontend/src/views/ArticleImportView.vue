@@ -32,7 +32,7 @@ onMounted(importArticle)
 
 <template>
     <Headline class="title">{{ __('Importing article...') }}</Headline>
-    <Paragraph>{{ __('Translating the article word by word. This may take a minute.') }}</Paragraph>
+    <Paragraph>{{ __('This may take a minute.') }}</Paragraph>
     <ErrorMessage :message="errorMessage" />
 </template>
 

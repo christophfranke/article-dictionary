@@ -107,7 +107,7 @@ export default {
 
     // Import article view
     'Importing article...': 'Artikel wird importiert...',
-    'Translating the article word by word. This may take a minute.': 'Übersetze den Artikel Wort für Wort. Dies kann eine Minute dauern.',
+    'This may take a minute.': 'Dies kann eine Minute dauern.',
 
     // Article list view
     'Loading Articles...': 'Lade Artikel...',

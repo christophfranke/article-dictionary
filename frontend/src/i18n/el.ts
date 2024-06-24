@@ -107,7 +107,7 @@ export default {
 
     // Import article view
     'Importing article...': 'Εισαγωγή άρθρου...',
-    'Translating the article word by word. This may take a minute.': 'Μετάφραση του άρθρου λέξη προς λέξη. Αυτό μπορεί να πάρει λίγο χρόνο.',
+    'This may take a minute.': 'Αυτό μπορεί να πάρει λίγο χρόνο.',
 
     // Article list view
     'Loading Articles...': 'Φόρτωση άρθρων...',
