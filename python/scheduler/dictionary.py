@@ -108,8 +108,6 @@ def update_word_frequency():
 
 
 def retranslate_word():
-    print('skip retranslate')
-    return
     try:
         dictionary = get_collection('dictionary')
 

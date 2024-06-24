@@ -1,4 +1,3 @@
-import type { PartialWord } from '@/types';
 import type { DictionaryApi } from './request';
 import createStorage from '@/layers/storage';
 

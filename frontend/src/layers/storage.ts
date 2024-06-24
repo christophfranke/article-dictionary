@@ -14,7 +14,7 @@ export default <T extends { id: string }>(request: StreamApi<T>, key: string): S
     try {
       localStorage.setItem(key, JSON.stringify(collection));
     } catch (e) {
-      console.error(e);
+      console.error('could not save collection to local storage', e);
     }
   };
 
