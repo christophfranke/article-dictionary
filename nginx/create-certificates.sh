@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Configuration variables
-DOMAIN="articles.krito.de"
+DOMAIN="www.international-reader.com"
 EMAIL="public@krito.de"
 WEBROOT_PATH="/var/www/certbot"
 
