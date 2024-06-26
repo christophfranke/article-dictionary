@@ -52,6 +52,7 @@ def retranslate_word():
 
 
 def update_word_frequency():
+    # TODO: make this more performant, potentially by not recounting all the words at once
     try:
         dictionary = get_collection('dictionary')
         article_collection = get_collection('articles')
