@@ -48,7 +48,6 @@ export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
 		
 		isLoadingDictionary = isLoading;
 		dictionary[key] = createDictionaryCollection(dictionaryStorage);
-		dictionary[key].load();
 	}
 
 	return {

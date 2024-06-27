@@ -108,9 +108,6 @@ export const useLogin = () => {
 	    await fetchPreview(fetchAuthorized)();
 
     	localIsLoading.value = false;
-
-			const { dictionary } = useDictionaryView();
-			const { articles } = useArticleView();
     	return true;
     }
 

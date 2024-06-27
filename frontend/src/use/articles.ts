@@ -42,7 +42,6 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 		isLoadingArticles = isLoading;
 		errorMessageArticles = errorMessage;
 		articles[key] = createArticleCollection(articleStorage);
-		articles[key].load();
 	}
 
 	return {
