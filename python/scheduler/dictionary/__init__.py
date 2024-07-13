@@ -4,6 +4,9 @@ from .repair import remove_duplicates, remove_invalid_src_or_target, remove_no_o
 
 def jobs():
     retranslate_word()
+
+
+def lazy_jobs():
     update_word_frequency()
     update_clusters()
 
