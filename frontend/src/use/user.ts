@@ -1,8 +1,6 @@
 import { ref, onMounted, reactive, watch, watchEffect } from 'vue';
 import useApi from '@/use/api';
 import type { Profile, ProfilePreview, FetchFn } from '@/types';
-import { useDictionaryView } from '@/use/dictionary';
-import { useArticleView } from '@/use/articles';
 import { setTheme } from '@/themes';
 
 const PROFILE_KEY = 'profile'
@@ -22,6 +20,14 @@ watchEffect(() => {
 	} else {
 		setTheme();
 	} 
+});
+
+window.addEventListener('beforeunload', () => {
+	try {
+		localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+	} catch(e) {
+		console.error('Could not store profile to local storage', e);
+	}
 });
 
 const fetchPreview = (fetchAuthorized: FetchFn) => async  () => {
