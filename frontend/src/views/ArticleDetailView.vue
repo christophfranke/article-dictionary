@@ -101,7 +101,7 @@ const wordIndexMap = computed(() => {
       map[word] = index;
     }
   });
-  // console.log('calculated wordIndexMap', Object.keys(map).length)
+
   return map;
 });
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
@@ -143,8 +143,8 @@ const router = useRouter();
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 let SECOND = 1000;
 onMounted(async () => {
-  dictionary.load();
-  await articles.get(slug.value);
+  await articles.get(slug.value)
+  dictionary.load()
 
   if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {

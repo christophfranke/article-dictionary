@@ -46,11 +46,6 @@ const tableDisplayConfig = computed(() => ({
   }
 }));
 
-// watchEffect(() => {
-//   console.log(props.dictionary?.items.value.length);
-//   console.log(props.dictionary?.all.value.length);
-// });
-
 </script>
 
 <template>
