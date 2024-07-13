@@ -31,15 +31,22 @@ onMounted(importArticle)
 </script>
 
 <template>
-    <Headline class="title">{{ __('Importing article...') }}</Headline>
-    <Paragraph>{{ __('This may take a minute.') }}</Paragraph>
-    <ErrorMessage :message="errorMessage" />
+    <div class="container">
+      <Headline class="title">{{ __('Importing article...') }}</Headline>
+      <Paragraph>{{ __('This may take a minute.') }}</Paragraph>
+      <ErrorMessage :message="errorMessage" />
+    </div>
 </template>
 
 
 <style scoped>
-.title {
+.container {
+  width: 80vw;
+  max-width: 1200px;
 	margin: 80px auto;
+}
+
+.title {
 	text-align: center;
 }
 </style>

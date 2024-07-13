@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
 import type { PropType } from 'vue';
 import type { DictionaryView } from '@/dictionary/view';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -45,6 +45,11 @@ const tableDisplayConfig = computed(() => ({
     scroll: props.showDictionary,
   }
 }));
+
+// watchEffect(() => {
+//   console.log(props.dictionary?.items.value.length);
+//   console.log(props.dictionary?.all.value.length);
+// });
 
 </script>
 

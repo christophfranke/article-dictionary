@@ -46,7 +46,11 @@ export default <T extends { id: string } & Record<K, any> & Record<L, any>, K ex
     ...item,
     order: order.value ? order.value(item) ?? index : index,
   })));
-  const items = computed(() => all.value.filter(filter.value));
+  const items = computed(() => {
+    const filtered = all.value.filter(filter.value)
+    // console.log('filtered items', filtered.length)
+    return filtered
+  });
 
   const setOrder = (orderFn?: OrderFunction<T>) => {
     order.value = orderFn || null;

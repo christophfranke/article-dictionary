@@ -29,14 +29,12 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
 
   const set = (newItems: T[]): void => {
     items.value = newItems as any;
-    itemsByKey.value = newItems.reduce((acc, item) => {
-      acc[item[searchField]] = item;
-      return acc;
-    }, {} as Record<string, T>);
-    itemsById.value = newItems.reduce((acc, item) => {
-      acc[item.id] = item;
-      return acc;
-    }, {} as Record<string, T>);
+    itemsByKey.value = {}
+    itemsById.value = {}
+    for(const item of newItems) {
+      itemsByKey.value[item[searchField]] = item
+      itemsById.value[item.id] = item
+    }
   };
 
   const add = async (data: Record<string, unknown>): Promise<T | null> => {

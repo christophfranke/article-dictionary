@@ -101,6 +101,7 @@ const wordIndexMap = computed(() => {
       map[word] = index;
     }
   });
+  // console.log('calculated wordIndexMap', Object.keys(map).length)
   return map;
 });
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
@@ -150,7 +151,7 @@ onMounted(async () => {
       if (article.value) {
         articles.updateOne(article.value.slug, { status: 'seen' });
       }
-    }, 60* SECOND);
+    }, 60 * SECOND);
   }
 });
 
