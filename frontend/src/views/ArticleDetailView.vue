@@ -140,11 +140,27 @@ const toggleShowDictionary = () => {
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
 const router = useRouter();
 
+const SECOND = 1000;
+const POLL_DELAY = 30 * SECOND
+let pollId: ReturnType<typeof setTimeout> | null = null;
+const pollForDictionaryUpdates = () => {
+  if (dictionary.items.value.some(item => item.needsRetranslate)) {
+    pollId = setTimeout(async () => {
+      await dictionary.load()
+      pollForDictionaryUpdates()
+    }, POLL_DELAY)
+  }
+}
+onBeforeUnmount(() => {
+  if (pollId) {
+    clearTimeout(pollId)
+  }
+})
+
+
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
-let SECOND = 1000;
 onMounted(async () => {
   await articles.get(slug.value)
-  dictionary.load()
 
   if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {
@@ -153,6 +169,9 @@ onMounted(async () => {
       }
     }, 60 * SECOND);
   }
+
+  await dictionary.load()
+  pollForDictionaryUpdates()
 });
 
 onBeforeUnmount(() => {
