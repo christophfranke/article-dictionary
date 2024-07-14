@@ -14,7 +14,7 @@ import Form from '@/elements/Form.vue';
 import __ from '@/i18n'
 
 
-const MAX_LENGTH = 50000;
+const MAX_LENGTH = 150000;
 
 
 const props = defineProps({

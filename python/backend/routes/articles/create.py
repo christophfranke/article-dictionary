@@ -12,7 +12,8 @@ from text_processing.characters import slugify
 from .helpers import serialize
 
 
-MAX_CONTENT_LENGTH = 50000
+MAX_CONTENT_LENGTH = 150000
+
 
 @login_required
 def create_article():
@@ -50,7 +51,6 @@ def create_article():
 
     if not privacy:
         return jsonify({'error': 'Privacy is a required field'}), 400
-
 
     if articles_collection.find_one({'title': title, 'user_id': ObjectId(current_user.id)}):
         return jsonify({'error': 'Title already taken'}), 409
