@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 
-import type { PartialWord, Word } from '@/types';
+import type { PartialWord } from '@/types';
 import type { DictionaryView, FilterFunction } from '@/dictionary/view';
 import type { DictionaryCollection } from '@/dictionary/collection';
 
@@ -44,10 +44,10 @@ export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
 	if (!dictionary[key]) {
 		const { fetchAuthorized, isLoading } = useApi()
 		const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
-		const dictionaryStorage = createDictionaryStorage(dictionaryRequest, `${key}-main-dictionary`)
+		const dictionaryCollection = createDictionaryCollection(dictionaryRequest);
 		
 		isLoadingDictionary = isLoading;
-		dictionary[key] = createDictionaryCollection(dictionaryStorage);
+		dictionary[key] = createDictionaryStorage(dictionaryCollection, `${key}-main-dictionary`)
 	}
 
 	return {

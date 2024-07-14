@@ -1,12 +1,7 @@
-import type { ArticleBase } from '@/types';
-import type { ArticleApi } from './api';
+import type { ArticleCollection } from './collection';
 import createStorage from '@/layers/storage';
 
-export default (api: ArticleApi, key: string): ArticleApi => {
-	const storage = createStorage(api, key);
-
-	return {
-		...api,
-		...storage
-	}
+export default (collection: ArticleCollection, key: string): ArticleCollection => {
+	// @ts-expect-error
+	return createStorage(collection, key);
 }

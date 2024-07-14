@@ -36,11 +36,11 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	if (!articles[key]) {		
 		const { fetchAuthorized, isLoading, errorMessage } = useApi()
 		const articleApi = createArticleApi(fetchAuthorized)
-		const articleStorage = createArticleStorage(articleApi, `${key}-articles`);
+		const articleCollection = createArticleCollection(articleApi);
 		
 		isLoadingArticles = isLoading;
 		errorMessageArticles = errorMessage;
-		articles[key] = createArticleCollection(articleStorage);
+		articles[key] = createArticleStorage(articleCollection, `${key}-articles`);
 	}
 
 	return {

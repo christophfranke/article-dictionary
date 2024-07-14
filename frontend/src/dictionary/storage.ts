@@ -1,11 +1,7 @@
-import type { DictionaryApi } from './request';
+import type { DictionaryCollection } from './collection';
 import createStorage from '@/layers/storage';
 
-export default (request: DictionaryApi, key: string): DictionaryApi => {
-	const storage = createStorage(request, key);
-
-	return {
-		...request,
-		...storage
-	}
+export default (collection: DictionaryCollection, key: string): DictionaryCollection => {
+	// @ts-expect-error
+	return createStorage(collection, key);
 }

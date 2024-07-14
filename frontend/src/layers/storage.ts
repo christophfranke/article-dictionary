@@ -1,83 +1,48 @@
-import type { StreamApi } from './api';
+import { watchEffect } from 'vue';
+import type { ComputedRef } from 'vue';
+import type { Collection } from './collection';
 
-export default <T extends { id: string }>(request: StreamApi<T>, key: string): StreamApi<T> => {
-  let cache: { [key: string]: T } = JSON.parse(localStorage.getItem(key) || '{}');
+export interface CollectionXX<T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T> {
+  find: (keyValue: any) => T | undefined;
+  findById: (id: string) => T | undefined;
 
-  const clearcache = () => {
-    cache = {}
+  all: ComputedRef<T[]>;
+
+  set: (newItems: T[]) => void;
+  discard: () => void;
+
+  load: () => Promise<T[] | null>;
+  get: (requestId: string) => Promise<T | null>;
+  updateMany: (requestIds: string[], data: Record<string, unknown>) => Promise<T[] | null>;
+  updateOne: (requestId: string, data: Record<string, unknown>) => Promise<T | null>;
+  add: (data: Record<string, unknown>) => Promise<T | null>;
+
+  updateLocal: (updatedItems: T[]) => void;
+  removeLocalExcept: (ids: string[]) => void;
+}
+
+
+// export default <T extends { id: string } & Record<K, any>, K extends keyof T, L extends keyof T>(collection: Collection<T, K, L>, key: string): Collection<T, K, L> => {
+export default <T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T, SomeCollection extends Collection<T, K, L>>(collection: SomeCollection, key: string): SomeCollection => {
+  const serializedItems = localStorage.getItem(key)
+  if (serializedItems) {
+    try {
+      const items: T[] = JSON.parse(serializedItems)
+      collection.set(items)
+    } catch(e) {
+      console.error('Could not restore collection from local storage:', e)
+    }
   }
 
-  const save = (newData: T[]) => {
-    newData.forEach(item => {
-      if (item.id in cache) {
-        Object.assign(cache[item.id], item);
-      } else {
-        cache[item.id] = item;
-      }
-    });
+  watchEffect(() => {
     try {
-      localStorage.setItem(key, JSON.stringify(cache));
-      // console.log('saved items to', key, Object.keys(cache).length)
-    } catch (e) {
-      localStorage.clear();
-      console.error('could not save cache to local storage', e);
+      localStorage.setItem(key, JSON.stringify(collection.all.value))
+    } catch(e) {
+      console.error('Could not save collection to local storage')
+      localStorage.clear()
     }
-  };
+  })
 
-  const list = async function* (): AsyncGenerator<T[], void, unknown> {
-    yield Object.values(cache);
-    for await (const newData of request.list()) {
-      clearcache()
-      yield newData;
-      // console.log('saving list to local storage', newData.length)
-      save(newData);
-    }
-  };
+  return collection
+}
 
-  const add = async function* (data: Record<string, unknown>): AsyncGenerator<T | null, void, unknown> {
-    for await (const newData of request.add(data)) {
-      yield newData;
-      // console.log('saving item to local storage', newData)
-      if (newData) {
-        save([newData]);
-      }
-    }
-  };
-
-  const get = async function* (id: string): AsyncGenerator<T | null, void, unknown> {
-    const item = cache[id];
-    if (item) {
-      yield item;
-    }
-    for await(const newItem of request.get(id)) {
-      yield newItem;
-      if (newItem) {
-        save([newItem]);
-      }
-    }
-  };
-
-  const updateOne = async function* (id: string, data: Record<string, unknown>): AsyncGenerator<T | null, void, unknown> {
-    const oldItem = cache[id];
-    if (oldItem) {
-      const item = { ...oldItem, ...data } as T;
-      yield item;
-      save([item]);
-    }
-
-    for await (const newData of request.updateOne(id, data)) {
-      yield newData;
-      if (newData) {
-        save([newData]);
-      }
-    }
-  };
-
-  return {
-    ...request,
-    add,
-    get,
-    updateOne,
-    list
-  };
-};
