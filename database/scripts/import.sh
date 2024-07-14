@@ -1,5 +1,6 @@
 #!/bin/bash
 # import-db.sh
+# usage: docker exec dictionary-backup-1 import.sh backup-file.gz
 
 # Parameters
 MONGO_HOST="mongodb"  # Name of your MongoDB service in docker-compose

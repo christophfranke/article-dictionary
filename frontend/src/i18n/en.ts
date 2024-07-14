@@ -26,17 +26,17 @@ export default {
     'Submit': 'Submit',
 
     // article preview
-    '$1 new words': '$1 new words',
-    '$1 seen words': '$1 seen words',
-    '$1 known words': '$1 known words',
+    '$1 new words ($2%)': '$1 new words ($2%)',
+    '$1 seen words ($2%)': '$1 seen words ($2%)',
+    '$1 known words ($2%)': '$1 known words ($2%)',
     'Estimated difficulty: $1 ($2% unknown words)': 'Estimated difficulty: $1 ($2% unknown words)',
     '$1 words total': '$1 words total',
     'Very Hard': 'Very Hard',
     'Hard': 'Hard',
     'Medium': 'Medium',
     'Easy': 'Easy',
-    'Very Easy': 'Easier',
-    'Too Easy': 'Very Easy',
+    'Very Easy': 'Very Easy',
+    'Known': 'Known',
     'Very Short': 'Very Short',
     'Short': 'Short',
     // 'Medium': 'Medium',
@@ -92,7 +92,7 @@ export default {
     'Words in dictionary': 'Words in dictionary',
     // 'New': 'New',
     'Seen': 'Seen',
-    'Known': 'Known',
+    // 'Known': 'Known',
     // 'Total': 'Total',
 
     // View

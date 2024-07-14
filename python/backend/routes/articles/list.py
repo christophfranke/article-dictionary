@@ -30,19 +30,32 @@ def list_articles():
         unread_words = article['words'][index:]
 
         statistics = {
-            'total': len(article['words']),
+            'total': len([
+                word for word in article['words']
+                if get_word_status(word, status_map) != 'ignore'
+            ]),
             'total_unread': len(unread_words),
             'new': {
-                'words': len([word for word in article['words'] if not get_word_status(word, status_map) or get_word_status(word, status_map) == 'new']),
-                'cluster': len([word for word in unread_words if not get_cluster_status(word, status_map) or get_cluster_status(word, status_map) == 'new']),
+                'words': len([
+                    word for word in article['words']
+                    if not get_word_status(word, status_map)
+                    or get_word_status(word, status_map) == 'new'
+                ]),
+                # 'cluster': len([word for word in unread_words if not get_cluster_status(word, status_map) or get_cluster_status(word, status_map) == 'new']),
             },
             'seen': {
-                'words': len([word for word in article['words'] if get_word_status(word, status_map) == 'seen']),
-                'cluster': len([word for word in unread_words if get_cluster_status(word, status_map) == 'seen']),
+                'words': len([
+                    word for word in article['words']
+                    if get_word_status(word, status_map) == 'seen'
+                ]),
+                # 'cluster': len([word for word in unread_words if get_cluster_status(word, status_map) == 'seen']),
             },
             'known': {
-                'words': len([word for word in article['words'] if get_word_status(word, status_map) == 'known']),
-                'cluster': len([word for word in unread_words if get_cluster_status(word, status_map) == 'known']),
+                'words': len([
+                    word for word in article['words']
+                    if get_word_status(word, status_map) == 'known'
+                ]),
+                # 'cluster': len([word for word in unread_words if get_cluster_status(word, status_map) == 'known']),
             }
         }
 

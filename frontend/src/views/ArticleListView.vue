@@ -26,9 +26,9 @@ const newestArticles = computed(() =>
     );
 
 const usefulness = (article: ArticlePreview): number =>
-  (0.2 * article.statistics.known.cluster
-    + 1.0 * article.statistics.seen.cluster
-    - 0.5 * article.statistics.new.cluster)
+  (0.2 * article.statistics.known.words
+    + 1.0 * article.statistics.seen.words
+    - 0.5 * article.statistics.new.words)
   / article.statistics.total;
 
 

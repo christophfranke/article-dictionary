@@ -17,6 +17,7 @@ def get_dictionary_entries(unique_words):
     ]
     return dictionary_entries
 
+
 def is_status_higher(old_status, new_status):
     if new_status == 'ignore':
         return False
@@ -31,6 +32,7 @@ def is_status_higher(old_status, new_status):
 
     # old_status is known
     return False
+
 
 def create_status_map():
     dictionary = get_collection('dictionary')
@@ -67,12 +69,14 @@ def create_status_map():
 
     return status_map
 
+
 def get_word_status(original, status_map):
     word = status_map.get(original, None)
     if word:
         return word['status']
 
     return None
+
 
 def get_cluster_status(original, status_map):
     word = status_map.get(original, None)

@@ -1,5 +1,6 @@
 #!/bin/bash
 # export-db.sh
+# usage: docker exec dictionary-backup-1 export.sh
 
 # Set the parameters
 MONGO_HOST="mongodb"  # Name of your MongoDB service in docker-compose

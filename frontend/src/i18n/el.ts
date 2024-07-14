@@ -25,17 +25,17 @@ export default {
     'Submit': 'Υποβολή',
 
     // article preview
-    '$1 new words': '$1 νέες λέξεις',
-    '$1 seen words': '$1 ειδικές λέξεις',
-    '$1 known words': '$1 γνωστές λέξεις',
+    '$1 new words ($2%)': '$1 νέες λέξεις ($2%)',
+    '$1 seen words ($2%)': '$1 ειδικές λέξεις ($2%)',
+    '$1 known words ($2%)': '$1 γνωστές λέξεις ($2%)',
     'Estimated difficulty: $1 ($2% unknown words)': 'Εκτιμώμενη δυσκολία: $1 ($2% άγνωστες λέξεις)',
     '$1 words total': 'Σύνολο $1 λέξεις',
     'Very Hard': 'Πολύ δύσκολο',
     'Hard': 'Δύσκολο',
     'Medium': 'Μέτριο',
     'Easy': 'Εύκολο',
-    'Very Easy': 'Πιο εύκολο',
-    'Too Easy': 'Πολύ εύκολο',
+    'Very Easy': 'Πολύ εύκολο',
+    'Known': 'Γνωστό',
     'Very Short': 'Πολύ σύντομο',
     'Short': 'Σύντομο',
     // 'Medium': 'Μέτριο',
@@ -91,7 +91,7 @@ export default {
     'Words in dictionary': 'Λέξεις στο λεξικό',
     // 'New': 'Νέα',
     'Seen': 'Ειδική',
-    'Known': 'Γνωστό',
+    // 'Known': 'Γνωστό',
     // 'Total': 'Σύνολο',
 
     // View

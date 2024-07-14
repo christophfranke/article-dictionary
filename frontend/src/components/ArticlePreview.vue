@@ -17,17 +17,19 @@ const props = defineProps({
 });
 
 const familiarityScore = computed<number>(() => {
-  const total = props.article.statistics.seen.cluster
-    + props.article.statistics.known.cluster
-    + props.article.statistics.new.cluster;
+  const total = props.article.statistics.seen.words
+    + props.article.statistics.known.words
+    + props.article.statistics.new.words;
 
   return Math.round(100 * (
-    0.2 * props.article.statistics.seen.cluster
-    + 1.0 * props.article.statistics.known.cluster
-    + 0.05 * props.article.statistics.new.cluster) / total)
+    0.2 * props.article.statistics.seen.words
+    + 1.0 * props.article.statistics.known.words
+    + 0.05 * props.article.statistics.new.words) / total)
 });
 
 const difficultyScore = computed(() => 100 - familiarityScore.value);
+const percentage = (key: 'new' | 'seen' | 'known'): number =>
+  Math.round(100.0 * props.article.statistics[key].words / props.article.statistics.total)
 
 const scoreDescription = computed(() => {
   if (familiarityScore.value < 50) {
@@ -41,7 +43,7 @@ const scoreDescription = computed(() => {
   } else if (familiarityScore.value < 98) {
     return __('Very Easy');
   } else {
-    return __('Too Easy');
+    return __('Known');
   }
 });
 
@@ -74,13 +76,13 @@ const link = (article: ArticlePreview): string => article.owned
         <Headline type="h3" class="title">{{ props.article.title }}</Headline>
         <Excerpt class="excerpt">{{ props.article.excerpt }}...</Excerpt>
         <div class="statistics">
-          <span :title="__('$1 new words', props.article.statistics.new.words)">
+          <span :title="__('$1 new words ($2%)', props.article.statistics.new.words, percentage('new'))">
             <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
           </span>
-          <span :title="__('$1 seen words', props.article.statistics.seen.words)">
+          <span :title="__('$1 seen words ($2%)', props.article.statistics.seen.words, percentage('seen'))">
             <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen.words }}
           </span>
-          <span :title="__('$1 known words', props.article.statistics.known.words)">
+          <span :title="__('$1 known words ($2%)', props.article.statistics.known.words, percentage('known'))">
             <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known.words }}
           </span>
         </div>

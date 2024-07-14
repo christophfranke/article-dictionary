@@ -25,17 +25,17 @@ export default {
     'Submit': 'Absenden',
 
     // article preview
-    '$1 new words': '$1 neue Wörter',
-    '$1 seen words': '$1 gesehene Wörter',
-    '$1 known words': '$1 bekannte Wörter',
+    '$1 new words ($2%)': '$1 neue Wörter ($2%)',
+    '$1 seen words ($2%)': '$1 gesehene Wörter ($2%)',
+    '$1 known words ($2%)': '$1 bekannte Wörter ($2%)',
     'Estimated difficulty: $1 ($2% unknown words)': 'Geschätzte Schwierigkeit: $1 ($2% unbekannte Wörter)',
     '$1 words total': '$1 Wörter insgesamt',
     'Very Hard': 'Sehr schwer',
     'Hard': 'Schwer',
     'Medium': 'Mittel',
     'Easy': 'Leicht',
-    'Very Easy': 'Leichter',
-    'Too Easy': 'Sehr leicht',
+    'Very Easy': 'Sehr leicht',
+    'Known': 'Bekannt',
     'Very Short': 'Sehr kurz',
     'Short': 'Kurz',
     // 'Medium': 'Mittel',
@@ -91,7 +91,7 @@ export default {
     'Words in dictionary': 'Wörter im Wörterbuch',
     // 'New': 'Neu',
     'Seen': 'Gesehen',
-    'Known': 'Bekannt',
+    // 'Known': 'Bekannt',
     // 'Total': 'Insgesamt',
 
     // View
