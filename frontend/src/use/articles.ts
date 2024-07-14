@@ -2,8 +2,7 @@ import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import type { Ref } from 'vue';
 
-import type { ArticleBase } from '@/types';
-import type { ArticleView, FilterFunction } from '@/articles/view';
+import type { FilterFunction } from '@/articles/view';
 import type { ArticleCollection } from '@/articles/collection';
 
 import createArticleApi from '@/articles/api';

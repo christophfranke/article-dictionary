@@ -48,6 +48,7 @@ export default <T extends { id: string } & Record<K, any> & Record<L, any>, K ex
   })));
   const items = computed(() => {
     const filtered = all.value.filter(filter.value)
+    // console.log('filtered items', filtered.length)
     return filtered
   });
 

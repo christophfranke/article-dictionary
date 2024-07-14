@@ -39,15 +39,26 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
 
   const add = async (data: Record<string, unknown>): Promise<T | null> => {
     let result = null;
-    for await (const item of request.add(data)) {      
+    for await (const item of request.add(data)) {
+      // console.log('adding', item)
       if (item) {
         result = item;
-        if (!itemsByKey.value[item[searchField]]) {
+        if (itemsByKey.value[item[searchField]]) {
+          const original = itemsByKey.value[item[searchField]]
+          delete itemsById.value[original.id]
+          Object.assign(original, item)
+          itemsById.value[original.id] = original
+          items.value = items.value
+        } else if (itemsById.value[item.id]) {
+          const original = itemsById.value[item.id]
+          delete itemsByKey.value[original[searchField]]
+          Object.assign(original, item)
+          itemsByKey.value[original[searchField]] = original
+          items.value = items.value
+        } else {
           items.value = [...items.value, item] as any;
           itemsByKey.value[item[searchField]] = item;
           itemsById.value[item.id] = item;
-        } else {
-          updateLocal([item]);
         }
       }
     }
@@ -57,13 +68,18 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
 
   const load = async (): Promise<T[] | null> => {
     let result = null;
-    for await (const items of request.list()) {
-      updateLocal(items);
-      removeLocalExcept(items.map(item => item.id));
+    // console.log('loading all items')
+    for await (const itemList of request.list()) {
+      // console.log('updating local', itemList.length)
+      updateLocal(itemList);
+      // console.log('removing others except', itemList.length)
+      removeLocalExcept(itemList.map(item => item.id));
+      // console.log('resulting items', items.value)
 
-      result = items;
+      result = itemList;
     }
 
+    // console.log('result', result)
     return result;
   }
 
@@ -142,7 +158,10 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     itemsById.value = {};
   }
 
-  const all = computed<T[]>(() => items.value);
+  const all = computed<T[]>(() => {
+    // console.log('collection', items.value.length)
+    return items.value
+  });
 
   return {
     find,
