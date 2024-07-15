@@ -132,9 +132,24 @@ const changePage = async () => {
   }
 }
 
-const showDictionary = ref(true);
+const readDisplayStateFromStorage = () => {
+  try {
+    return !!JSON.parse(localStorage.getItem('showDictionary') ?? 'true')
+  } catch(e) {}
+
+  return true
+}
+const saveDisplayStateToStorage = () => {
+  try {
+    localStorage.setItem('showDictionary', JSON.stringify(showDictionary.value))
+  } catch(e) {
+    console.error('Could not save dictionary display state to local storage', e)
+  }
+}
+const showDictionary = ref(readDisplayStateFromStorage());
 const toggleShowDictionary = () => {
   showDictionary.value = !showDictionary.value;
+  saveDisplayStateToStorage();
 };
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
