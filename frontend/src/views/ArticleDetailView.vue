@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
   </div>
   <div class="article-page" v-else>
     <template v-if="article">
-      <div :class="{ content: true, 'no-dictionary': !showDictionary }">
+      <div :class="{ content: true, 'no-dictionary': !showDictionary || dictionary.items.value.length === 0 }">
         <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
         <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
         <Headline type="h3" class="title" v-else>{{ article.title }} ({{ currentPage }}/{{ numberOfPages }})</Headline>
@@ -222,7 +222,7 @@ onBeforeUnmount(() => {
         />
         <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
       </div>
-      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" />
+      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" v-if="dictionary.items.value.length > 0"/>
     </template>
     <NotFoundView v-else />
   </div>

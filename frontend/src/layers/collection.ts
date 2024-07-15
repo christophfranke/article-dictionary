@@ -18,7 +18,6 @@ export interface Collection<T extends { id: string } & Record<K, any> & Record<L
   add: (data: Record<string, unknown>) => Promise<T | null>;
 
   updateLocal: (updatedItems: T[]) => void;
-  removeLocalExcept: (ids: string[]) => void;
 }
 
 
@@ -68,18 +67,11 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
 
   const load = async (): Promise<T[] | null> => {
     let result = null;
-    // console.log('loading all items')
     for await (const itemList of request.list()) {
-      // console.log('updating local', itemList.length)
-      updateLocal(itemList);
-      // console.log('removing others except', itemList.length)
-      removeLocalExcept(itemList.map(item => item.id));
-      // console.log('resulting items', items.value)
-
+      set(itemList);
       result = itemList;
     }
 
-    // console.log('result', result)
     return result;
   }
 
@@ -139,19 +131,6 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     }
   };
 
-  const removeLocalExcept = (keepIds: string[]): void => {
-    const removeIds = items.value
-      .filter(item => !keepIds.includes(item.id))
-      .map(item => item.id);
-
-    items.value = items.value
-      .filter(item => keepIds.includes(item.id));
-    removeIds.forEach(id => {
-      delete itemsByKey.value[id];
-      delete itemsById.value[id];
-    });
-  }
-
   const discard = () => {
     items.value = [];
     itemsByKey.value = {};
@@ -175,6 +154,5 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     updateOne,
     add,
     updateLocal,
-    removeLocalExcept,
   }
 }
