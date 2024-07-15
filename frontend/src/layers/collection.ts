@@ -31,6 +31,12 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     itemsByKey.value = {}
     itemsById.value = {}
     for(const item of newItems) {
+      if (itemsByKey.value[item[searchField]]) {
+        console.error('duplicate item', item[searchField], item, itemsByKey.value[item[searchField]])
+      }
+      if (itemsById.value[item.id]) {
+        console.error('duplicate item', item.id, item, itemsByKey.value[item.id])
+      }
       itemsByKey.value[item[searchField]] = item
       itemsById.value[item.id] = item
     }
@@ -39,7 +45,6 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
   const add = async (data: Record<string, unknown>): Promise<T | null> => {
     let result = null;
     for await (const item of request.add(data)) {
-      // console.log('adding', item)
       if (item) {
         result = item;
         if (itemsByKey.value[item[searchField]]) {
@@ -68,8 +73,16 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
   const load = async (): Promise<T[] | null> => {
     let result = null;
     for await (const itemList of request.list()) {
-      set(itemList);
-      result = itemList;
+      const mergedList = itemList.map((newItem: T) => {
+        const oldItem = findById(newItem.id) || {}
+        return {
+          ...oldItem,
+          ...newItem
+        }
+      })
+
+      set(mergedList);
+      result = mergedList;
     }
 
     return result;
@@ -119,7 +132,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
       set(updatedItems);
     } else {
       updatedItems.forEach(updated => {
-        const item = findById(updated.id);
+        const item = findById(updated.id) || find(updated[searchField]);
         if (item) {
           Object.assign(item, updated);
         } else {
@@ -138,7 +151,6 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
   }
 
   const all = computed<T[]>(() => {
-    // console.log('collection', items.value.length)
     return items.value
   });
 

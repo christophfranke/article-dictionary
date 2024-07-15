@@ -27,7 +27,12 @@ def translate_single_word(word, source_language, target_language, language_colle
             return existing_translation['translations']
 
     # If not found in the collection, use the translate function
-    translation_result = translate(word, source_lang=source_language, target_lang=target_language).results[0]
+    try:
+        translation_result = translate(word, source_lang=source_language, target_lang=target_language).results[0]
+    except Exception as e:
+        # Code that runs if any other exception occurs
+        print(f"failed to translate {word}: {e}")
+
     primary = translation_result['paraphrase']
     alternatives = translation_result['alternatives']
 
