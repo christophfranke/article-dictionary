@@ -86,11 +86,45 @@ def get_cluster_status(original, status_map):
     return None
 
 
+def create_statistics(article):
+    status_map = create_status_map()
+    index = article.get('reading_index', 0)
+    unread_words = article['words'][index:]
+
+    return {
+        'total': len([
+            word for word in article['words']
+            if get_word_status(word, status_map) != 'ignore'
+        ]),
+        'total_unread': len(unread_words),
+        'new': {
+            'words': len([
+                word for word in article['words']
+                if not get_word_status(word, status_map)
+                or get_word_status(word, status_map) == 'new'
+            ]),
+        },
+        'seen': {
+            'words': len([
+                word for word in article['words']
+                if get_word_status(word, status_map) == 'seen'
+            ]),
+        },
+        'known': {
+            'words': len([
+                word for word in article['words']
+                if get_word_status(word, status_map) == 'known'
+            ]),
+        }
+    }
+
+
 def serialize(article, user_id):
     return jsonify({
         'id': str(article['_id']),
         'title': article['title'],
         'content': article['content'],
+        'excerpt': article['content'][:150],
         'owned': article['owner_id'] == ObjectId(user_id),
         'privacy': article['privacy'],
         'slug': article['slug'],
@@ -98,5 +132,6 @@ def serialize(article, user_id):
         'createdAt': article['created_at'],
         'lastRead': article['last_read'],
         'status': article['status'],
-        'readingIndex': article.get('reading_index', 0)
+        'readingIndex': article.get('reading_index', 0),
+        'statistics': create_statistics(article),
     })

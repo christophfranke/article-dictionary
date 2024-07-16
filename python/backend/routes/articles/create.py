@@ -55,17 +55,21 @@ def create_article():
     if articles_collection.find_one({'title': title, 'user_id': ObjectId(current_user.id)}):
         return jsonify({'error': 'Title already taken'}), 409
 
+    source_language, target_language = get_languages(get_collection('users'), current_user.id)
+    slug = slugify(title, source_language, target_language)
+
+    if articles_collection.find_one({'slug': slug, 'user_id': ObjectId(current_user.id)}):
+        return jsonify({'error': 'Title (or slug) already taken'}), 409
+
     words = extract_words(content)
     unique_words = get_unique_words(words)
-
-    source_language, target_language = get_languages(get_collection('users'), current_user.id)
 
     new_article = {
         'title': title,
         'content': content,
         'privacy': privacy,
         'owner_id': ObjectId(owner),
-        'slug': slugify(title, source_language, target_language),
+        'slug': slug,
         'words': words,
         'unique_words': unique_words,
         'language': source_language,

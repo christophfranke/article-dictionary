@@ -17,18 +17,18 @@ export default (fetchFn: FetchFn): ArticleApi => {
 		add: makeAsyncGenerator(async (data: Record<string, unknown>) => {
 			return await fetchFn<ArticleBase>('/api/articles/create', {
 				method: 'POST',
-	      headers: {
-	        'Content-Type': 'application/json',
-	      },
+	  	        headers: {
+		        	'Content-Type': 'application/json',
+		        },
 				body: JSON.stringify(data)
 			});
 		}),
 		updateOne: makeAsyncGenerator(async (slug: string, data: Record<string, unknown>) => {
 			return await fetchFn<ArticleBase>(`/api/articles/${slug}`, {
 				method: 'PUT',
-	      headers: {
-	        'Content-Type': 'application/json',
-	      },
+				headers: {
+	        		'Content-Type': 'application/json',
+	        	},
 				body: JSON.stringify(data)
 			});
 		}),
@@ -38,9 +38,9 @@ export default (fetchFn: FetchFn): ArticleApi => {
 		markSeen: makeAsyncGenerator(async (data: Record<string, unknown>) => {
 			return await fetchFn<ArticleBase>(`/api/articles/seen`, {
 				method: 'POST',
-	      headers: {
-	        'Content-Type': 'application/json',
-	      },
+	        	headers: {
+	        		'Content-Type': 'application/json',
+	        	},
 				body: JSON.stringify(data)
 			});
 		}),

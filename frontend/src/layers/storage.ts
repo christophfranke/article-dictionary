@@ -1,11 +1,11 @@
 import { watchEffect } from 'vue';
 import type { Collection } from './collection';
 
-export default <T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T, SomeCollection extends Collection<T, K, L>>(collection: SomeCollection, key: string): SomeCollection => {
+export default <SomeCollection extends Collection<any, any, any>>(collection: SomeCollection, key: string): SomeCollection => {
   const serializedItems = localStorage.getItem(key)
   if (serializedItems) {
     try {
-      const items: T[] = JSON.parse(serializedItems)
+      const items = JSON.parse(serializedItems)
       collection.set(items)
     } catch(e) {
       console.error('Could not restore collection from local storage:', e)

@@ -20,7 +20,7 @@ const router = useRouter();
 
 const newestArticles = computed(() =>
   articles.previews.value
-    .filter(article => article.owned)
+    .filter(article => article.privacy === 'private' || article.owned)
     .sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     );
@@ -34,7 +34,7 @@ const usefulness = (article: ArticlePreview): number =>
 
 const publicArticles = computed(() =>
   articles.previews.value
-    .filter(article => !article.owned)
+    .filter(article => article.privacy === 'public' && !article.owned)
     .sort((a, b) => usefulness(b) - usefulness(a))
   );
 

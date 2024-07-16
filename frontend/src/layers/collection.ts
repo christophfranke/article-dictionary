@@ -32,10 +32,10 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
     itemsById.value = {}
     for(const item of newItems) {
       if (itemsByKey.value[item[searchField]]) {
-        console.error('duplicate item', item[searchField], item, itemsByKey.value[item[searchField]])
+        console.warn('duplicate item', item[searchField], item, itemsByKey.value[item[searchField]])
       }
       if (itemsById.value[item.id]) {
-        console.error('duplicate item', item.id, item, itemsByKey.value[item.id])
+        console.warn('duplicate item', item.id, item, itemsByKey.value[item.id])
       }
       itemsByKey.value[item[searchField]] = item
       itemsById.value[item.id] = item
@@ -60,7 +60,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
           itemsByKey.value[original[searchField]] = original
           items.value = items.value
         } else {
-          items.value = [...items.value, item] as any;
+          items.value.push(item as any);
           itemsByKey.value[item[searchField]] = item;
           itemsById.value[item.id] = item;
         }
