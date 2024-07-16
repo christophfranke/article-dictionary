@@ -97,7 +97,7 @@ describe('Collection', () => {
     const result = await collection.get('1');
 
     expect(result).toEqual(data);
-    expect(collection.all.value).toContain(data);
+    expect(collection.all.value.find(item => item.id === '1' && item.name === 'Item 1')).toBeTruthy()
   });
 
   it('should discard all items', () => {

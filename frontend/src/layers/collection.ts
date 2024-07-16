@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import type { ComputedRef } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 import type { StreamApi } from './api';
 
 export interface Collection<T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T> {
@@ -22,24 +22,44 @@ export interface Collection<T extends { id: string } & Record<K, any> & Record<L
 
 
 export default <T extends { id: string } & Record<K, any>, K extends keyof T, L extends keyof T>(request: StreamApi<T>, searchField: K, requestField: L): Collection<T, K, L> => {
-  const items = ref<T[]>([]);
+  const items: Ref<T[]> = ref<T[]>([]);
   const itemsByKey = ref<Record<string, T>>({});
   const itemsById = ref<Record<string, T>>({});
 
+  // this algorithm ensures to never throw away the old references
+  // it is carefully crafted to have linear runtime
   const set = (newItems: T[]): void => {
-    items.value = newItems as any;
+    // generate id map
+    const idMap: Record<string, T> = {}
+    newItems.forEach(item => {
+      idMap[item.id] = item
+    })
+
+    // add new items
+    newItems.forEach(item => {
+      if (!itemsById.value[item.id]) {
+        // @ts-expect-error
+        itemsById.value[item.id] = {}
+      }
+      Object.assign(itemsById.value[item.id], item)
+    })
+
+    // delete old items
+    Object.keys(itemsById.value).forEach(id => {
+      if (!idMap[id]) {
+        delete itemsById.value[id]
+      }
+    })
+
+    items.value = Object.values(itemsById.value)
+
+    // fill key map
     itemsByKey.value = {}
-    itemsById.value = {}
-    for(const item of newItems) {
-      if (itemsByKey.value[item[searchField]]) {
-        console.warn('duplicate item', item[searchField], item, itemsByKey.value[item[searchField]])
+    items.value.forEach(item => {
+      if (item[searchField] !== undefined) {
+        itemsByKey.value[item[searchField]] = item
       }
-      if (itemsById.value[item.id]) {
-        console.warn('duplicate item', item.id, item, itemsByKey.value[item.id])
-      }
-      itemsByKey.value[item[searchField]] = item
-      itemsById.value[item.id] = item
-    }
+    })
   };
 
   const add = async (data: Record<string, unknown>): Promise<T | null> => {

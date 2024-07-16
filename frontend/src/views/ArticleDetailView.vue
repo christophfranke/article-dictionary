@@ -156,7 +156,7 @@ const toggleStatusSeen = useToggleStatusSeen(dictionary)
 const router = useRouter();
 
 const SECOND = 1000;
-const POLL_DELAY = 30 * SECOND
+const POLL_DELAY = 10 * SECOND
 let pollId: ReturnType<typeof setTimeout> | null = null;
 const pollForDictionaryUpdates = () => {
   if (dictionary.items.value.some(item => item.needsRetranslate)) {
