@@ -33,6 +33,11 @@ export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryC
 
   const markSeen = async (id: string): Promise<PartialWord | null> => {
     let result = null;
+    const word = collection.findById(id)
+    const originalStatus = word?.status ?? null
+    if (word?.status === 'new') {
+      word.status = 'seen'
+    }
     for await (const seenWord of request.markSeen(id)) {
       if (seenWord) {
         collection.updateLocal([seenWord]);
@@ -40,6 +45,9 @@ export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryC
       }
     }
 
+    if (word && originalStatus && !result) {
+      word.status = originalStatus
+    }
     return result;
   };
 
@@ -55,8 +63,25 @@ export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryC
     return result;
   }
 
+  const updateOne = (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
+    const word = collection.findById(id)
+    const originalWord = word ? {
+      ...word
+    } : null
+    if (word) {
+      Object.assign(word, data)
+    }
+    const result = collection.updateOne(id, data)
+    if (word && originalWord && ! result) {
+      Object.assign(word, originalWord)
+    }
+
+    return result
+  };
+
   return {
     ...collection,
+    updateOne,
     markSeen,
     retranslate,
     rebuild,
