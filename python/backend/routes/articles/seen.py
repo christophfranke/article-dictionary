@@ -27,28 +27,34 @@ def seen_article():
         new_index = data.get('index') + 1
         old_index = article.get('reading_index', 0) + 1
         words = article.get('words', [])
-        print(f'updating words for seen article {article.get('title')} ({old_index} - {new_index})')
-        for i in range(old_index, min(new_index, len(words))):
-            print(f'viewed word {i}:{words[i]}')
-            word = words[i]
-            dictionary.update_one({
-                'original': word,
-                'user_id': ObjectId(current_user.id),
-                'status': 'known'
-            }, {'$set': {
-                'last_viewed': datetime.utcnow(),
-            }})
+        print(f'updating words for seen article {article.get("title")} ({old_index} - {new_index})')
+
+        words_to_update = words[old_index:min(new_index, len(words))]
+
+        if words_to_update:
+            print(f'viewed words: {words_to_update}')
+            dictionary.update_many(
+                {
+                    'original': {'$in': words_to_update},
+                    'user_id': ObjectId(current_user.id),
+                    'status': 'known'
+                },
+                {'$set': {
+                    'last_viewed': datetime.utcnow(),
+                }}
+            )
 
     index = data.get('index', article.get('reading_index', 0))
 
-    # update last read field
     collection.update_one({'_id': article['_id']}, {'$set': {
         'last_read': datetime.utcnow(),
         'status': 'seen',
         'reading_index': index
     }})
 
-    article['status'] = 'seen'
-    article['last_read'] = datetime.utcnow()
-    article['reading_index'] = index
-    return serialize(article, current_user.id), 200
+    return jsonify({
+        'id': id,
+        'lastRead': datetime.utcnow(),
+        'status': 'seen',
+        'readingIndex': index,
+    }), 200

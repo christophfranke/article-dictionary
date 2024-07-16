@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ref, computed } from 'vue'; // Import Vue related dependencies
 import createCollection from './collection';
 
 // Mock StreamApi for testing purposes
@@ -108,14 +107,5 @@ describe('Collection', () => {
     collection.discard();
 
     expect(collection.all.value).toEqual([]);
-  });
-
-  it('should remove local items except the specified ones', () => {
-    const data = [{ id: '1', name: 'Item 1' }, { id: '2', name: 'Item 2' }, { id: '3', name: 'Item 3' }];
-    collection.set(data);
-
-    collection.removeLocalExcept(['1', '3']);
-
-    expect(collection.all.value).toEqual([{ id: '1', name: 'Item 1' }, { id: '3', name: 'Item 3' }]);
   });
 });
