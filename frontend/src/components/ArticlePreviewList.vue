@@ -42,7 +42,7 @@ const props = defineProps({
 }
 
 .title {
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .create-link {
