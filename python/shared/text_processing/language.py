@@ -8,6 +8,7 @@ def supported_languages():
         'fr': 'Français',
         'es': 'Español',
         'pt': 'Português',
+        'it': 'Italiano',
         'el': 'Ελληνικά',  # Greek
         'pl': 'Polski',    # Polish
         'ru': 'Русский',   # Russian

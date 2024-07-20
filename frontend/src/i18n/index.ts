@@ -17,6 +17,7 @@ export const supportedLanguages: Record<string, string> = {
     // 'fr': 'Français',
     // 'es': 'Español',
     // 'pt': 'Português',
+    // 'it': 'Italiano',
     'el': 'Ελληνικά',  // Greek
     // 'pl': 'Polski',    // Polish
     // 'ru': 'Русский',   // Russian

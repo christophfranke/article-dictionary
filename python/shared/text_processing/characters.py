@@ -68,11 +68,18 @@ russian_mapping = {
     'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
 }
 
+italian_mapping = {
+    'à': 'a', 'è': 'e', 'é': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+    'À': 'A', 'È': 'E', 'É': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U'
+}
+
+
 mapping = {
     'el': greek_mapping,
     'en': english_mapping,
     'es': spanish_mapping,
     'fr': french_mapping,
+    'it': italian_mapping,
     'pt': portuguese_mapping,
     'de': german_mapping,
     'pl': polish_mapping,
