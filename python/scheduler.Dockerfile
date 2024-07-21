@@ -4,7 +4,7 @@ FROM python:3.12-alpine
 # Set the working directory to /app/backend
 WORKDIR /app/scheduler
 
-# Install build dependencies
+# Install build dependencies for spacy
 RUN apk add --no-cache \
     build-base \
     gcc \
@@ -18,6 +18,7 @@ RUN python3 -m pip install --upgrade pip setuptools wheel
 COPY ./scheduler/requirements.txt .
 RUN pip3 install -r requirements.txt
 
+# For watch mode in development
 RUN pip3 install watchdog
 
 COPY ./setup.py /app/setup.py
