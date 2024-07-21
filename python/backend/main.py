@@ -13,6 +13,7 @@ from routes.profile import profile
 from routes.language import language
 from routes.health_check import health_check
 
+
 def create_app(config=None):
     app = Flask(__name__)
 

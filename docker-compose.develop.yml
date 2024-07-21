@@ -83,11 +83,14 @@ services:
       dockerfile: scheduler.Dockerfile
     env_file:
       - .env.mongodb
+    environment:
+      - DEBUG=true
     volumes:
       - ./python/scheduler:/app/scheduler
       - ./python/shared:/app/shared
     depends_on:
       - mongodb
+    command: watchmedo auto-restart --patterns="*.py" --recursive -- python main.py
 
   mongo-express:
     image: mongo-express:latest

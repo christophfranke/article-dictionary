@@ -6,6 +6,7 @@ from bson import ObjectId
 def repair():
     rename_languages()
 
+
 def rename_languages():
     try:
         dictionary = get_collection('users')
