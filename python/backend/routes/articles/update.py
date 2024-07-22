@@ -38,13 +38,15 @@ def update_article(slug):
 
     article_data = {camel_to_snake(key): data[key] for key in data if key in ['title', 'content', 'lastRead', 'status']}
 
-
     if 'content' in article_data:
-        content = article_data['content']
+        article_data['needs_processing'] = True
+        article_data['reading_index'] = 0
+
+        # TODO: Remove this, won't be needed
         article_data['words'] = extract_words(content)
         article_data['unique_words'] = get_unique_words(article_data['words'])
-        article_data['reading_index'] = 0
         add_words(article_data['unique_words'], current_user.id, get_collection('dictionary'), get_collection('users'))
+        # Until here
 
     if 'title' in article_data:
         title = data['title']
@@ -59,7 +61,6 @@ def update_article(slug):
 
         if article_data['status'] == 'read':
             article_data['last_read'] = datetime.utcnow()
-
 
     collection.update_one({'_id': ObjectId(article['_id'])}, {'$set': article_data})
     updated_article = collection.find_one({'_id': article['_id']})

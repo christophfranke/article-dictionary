@@ -5,12 +5,15 @@ from text_processing.extract import extract_words, get_unique_words
 from text_processing.characters import slugify
 from utils.mongo_external import get_collection
 
+from processing import process_article
+
 
 def jobs():
-    pass
+    process_article()
 
 
 def repair():
+    add_needs_processing()
     add_reading_index()
     add_words()
     add_language()
@@ -32,25 +35,38 @@ def remove_words():
         print('Removed words from article: ' + article['title'])
 
 
+def add_needs_processing():
+    collection = get_collection('articles')
+    query = {
+        'needs_processing': {'$exists': False},
+    }
+
+    # Update all documents that match the query
+    result = collection.update_many(query, {'$set': {'needs_processing': True}})
+    if result.matched_count > 0:
+        print(f"Added field 'needs_processing' to documents: {result.modified_count}/{result.matched_count}")
+
+
 def add_words():
     collection = get_collection('articles')
-
     query = {
         'content': {'$exists': True},
         '$or': [
             {'words': {'$exists': False}},
-            {'unique_words': {'$exists': False}}
+            {'unique_words': {'$exists': False}},
         ]
     }
 
-    articles = collection.find(query)
+    update = {
+        'needs_processing': True,
+        'words': [],
+        'unique_words': [],
+    }
 
-    for article in articles:
-        words = extract_words(article['content'])
-        article['words'] = words
-        article['unique_words'] = get_unique_words(words)
-        get_collection('articles').replace_one({'_id': article['_id']}, article)
-        print('Added words to article: ' + article['title'] + f' ({len(words)})')
+    # Update all documents that match the query
+    result = collection.update_many(query, {'$set': update})
+    if result.matched_count > 0:
+        print(f"Added fields {update} to documents: {result.modified_count}/{result.matched_count}")
 
 
 def add_language():
@@ -84,6 +100,7 @@ def add_dates():
         collection.replace_one({'_id': article['_id']}, article)
         print('Added dates to article: ' + article['title'])
 
+
 def add_status():
     collection = get_collection('articles')
 
@@ -97,6 +114,7 @@ def add_status():
         article['status'] = 'new'
         collection.replace_one({'_id': article['_id']}, article)
         print('Added status to article: ' + article['title'])
+
 
 def add_privacy():
     collection = get_collection('articles')
@@ -112,6 +130,7 @@ def add_privacy():
         collection.replace_one({'_id': article['_id']}, article)
         print('Added privacy to article: ' + article['title'])
 
+
 def add_owner():
     collection = get_collection('articles')
 
@@ -126,6 +145,7 @@ def add_owner():
         collection.replace_one({'_id': article['_id']}, article)
         print('Added owner_id to article: ' + article['title'])
 
+
 def remove_dictionary():
     collection = get_collection('articles')
 
@@ -139,6 +159,7 @@ def remove_dictionary():
         del article['dictionary']
         collection.replace_one({'_id': article['_id']}, article)
         print('Removed dictionary from article: ' + article['title'])
+
 
 def add_reading_index():
     collection = get_collection('articles')

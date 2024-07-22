@@ -36,12 +36,10 @@ def get_detail(original):
         for sentence in list(set(raw_sentences))
     ]
 
-
     similar = dictionary.find({
         'user_id': ObjectId(current_user.id),
         'cluster_id': word['cluster_id']
     }, {'original': 1}) if word['cluster_id'] is not None else []
-
 
     return jsonify({
         'id': str(word['_id']),

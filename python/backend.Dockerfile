@@ -7,8 +7,8 @@ WORKDIR /app/backend
 COPY ./backend/requirements.txt .
 RUN pip3 install -r requirements.txt
 
-COPY ./setup.py /app/setup.py
-RUN python3 /app/setup.py
+COPY ./setup-nltk.py /app/setup-nltk.py
+RUN python3 /app/setup-nltk.py
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH="${PYTHONPATH}:/app/shared"
