@@ -121,14 +121,7 @@ def create_statistics(article):
 
 def serialize(article, user_id):
     tokens = [token for token in article.get('tokens', []) if not token['ignore']]
-    if len(tokens) == 0 and len(article.get('words', [])) > 0:
-        tokens = [{
-            'display': word,
-            'word': word,
-            'space': '',
-            'ignore': False
-        } for word in article.get('words')]
-
+    needs_processing = article.get('needs_processing', True)
     return jsonify({
         'id': str(article['_id']),
         'title': article['title'],
@@ -143,4 +136,5 @@ def serialize(article, user_id):
         'readingIndex': article.get('reading_index', 0),
         'statistics': create_statistics(article),
         'tokens': tokens,
-    })
+        'needs_processing': needs_processing
+    }), 202 if needs_processing else 200
