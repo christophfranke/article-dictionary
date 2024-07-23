@@ -27,31 +27,32 @@ def list_articles():
     formatted_articles = []
     for article in all_articles:
         index = article.get('reading_index', 0)
-        unread_words = article['words'][index:]
+        tokens = article.get('tokens', [])
+        unread_words = tokens[index:]
 
         statistics = {
             'total': len([
-                word for word in article['words']
-                if get_word_status(word, status_map) != 'ignore'
+                token for token in tokens
+                if get_word_status(token['word'], status_map) != 'ignore'
             ]),
             'total_unread': len(unread_words),
             'new': {
                 'words': len([
-                    word for word in article['words']
-                    if not get_word_status(word, status_map)
-                    or get_word_status(word, status_map) == 'new'
+                    token for token in tokens
+                    if not get_word_status(token['word'], status_map)
+                    or get_word_status(token['word'], status_map) == 'new'
                 ]),
             },
             'seen': {
                 'words': len([
-                    word for word in article['words']
-                    if get_word_status(word, status_map) == 'seen'
+                    token for token in tokens
+                    if get_word_status(token['word'], status_map) == 'seen'
                 ]),
             },
             'known': {
                 'words': len([
-                    word for word in article['words']
-                    if get_word_status(word, status_map) == 'known'
+                    token for token in tokens
+                    if get_word_status(token['word'], status_map) == 'known'
                 ]),
             }
         }
@@ -68,6 +69,7 @@ def list_articles():
             'createdAt': article['created_at'],
             'lastRead': article['last_read'] if is_owned else article['created_at'],
             'status': article['status'] if is_owned else 'new',
+            'needsProcessing': article['needs_processing'],
             'statistics': statistics
         }
 

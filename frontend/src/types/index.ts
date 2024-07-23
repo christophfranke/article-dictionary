@@ -33,6 +33,7 @@ export interface ArticleBase extends ArticleData {
   status: string;
   owned: boolean;
   readingIndex: number;
+  needsProcessing: boolean;
 }
 
 export interface ArticlePreview extends ArticleBase {

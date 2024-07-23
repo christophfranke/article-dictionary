@@ -89,31 +89,32 @@ def get_cluster_status(original, status_map):
 def create_statistics(article):
     status_map = create_status_map()
     index = article.get('reading_index', 0)
-    unread_words = article['words'][index:]
+    tokens = article.get('tokens', [])
+    unread_words = tokens[index:]
 
     return {
         'total': len([
-            word for word in article['words']
-            if get_word_status(word, status_map) != 'ignore'
+            token for token in tokens
+            if get_word_status(token['word'], status_map) != 'ignore'
         ]),
         'total_unread': len(unread_words),
         'new': {
             'words': len([
-                word for word in article['words']
-                if not get_word_status(word, status_map)
-                or get_word_status(word, status_map) == 'new'
+                token for token in tokens
+                if not get_word_status(token['word'], status_map)
+                or get_word_status(token['word'], status_map) == 'new'
             ]),
         },
         'seen': {
             'words': len([
-                word for word in article['words']
-                if get_word_status(word, status_map) == 'seen'
+                token for token in tokens
+                if get_word_status(token['word'], status_map) == 'seen'
             ]),
         },
         'known': {
             'words': len([
-                word for word in article['words']
-                if get_word_status(word, status_map) == 'known'
+                token for token in tokens
+                if get_word_status(token['word'], status_map) == 'known'
             ]),
         }
     }
@@ -122,6 +123,8 @@ def create_statistics(article):
 def serialize(article, user_id):
     tokens = [token for token in article.get('tokens', []) if not token['ignore']]
     needs_processing = article.get('needs_processing', True)
+    # status = 202 if needs_processing else 200
+
     return jsonify({
         'id': str(article['_id']),
         'title': article['title'],
@@ -136,5 +139,5 @@ def serialize(article, user_id):
         'readingIndex': article.get('reading_index', 0),
         'statistics': create_statistics(article),
         'tokens': tokens,
-        'needs_processing': needs_processing
-    }), 202 if needs_processing else 200
+        'needsProcessing': needs_processing,
+    })

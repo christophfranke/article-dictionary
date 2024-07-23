@@ -157,19 +157,35 @@ const toggleStatusSeen = useToggleStatusSeen(dictionary)
 const router = useRouter();
 
 const SECOND = 1000;
-const POLL_DELAY = 10 * SECOND
-let pollId: ReturnType<typeof setTimeout> | null = null;
+const DICTIONARY_POLL_DELAY = 10 * SECOND
+let dictionaryPollId: ReturnType<typeof setTimeout> | null = null;
 const pollForDictionaryUpdates = () => {
   if (dictionary.items.value.some(item => item.needsRetranslate)) {
-    pollId = setTimeout(async () => {
+    dictionaryPollId = setTimeout(async () => {
       await dictionary.load()
       pollForDictionaryUpdates()
-    }, POLL_DELAY)
+    }, DICTIONARY_POLL_DELAY)
   }
 }
 onBeforeUnmount(() => {
-  if (pollId) {
-    clearTimeout(pollId)
+  if (dictionaryPollId) {
+    clearTimeout(dictionaryPollId)
+  }
+})
+
+const ARTICLE_POLL_DELAY = 10 * SECOND
+let articlePollId: ReturnType<typeof setTimeout> | null = null;
+const pollForArticleUpdates = () => {
+  if (article.value?.needsProcessing) {
+    articlePollId = setTimeout(async () => {
+      await articles.get(slug.value)
+      pollForArticleUpdates()
+    }, ARTICLE_POLL_DELAY)
+  }
+}
+onBeforeUnmount(() => {
+  if (articlePollId) {
+    clearTimeout(articlePollId)
   }
 })
 
@@ -177,6 +193,7 @@ onBeforeUnmount(() => {
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 onMounted(async () => {
   await articles.get(slug.value)
+  pollForArticleUpdates()
 
   if(article.value?.status === 'read') {
     timeoutId = setTimeout(() => {
@@ -206,7 +223,14 @@ onBeforeUnmount(() => {
   </div>
   <div class="article-page" v-else>
     <template v-if="article">
-      <div :class="{ content: true, 'no-dictionary': !showDictionary || dictionary.items.value.length === 0 }">
+      <div class="processing" v-if="article.needsProcessing">
+        <Headline type="h2">{{ __('Please wait until the text is processed. This may take a few minutes...') }}</Headline>
+      </div>
+      <div :class="{
+        content: true,
+        'no-dictionary': !showDictionary || dictionary.items.value.length === 0,
+        'needs-processing': article.needsProcessing
+      }">
         <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
         <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
         <Headline type="h3" class="title" v-else>{{ article.title }} ({{ currentPage }}/{{ numberOfPages }})</Headline>
@@ -236,6 +260,10 @@ onBeforeUnmount(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+}
+
+.needs-processing {
+  opacity: 0.5;
 }
 
 .content {

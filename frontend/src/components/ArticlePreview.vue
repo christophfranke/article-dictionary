@@ -71,11 +71,14 @@ const link = (article: ArticlePreview): string => article.owned
 
 <template>
   <div class="outer-container">
-    <div class="article-preview">
+    <div :class="{
+      'article-preview': true,
+      'needs-processing': props.article.needsProcessing
+    }">
       <router-link :to="link(props.article)">
         <Headline type="h3" class="title">{{ props.article.title }}</Headline>
         <Excerpt class="excerpt">{{ props.article.excerpt }}...</Excerpt>
-        <div class="statistics">
+        <div class="statistics" v-if="props.article.statistics.total > 0">
           <span :title="__('$1 new words ($2%)', props.article.statistics.new.words, percentage('new'))">
             <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
           </span>
@@ -87,7 +90,7 @@ const link = (article: ArticlePreview): string => article.owned
           </span>
         </div>
 
-        <div class="difficulty">
+        <div class="difficulty" v-if="props.article.statistics.total > 0">
           <div class="left" :title="__('Estimated difficulty: $1 ($2% unknown words)', scoreDescription, difficultyScore)">
             <span>{{ scoreDescription }}</span>
             <span><FontAwesomeIcon icon="lightbulb" /></span>
@@ -99,6 +102,10 @@ const link = (article: ArticlePreview): string => article.owned
             <span>{{ lengthDescription }}</span>
           </div>
         </div>
+
+        <div class="processing" v-if="props.article.needsProcessing">
+          {{ __('This article is currently beeing analyzed...') }}
+        </div>
       </router-link>
     </div>
   </div>
@@ -107,6 +114,14 @@ const link = (article: ArticlePreview): string => article.owned
 
 <style scoped lang="scss">
 @import '@/style/global.scss';
+
+.processing {
+  margin-top: auto;
+}
+
+.needs-processing {
+  opacity: 0.5;
+}
 
 .outer-container {
   background-color: $card-outer-background-color;

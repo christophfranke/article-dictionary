@@ -27,7 +27,7 @@ const statistics = useStatistics({ dictionary, article: article && ref(article) 
 </script>
 
 <template>
-  <div class="statistics">
+  <div class="statistics" v-if="statistics.totalWords > 0">
     <h3 v-if="article">{{ __('Words in this article') }}</h3>
     <h3 v-else>{{ __('Words in dictionary') }}</h3>
     <div class="word-statistics">
