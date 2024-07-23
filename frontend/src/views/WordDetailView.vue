@@ -90,6 +90,7 @@ const contentDisplay = {
     new: false,
     seen: false,
     mark: true,
+    underline: false,
   }
 };
 
@@ -100,6 +101,7 @@ const similarDisplay = {
     new: false,
     seen: false,
     mark: false,
+    underline: false,
   }
 }
 

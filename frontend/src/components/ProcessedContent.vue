@@ -40,6 +40,7 @@ const props = defineProps({
         new: true,
         seen: true,
         mark: true,
+        underline: true,
       }
     }
   }
@@ -112,6 +113,7 @@ const isNewWord = (word: string): boolean => {
 const isSeenWord = (word: string): boolean => {
   return props.dictionary?.find(word)?.status === 'seen'
 }
+const isNewOrSeenWord = (word: string): boolean => isSeenWord(word) || isNewWord(word)
 
 const unique = `${Math.random()}`.substring(2, 6);
 onMounted(() => {
@@ -142,6 +144,7 @@ onMounted(() => {
         new: props.display.highlight.new && isNewWord(token.word),
         seen: props.display.highlight.seen && isSeenWord(token.word),
         mark: props.display.highlight.mark && token.word === mark,
+        underline: props.display.highlight.underline && isNewOrSeenWord(token.word) && token.word === internalHighlightedWord
       }"
     >
       {{ token.display }}
@@ -154,6 +157,10 @@ onMounted(() => {
 
 span.padding {
   padding: 2px 3px;
+}
+
+span.underline {
+  text-decoration: underline;
 }
 
 span.clickable {

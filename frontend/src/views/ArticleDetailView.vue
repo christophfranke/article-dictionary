@@ -40,6 +40,7 @@ const contentDisplayConfig = {
     new: true,
     seen: true,
     mark: false,
+    underline: true,
   }  
 }
 
@@ -175,12 +176,15 @@ onBeforeUnmount(() => {
 
 const ARTICLE_POLL_DELAY = 10 * SECOND
 let articlePollId: ReturnType<typeof setTimeout> | null = null;
-const pollForArticleUpdates = () => {
+const pollForArticleUpdates = async () => {
   if (article.value?.needsProcessing) {
     articlePollId = setTimeout(async () => {
       await articles.get(slug.value)
       pollForArticleUpdates()
     }, ARTICLE_POLL_DELAY)
+  } else {
+    await dictionary.load()
+    pollForDictionaryUpdates()
   }
 }
 onBeforeUnmount(() => {
@@ -202,9 +206,6 @@ onMounted(async () => {
       }
     }, 60 * SECOND);
   }
-
-  await dictionary.load()
-  pollForDictionaryUpdates()
 });
 
 onBeforeUnmount(() => {
