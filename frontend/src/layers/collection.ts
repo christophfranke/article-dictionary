@@ -8,7 +8,7 @@ export interface Collection<T extends { id: string } & Record<K, any> & Record<L
 
   all: ComputedRef<T[]>;
 
-  set: (newItems: T[]) => void;
+  set: (newItems: T[]) => T[];
   discard: () => void;
 
   load: () => Promise<T[] | null>;
@@ -28,7 +28,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
 
   // this algorithm ensures to never throw away the old references
   // it is carefully crafted to have linear runtime
-  const set = (newItems: T[]): void => {
+  const set = (newItems: T[]): T[] => {
     // generate id map
     const idMap: Record<string, T> = {}
     newItems.forEach(item => {
@@ -60,6 +60,8 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
         itemsByKey.value[item[searchField]] = item
       }
     })
+
+    return items.value
   };
 
   const add = async (data: Record<string, unknown>): Promise<T | null> => {
@@ -101,8 +103,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
         }
       })
 
-      set(mergedList);
-      result = mergedList;
+      result = set(itemList);
     }
 
     return result;

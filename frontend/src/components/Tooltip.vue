@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import type { PropType } from 'vue';
-import type { ArticleBase } from '@/types';
+import type { ArticleBase, ArticleDetail } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
 import { useArticleView } from '@/use/articles';
 
@@ -18,7 +18,7 @@ const props = defineProps({
 		required: true
 	},
   article: {
-    type: Object as PropType<ArticleBase>,
+    type: Object as PropType<ArticleDetail>,
     default: null,
   },
   display: {
@@ -34,6 +34,30 @@ const props = defineProps({
   }
 });
 
+const explanationTable = {
+  VERB: 'Verb',
+  NOUN: 'Noun',
+  ADJ: 'Adjective',
+  ADV: 'Adverb',
+  PROPN: 'Proper Noun',
+  NUM: 'Number',
+  PERSON: 'Person',
+  GPE: 'Country, City, State',
+  PRODUCT: 'Object, Vehicle, Food, etc.',
+  PRON: 'Pronoun',
+  ADP: 'Adposition',
+  ORG: 'Organisation, Institution, etc.',
+  DET: 'Determiner',
+  CCONJ: 'Coordinating Conjunction',
+  SCONJ: 'Subordinating Conjunction',
+  PART: 'Particle',
+  X: 'Other',
+}
+const explain = (mark: string): string => {
+  // @ts-ignore
+  return explanationTable[mark] ?? mark
+}
+
 const showStatus = computed<string[]>(() => ['new', 'seen', 'known'].filter(status => props.display[status]));
 const isVisible = computed(() => !!props.highlighted.word
     && showStatus.value.includes(props.dictionary.find(props.highlighted.word || '')?.status || '')
@@ -41,19 +65,27 @@ const isVisible = computed(() => !!props.highlighted.word
 
 const content = computed(() => {
   if (isVisible.value) {
-    const word = props.dictionary.find(props.highlighted.word || '')
+    const token = props.article.tokens[props.highlighted.index]
+    if (!token || token.ignore) {
+      console.log('no token', token)
+      return null
+    }
+
+    const original = token.word
+    const word = props.dictionary.find(token.word)
     if (!word) {
-      return ''
+      console.log('no word', original)
+      return null
     }
 
     if (word.needsRetranslate) {
-      return __('translating...')
+      return { text: '...', info: __('translating') }
     }
 
-    return word.translations.join(', ') || ''
+    return { text: word.translations.join(', ') || '', info: explain(token.pos) }
   }
 
-  return ''
+  return null
 });
 
 const position = reactive({ x: 0, y: 0 });
@@ -116,8 +148,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="isVisible" class="tooltip" :style="{ top: `${position.y}px`, left: `${position.x}px` }">
-		{{ content }}
+  <div v-if="isVisible && !!content" class="tooltip" :style="{ top: `${position.y}px`, left: `${position.x}px` }">
+		<span>{{ content.text }} | <i class="italic">{{ content.info }}</i></span>
   </div>	
 </template>
 
@@ -131,7 +163,10 @@ onBeforeUnmount(() => {
   color: $tooltip-color;
   padding: 5px;
   border-radius: 5px;
-  font-size: $tooltip-font-size;
+  font-size: ($tooltip-font-size);
   pointer-events: none; /* Ensures tooltip doesn't interfere with mouse events */
+}
+.italic {
+  // font-size: ($tooltip-font-size - 2px);
 }
 </style>

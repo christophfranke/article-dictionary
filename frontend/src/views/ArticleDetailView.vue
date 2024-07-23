@@ -65,6 +65,17 @@ watch(() => article.value?.content, () => {
 }, { immediate: true });
 
 
+const wordIndexMap = computed(() => {
+  const map: { [key: string]: number } = {};
+  article.value?.words.forEach((word, index) => {
+    if (!(word in map)) {
+      map[word] = index;
+    }
+  });
+
+  return map;
+});
+
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
   && (word.status === 'new' || word.status === 'seen')
@@ -72,6 +83,7 @@ const displayFilter = (word: PartialWord): boolean => (
 );
 
 const { dictionary } = useDictionaryView(displayFilter);
+dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
 const highlighted = ref<{ word: string; index: number }>({
   word: '',
@@ -93,18 +105,6 @@ const statusDescription = computed(() => {
 
   return ''
 })
-
-const wordIndexMap = computed(() => {
-  const map: { [key: string]: number } = {};
-  article.value?.words.forEach((word, index) => {
-    if (!(word in map)) {
-      map[word] = index;
-    }
-  });
-
-  return map;
-});
-dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
 const { fetchAuthorized: fetchAuthorizedButton, errorMessage } = useApi();
 

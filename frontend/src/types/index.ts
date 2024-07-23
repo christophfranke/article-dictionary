@@ -56,8 +56,18 @@ export interface ArticlePreview extends ArticleBase {
   }
 }
 
+type Token = {
+  display: string;
+  word: string;
+  space: string;
+  lemma: string;
+  pos: string;
+  ignore: boolean;
+}
+
 export interface ArticleDetail extends ArticleBase {
   words: string[];
+  tokens: Token[];
 }
 
 export interface Progress {

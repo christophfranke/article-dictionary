@@ -120,6 +120,9 @@ def create_statistics(article):
 
 
 def serialize(article, user_id):
+    tokens = [token for token in article.get('tokens', []) if not token['ignore']]
+    # tokens = article.get('tokens', [])
+
     return jsonify({
         'id': str(article['_id']),
         'title': article['title'],
@@ -128,10 +131,11 @@ def serialize(article, user_id):
         'owned': article['owner_id'] == ObjectId(user_id),
         'privacy': article['privacy'],
         'slug': article['slug'],
-        'words': article['words'],
+        'words': [token['display'] for token in tokens],
         'createdAt': article['created_at'],
         'lastRead': article['last_read'],
         'status': article['status'],
         'readingIndex': article.get('reading_index', 0),
         'statistics': create_statistics(article),
+        'tokens': tokens,
     })

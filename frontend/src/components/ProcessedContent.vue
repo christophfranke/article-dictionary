@@ -99,8 +99,14 @@ const unsetHighlight = (update: ModelType) => {
   }
 };
 
-const unique = `${Math.random()}`.substring(2, 6);
+const isNewWord = (word: string): boolean => {
+  return dictionary?.find(word)?.status === 'new'
+}
+const isSeenWord = (word: string): boolean => {
+  return dictionary?.find(word)?.status === 'seen'
+}
 
+const unique = `${Math.random()}`.substring(2, 6);
 onMounted(() => {
   if (scrollToIndex) {
     const word = document.getElementById(`word-${unique}-${scrollToIndex}`);
@@ -126,8 +132,8 @@ onMounted(() => {
       :class="{
         padding: display.padding,
         clickable: display.click,
-        new: display.highlight.new && dictionary?.find(word)?.status === 'new',
-        seen: display.highlight.seen && dictionary?.find(word)?.status === 'seen',
+        new: display.highlight.new && isNewWord(word),
+        seen: display.highlight.seen && isSeenWord(word),
         mark: display.highlight.mark && word === mark,
       }"
     >
