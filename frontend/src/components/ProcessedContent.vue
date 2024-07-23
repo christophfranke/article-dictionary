@@ -2,19 +2,15 @@
 import { ref, computed, onMounted } from 'vue';
 import type { PropType } from 'vue';
 import type { DictionaryView } from '../dictionary/view';
+import type { Token, Highlight } from '@/types';
 
-type ModelType = {
-  word: string;
-  index: number;
-}
-
-const { content, words, dictionary, mark, scrollToIndex } = defineProps({
+const props = defineProps({
 	content: {
 		type: String,
 		default: '',
 	},
-	words: {
-		type: Array as PropType<string[]>,
+	tokens: {
+		type: Array as PropType<Token[]>,
 		required: true,
 	},
 	dictionary: {
@@ -22,10 +18,10 @@ const { content, words, dictionary, mark, scrollToIndex } = defineProps({
 		default: null
 	},
 	modelValue: {
-    type: Object as PropType<ModelType>,
+    type: Object as PropType<Highlight>,
 		default: {
-      word: null,
-      index: null
+      token: null,
+      index: null,
     },
 	},
   mark: {
@@ -52,12 +48,19 @@ const { content, words, dictionary, mark, scrollToIndex } = defineProps({
 const emit = defineEmits(['update:modelValue', 'click']);
 
 
-interface ProcessedContentItem {
-  word: string;
+type ProcessedContentItem = {
+  token: Token;
   separator: string[];
 }
 
-const sanitizedContent = computed<string>(() => content || words.join(', '))
+const createEmptyToken = () => ({
+  display: '',
+  word: '',
+  space: '',
+  ignore: true,
+})
+
+const sanitizedContent = computed<string>(() => props.content || props.tokens.map(token => token.display).join(', '))
 
 const getSeparator = (index: number, nextWord: string): string => {
   const nextIndex = sanitizedContent.value.substring(index).indexOf(nextWord);
@@ -70,15 +73,19 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
   const result: ProcessedContentItem[] = [];
   let currentIndex = 0;
 
-  words.forEach((word, index) => {
-    const separator = getSeparator(currentIndex, word);
-    result.push({ word, separator: separator.split('\n') });
-    currentIndex += separator.length + word.length;
+  props.tokens.forEach((token, index) => {
+    const separator = getSeparator(currentIndex, token.display);
+    result.push({
+      token,
+      separator: separator.split('\n')
+    });
+
+    currentIndex += separator.length + token.display.length;
   });
 
   if (currentIndex < sanitizedContent.value.length) {
     const separator = sanitizedContent.value.substring(currentIndex).split('\n');
-    result.push({ word: '', separator });
+    result.push({ token: createEmptyToken(), separator });
   }
 
   return result;
@@ -86,30 +93,30 @@ const processedContent = computed<ProcessedContentItem[]>(() => {
 
 
 let internalHighlightedWord = ''
-const setHighlight = (update: ModelType) => {
-  if (update.word) {    
-  	internalHighlightedWord = update.word;
+const setHighlight = (update: Highlight) => {
+  if (update.token) {
+  	internalHighlightedWord = update.token.word;
     emit('update:modelValue', update);
   }
 };
-const unsetHighlight = (update: ModelType) => {
-	if (internalHighlightedWord === update.word) {
+const unsetHighlight = (update: Highlight) => {
+	if (internalHighlightedWord === update.token?.word) {
 		internalHighlightedWord = '';
 		emit('update:modelValue', { word: '', index: -1 });
   }
 };
 
 const isNewWord = (word: string): boolean => {
-  return dictionary?.find(word)?.status === 'new'
+  return props.dictionary?.find(word)?.status === 'new'
 }
 const isSeenWord = (word: string): boolean => {
-  return dictionary?.find(word)?.status === 'seen'
+  return props.dictionary?.find(word)?.status === 'seen'
 }
 
 const unique = `${Math.random()}`.substring(2, 6);
 onMounted(() => {
-  if (scrollToIndex) {
-    const word = document.getElementById(`word-${unique}-${scrollToIndex}`);
+  if (props.scrollToIndex) {
+    const word = document.getElementById(`word-${unique}-${props.scrollToIndex}`);
     if (word) {
       word.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -118,26 +125,26 @@ onMounted(() => {
 </script>
 
 <template>
-  <template v-for="({ word, separator }, index) in processedContent" :key="index">
+  <template v-for="({ token, separator }, index) in processedContent" :key="index">
     <span class="separator">
       <template v-for="(sep, sepIndex) in separator">
         {{ sep }}<br v-if="sepIndex < separator.length - 1" />
       </template>
     </span>
     <span
-      @mouseover="setHighlight({ word, index })"
-      @mouseout="unsetHighlight({ word, index })"
-      @click="event => emit('click', { word, index }, event)"
+      @mouseover="setHighlight({ token, index })"
+      @mouseout="unsetHighlight({ token, index })"
+      @click="event => emit('click', { token, index }, event)"
       :id="`word-${unique}-${index}`"
       :class="{
-        padding: display.padding,
-        clickable: display.click,
-        new: display.highlight.new && isNewWord(word),
-        seen: display.highlight.seen && isSeenWord(word),
-        mark: display.highlight.mark && word === mark,
+        padding: props.display.padding,
+        clickable: props.display.click,
+        new: props.display.highlight.new && isNewWord(token.word),
+        seen: props.display.highlight.seen && isSeenWord(token.word),
+        mark: props.display.highlight.mark && token.word === mark,
       }"
     >
-      {{ word }}
+      {{ token.display }}
     </span>
   </template>
 </template>

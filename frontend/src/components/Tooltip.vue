@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import type { PropType } from 'vue';
-import type { ArticleBase, ArticleDetail } from '@/types';
+import type { ArticleBase, ArticleDetail, Token } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
 import { useArticleView } from '@/use/articles';
 
@@ -14,7 +14,7 @@ const props = defineProps({
 		required: true,
 	},
 	highlighted: {
-		type: Object as PropType<{ word: string, index: number }>,
+		type: Object as PropType<{ token: Token | null, index: number }>,
 		required: true
 	},
   article: {
@@ -44,6 +44,7 @@ const explanationTable = {
   PERSON: 'Person',
   GPE: 'Country, City, State',
   PRODUCT: 'Object, Vehicle, Food, etc.',
+  EVENT: 'Event, battle, hurricane, etc.',
   PRON: 'Pronoun',
   ADP: 'Adposition',
   ORG: 'Organisation, Institution, etc.',
@@ -59,13 +60,13 @@ const explain = (mark: string): string => {
 }
 
 const showStatus = computed<string[]>(() => ['new', 'seen', 'known'].filter(status => props.display[status]));
-const isVisible = computed(() => !!props.highlighted.word
-    && showStatus.value.includes(props.dictionary.find(props.highlighted.word || '')?.status || '')
+const isVisible = computed(() => !!props.highlighted.token?.word
+    && showStatus.value.includes(props.dictionary.find(props.highlighted.token?.word || '')?.status || '')
 );
 
 const content = computed(() => {
   if (isVisible.value) {
-    const token = props.article.tokens[props.highlighted.index]
+    const token = props.highlighted.token
     if (!token || token.ignore) {
       console.log('no token', token)
       return null
@@ -82,7 +83,10 @@ const content = computed(() => {
       return { text: '...', info: __('translating') }
     }
 
-    return { text: word.translations.join(', ') || '', info: explain(token.pos) }
+    return {
+      text: word.translations.join(', ') || '',
+      info: token.pos ? explain(token.pos) : null
+    }
   }
 
   return null
@@ -102,7 +106,7 @@ const markArticleAsSeen = (article: ArticleBase, index: number) => {
 
 // time how long a translation must be shown before it counts as seen
 const UPDATE_TIME = 500
-let original = ''
+let original: string | undefined
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 watch(isVisible, async (newValue, oldValue) => {
   if (timeoutId) {
@@ -110,7 +114,7 @@ watch(isVisible, async (newValue, oldValue) => {
     timeoutId = null;
   }
   if (!oldValue && newValue) {
-    original = props.highlighted.word;
+    original = props.highlighted.token?.word;
     const word = props.dictionary.find(original)
     if (word?.needsRetranslate) {
       await props.dictionary.getWord(word.id)
@@ -149,7 +153,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="isVisible && !!content" class="tooltip" :style="{ top: `${position.y}px`, left: `${position.x}px` }">
-		<span>{{ content.text }} | <i class="italic">{{ content.info }}</i></span>
+		{{ content.text }}<span v-if="content.info"> | <i class="italic">{{ content.info }}</i></span>
   </div>	
 </template>
 

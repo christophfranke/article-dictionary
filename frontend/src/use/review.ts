@@ -1,4 +1,4 @@
-import type { PartialWord } from '@/types';
+import type { PartialWord, Token } from '@/types';
 import type { DictionaryView } from '@/dictionary/view';
 
 
@@ -143,9 +143,9 @@ export default (dictionary: DictionaryView, scoreFn: ScoreFunction = plainScore)
 	  return wordToReview?.id || null
 	};
 
-	const pickSentence = (sentences: { text: string, words: string[] }[], word?: PartialWord): number => {
+	const pickSentence = (sentences: { text: string, tokens: Token[] }[], word?: PartialWord): number => {
 		const scores = sentences.map(sentence => {
-			const words = sentence.words.map(word => dictionary.find(word));
+			const words = sentence.tokens.map(token => dictionary.find(token.word));
 			const score = words.reduce((acc, w) => acc + (w?.id === word?.id ? 6 : w?.reviewLevel || 0), 0);
 			const random = 1 + Math.random();
 			return random * score / words.length;

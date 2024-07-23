@@ -24,7 +24,7 @@ function isArticlePreview(article: ArticleBase): article is ArticlePreview {
 }
 
 function isArticleDetail(article: ArticleBase): article is ArticleDetail {
-  return (article as ArticleDetail).words !== undefined;
+  return (article as ArticleDetail).tokens !== undefined;
 }
 
 

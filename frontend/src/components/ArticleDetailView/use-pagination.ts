@@ -1,12 +1,11 @@
 import { ref, computed, watchEffect } from 'vue';
 import type { Ref } from 'vue';
-import type { ArticleDetail } from '@/types';
+import type { ArticleDetail, Token } from '@/types';
 
 
 const CHARACTERS_IN_PAGE = 2000;
-const splitChars = ['\n\n', '.\n','\n', '. ', '.', ' '];
+const splitChars = ['\n\n', '\n', '.', ' '];
 export const splitContentIntoPages = (content: string, pageLength: number, errorMargin: number): number[] => {
-  const splitChars = ['\n\n', '\n', '.', ' '];
   let splitIndices = [0]; // Start with the first index as 0
   let currentIndex = 0;
 
@@ -68,7 +67,7 @@ export const getPageContents = (content: string, splitIndices: number[]): string
   });
 }
 
-export const calculateWordSplits = (content: string, words: string[], splitIndices: number[]): number[] => {
+export const calculateTokenSplits = (content: string, tokens: Token[], splitIndices: number[]): number[] => {
   const result: number[] = []; // Start with the first index as 0
   let index = 0;
 
@@ -81,8 +80,8 @@ export const calculateWordSplits = (content: string, words: string[], splitIndic
 
     // consume pageContent word by word
     let pageIndex = 0;
-    while(index < words.length) {
-      const word = words[index];
+    while(index < tokens.length) {
+      const word = tokens[index].display;
       const wordStart = pageContent.indexOf(word, pageIndex);
 
       // if word is not found, break
@@ -100,10 +99,10 @@ export const calculateWordSplits = (content: string, words: string[], splitIndic
   return result;
 }
 
-export const getPageWords = (words: string[], wordSplits: number[]): string[][] => {
+export const getPageTokens = (tokens: Token[], wordSplits: number[]): Token[][] => {
   return wordSplits.map((pageStart, i) => {
-    const pageEnd = wordSplits[i + 1] || words.length;
-    return words.slice(pageStart, pageEnd);
+    const pageEnd = wordSplits[i + 1] || tokens.length;
+    return tokens.slice(pageStart, pageEnd);
   });
 }
 
@@ -115,25 +114,25 @@ export default (article: Ref<ArticleDetail | undefined>) => {
   let splitDetails = ref<{
     splitIndices: number[];
     pageContent: string[];
-    wordSplits: number[];
-    pageWords: string[][];
+    tokenSplits: number[];
+    pageTokens: Token[][];
   }>({
     splitIndices: [],
     pageContent: [],
-    wordSplits: [],
-    pageWords: [],
+    tokenSplits: [],
+    pageTokens: [],
   });
   watchEffect(() => {
     if (article.value) {      
       const splitIndices = splitContentIntoPages(article.value.content, pageLength.value, errorPercentage.value);
       const pageContent = getPageContents(article.value.content, splitIndices);
-      const wordSplits = calculateWordSplits(article.value.content, article.value.words, splitIndices);
-      const pageWords = getPageWords(article.value.words, wordSplits);
+      const tokenSplits = calculateTokenSplits(article.value.content, article.value.tokens, splitIndices);
+      const pageTokens = getPageTokens(article.value.tokens, tokenSplits);
       splitDetails.value = {
         splitIndices,
         pageContent,
-        wordSplits,
-        pageWords,
+        tokenSplits,
+        pageTokens,
       };
     }
   });
@@ -144,8 +143,8 @@ export default (article: Ref<ArticleDetail | undefined>) => {
     return splitDetails.value.pageContent[currentPage.value - 1];
   });
 
-  const paginatedWords = computed(() => {
-    return splitDetails.value.pageWords[currentPage.value - 1];
+  const paginatedTokens = computed(() => {
+    return splitDetails.value.pageTokens[currentPage.value - 1];
   });
 
 
@@ -162,11 +161,11 @@ export default (article: Ref<ArticleDetail | undefined>) => {
     }
 
     const readingIndex = article.value.readingIndex;
-    const wordSplits = splitDetails.value.wordSplits;
+    const tokenSplits = splitDetails.value.tokenSplits;
 
     // Find the page number for the readingIndex
-    const pageIndex = wordSplits.findIndex((splitIndex, index) => {
-      const nextPageSplitIndex = wordSplits[index + 1] || article.value!.words.length;
+    const pageIndex = tokenSplits.findIndex((splitIndex, index) => {
+      const nextPageSplitIndex = tokenSplits[index + 1] || article.value!.tokens.length;
       return readingIndex >= splitIndex && readingIndex < nextPageSplitIndex;
     });
 
@@ -175,22 +174,21 @@ export default (article: Ref<ArticleDetail | undefined>) => {
     }
 
     // Calculate the relative index of the word on the found page
-    const relativeWordIndex = readingIndex - wordSplits[pageIndex];
+    const relativeWordIndex = readingIndex - tokenSplits[pageIndex];
 
     return { page: pageIndex + 1, index: relativeWordIndex };
   });
 
   const getAbsoluteIndex = (index: number): number => {
-    const wordSplits = splitDetails.value.wordSplits;
     const pageIndex = currentPage.value - 1;
 
-    return wordSplits[pageIndex] + index;
+    return splitDetails.value.tokenSplits[pageIndex] + index;
   }
 
   return {
     currentPage,
     paginatedContent,
-    paginatedWords,
+    paginatedTokens,
     numberOfPages,
     relativeIndex,
     getAbsoluteIndex,

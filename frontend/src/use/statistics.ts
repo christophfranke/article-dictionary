@@ -1,7 +1,7 @@
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import type { Ref } from 'vue';
 
-import type { Word, ArticleDetail } from '../types';
+import type { Word, Token, ArticleDetail } from '../types';
 import type { DictionaryView } from '../dictionary/view';
 
 interface StatisticsResult {
@@ -25,8 +25,8 @@ const statisticsForArticle = (dictionary: DictionaryView, article: Ref<ArticleDe
   let seenWords = 0;
   let knownWords = 0;
 
-  article.value.words.forEach((original: string) => {
-    const word = dictionary.find(original);
+  article.value.tokens.forEach((token: Token) => {
+    const word = dictionary.find(token.word);
     if (word) {
       if (word.status === 'new') {
         newWords++;
@@ -51,7 +51,7 @@ const statisticsForArticle = (dictionary: DictionaryView, article: Ref<ArticleDe
     seenWords,
     knownWords,
     uniqueWords: dictionary.items.value.length,
-    totalWords: article.value.words.length,
+    totalWords: article.value.tokens.length,
   };
 }
 

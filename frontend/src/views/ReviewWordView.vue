@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import type { WordDetail, PartialWord, ArticleDetail } from '@/types';
+import type { WordDetail, PartialWord, ArticleDetail, Highlight } from '@/types';
 import { useDictionaryView } from '@/use/dictionary';
 import { useArticleView } from '@/use/articles';
 import useReview from '@/use/review';
@@ -51,7 +51,8 @@ const generalFilterFn = (word: PartialWord): boolean => !recentlyShown.includes(
 	&& ['seen', 'known'].includes(word.status)
 
 // bias towards words that are close to the readingIndex of the article
-const wordIndexMap = computed(() => article.value?.words.reduce((acc, word, index) => {
+const wordIndexMap = computed(() => article.value?.tokens.reduce((acc, token, index) => {
+  const word = token.word
 	if (!acc[word]) {
 		acc[word] = [index]
 	} else {
@@ -63,7 +64,7 @@ const wordIndexMap = computed(() => article.value?.words.reduce((acc, word, inde
 const articleScoreFn = (scores: ScoreMap, word: PartialWord): number => {
 	const wordIndices = wordIndexMap.value[word.original];
 	const readingIndex = article.value?.readingIndex
-	const length = article.value?.words.length;
+	const length = article.value?.tokens.length;
 	if (!wordIndices || !length && (!readingIndex && readingIndex !== 0)) {
 		return 0;
 	}
@@ -111,10 +112,10 @@ watch(wordId, async () => {
 	}
 });
 
-const highlight = ref({ word: '', index: -1});
+const highlight = ref<Highlight>({ token: null, index: -1});
 const sanitizedHighlight = computed(() => {
-	return !highlight.value || highlight.value?.word === word.value?.original
-		? { word: '', index: -1 }
+	return !highlight.value || highlight.value?.token?.word === word.value?.original
+		? { token: null, index: -1 }
 		: highlight.value
 });
 
@@ -252,7 +253,7 @@ onUnmounted(() => {
       <Paragraph class="example-sentence" v-if="sentence">
         <ProcessedContent
           :content="sentence.text"
-          :words="sentence.words"
+          :tokens="sentence.tokens"
           :dictionary="dictionary"
           :mark="word.original"
           :display="contentDisplay"

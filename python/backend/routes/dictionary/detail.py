@@ -31,10 +31,15 @@ def get_detail(original):
         if original in extract_words(sentence)
     ]
 
-    sentences = [
-        {'text': sentence, 'words': extract_words(sentence)}
-        for sentence in list(set(raw_sentences))
-    ]
+    sentences = [{
+        'text': sentence,
+        'tokens': [{
+            'display': word,
+            'word': word,
+            'space': '',
+            'ignore': False,
+        } for word in extract_words(sentence)]
+    } for sentence in set(raw_sentences)]
 
     similar = dictionary.find({
         'user_id': ObjectId(current_user.id),

@@ -2,7 +2,7 @@
 import { ref, watchEffect, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import type { WordDetail } from '@/types'
+import type { WordDetail, Token, Highlight } from '@/types'
 
 import useApi from '@/use/api';
 import { useDictionaryView } from '@/use/dictionary'
@@ -24,8 +24,8 @@ import __ from '@/i18n'
 
 const word = ref<WordDetail | null>(null);
 const isLoading = ref<boolean>(true);
-const highlighted = ref<{ word: string; index: number }>({
-  word: '',
+const highlighted = ref<Highlight>({
+  token: null,
   index: -1
 });
 const { fetchAuthorized } = useApi();
@@ -48,6 +48,15 @@ const reviewIntervalDescription = computed(() => {
   }
   return `every ${describeTimeInterval(interval)}`;
 });
+
+const tokanize = (word: string): Token => {
+  return {
+    display: word,
+    word: word,
+    space: ', ',
+    ignore: false
+  }
+}
 
 
 const wordCache = useWordCache()
@@ -105,7 +114,7 @@ const tooltipDisplay = {
 
 const router = useRouter()
 const navigate = (params: { word: string }) => {
-  highlighted.value.word = ''
+  highlighted.value.token = null
   highlighted.value.index = -1
   router.push(`/dictionary/${params.word}`)
 };
@@ -131,7 +140,7 @@ watchEffect(() => {
         <p><strong>{{ __('Last seen') }}:</strong> {{ timeAgo(word.lastViewed) }}</p>
         <p><strong>{{ __('Frequency') }}:</strong> {{ word.frequency }}</p>
         <p><strong>{{ __('Similar words') }}:</strong>&nbsp;
-          <ProcessedContent v-if="word.similar.length > 0" :words="word.similar" :dictionary="dictionary" :display="similarDisplay" v-model="highlighted" @click="navigate" :key="word.original" />
+          <ProcessedContent v-if="word.similar.length > 0" :tokens="word.similar.map(tokanize)" :dictionary="dictionary" :display="similarDisplay" v-model="highlighted" @click="navigate" :key="word.original" />
           <span v-else>{{ __('None') }}</span>
         </p>
       </div>
@@ -140,7 +149,7 @@ watchEffect(() => {
           <li><strong>{{ __('Sentences') }}:</strong></li>
           <li v-for="(sentence, index) in word.sentences" :key="`${word.id}-${index}`">
             <Paragraph>
-              <ProcessedContent :content="sentence.text" :words="sentence.words" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlighted" @click="navigate" />
+              <ProcessedContent :content="sentence.text" :tokens="sentence.tokens" :dictionary="dictionary" :mark="word.original" :display="contentDisplay" v-model="highlighted" @click="navigate" />
             </Paragraph>
           </li>
         </ul>

@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import type { PartialWord, ArticleDetail } from '../types';
+import type { PartialWord, ArticleDetail, Token, Highlight } from '@/types';
 
 import { useDictionaryView } from '@/use/dictionary';
 import { useArticleView } from '@/use/articles';
@@ -53,7 +53,7 @@ const {
   currentPage,
   numberOfPages,
   paginatedContent,
-  paginatedWords,
+  paginatedTokens,
   relativeIndex,
   getAbsoluteIndex,
 } = usePagination(article);
@@ -67,7 +67,8 @@ watch(() => article.value?.content, () => {
 
 const wordIndexMap = computed(() => {
   const map: { [key: string]: number } = {};
-  article.value?.words.forEach((word, index) => {
+  article.value?.tokens.forEach((token, index) => {
+    const word = token.word
     if (!(word in map)) {
       map[word] = index;
     }
@@ -79,17 +80,17 @@ const wordIndexMap = computed(() => {
 const displayFilter = (word: PartialWord): boolean => (
   wordIndexMap.value[word.original] > -1
   && (word.status === 'new' || word.status === 'seen')
-  && paginatedWords.value.includes(word.original)
+  && paginatedTokens.value.some(token => token.word === word.original)
 );
 
 const { dictionary } = useDictionaryView(displayFilter);
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
-const highlighted = ref<{ word: string; index: number }>({
-  word: '',
+const highlighted = ref<Highlight>({
+  token: null,
   index: -1,
 });
-const absoluteHighlighted = computed(() => ({
+const absoluteHighlighted = computed<Highlight>(() => ({
   ...highlighted.value,
   index: getAbsoluteIndex(highlighted.value?.index ?? -1),
 }));
@@ -210,7 +211,7 @@ onBeforeUnmount(() => {
         <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
         <Headline type="h3" class="title" v-else>{{ article.title }} ({{ currentPage }}/{{ numberOfPages }})</Headline>
         <Paragraph>
-          <ProcessedContent :words="paginatedWords" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="relativeIndex.page === currentPage ? relativeIndex.index : 0" :key="currentPage" />
+          <ProcessedContent :tokens="paginatedTokens" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="relativeIndex.page === currentPage ? relativeIndex.index : 0" :key="currentPage" />
         </Paragraph>
         <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" v-if="currentPage === numberOfPages" />
         <Pagination 
@@ -222,7 +223,7 @@ onBeforeUnmount(() => {
         />
         <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
       </div>
-      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.word" :toggleShowDictionary="toggleShowDictionary" v-if="dictionary.items.value.length > 0"/>
+      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.token?.word" :toggleShowDictionary="toggleShowDictionary" v-if="dictionary.items.value.length > 0"/>
     </template>
     <NotFoundView v-else />
   </div>

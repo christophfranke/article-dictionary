@@ -61,47 +61,21 @@ def create_article():
     if articles_collection.find_one({'slug': slug, 'user_id': ObjectId(current_user.id)}):
         return jsonify({'error': 'Title (or slug) already taken'}), 409
 
-    # TODO: Move word processing
-    # new_article = {
-    #     'title': title,
-    #     'content': content,
-    #     'privacy': privacy,
-    #     'owner_id': ObjectId(owner),
-    #     'slug': slug,
-    #     'words': [],
-    #     'unique_words': [],
-    #     'language': source_language,
-    #     'created_at': datetime.utcnow(),
-    #     'last_read': datetime.utcnow(),
-    #     'status': 'new',
-    #     'user_id': ObjectId(current_user.id),
-    #     'reading_index': 0,
-    #     'needs_processing': True
-    # }
-
-    # Will not need this in the future
-    words = extract_words(content)
-    unique_words = get_unique_words(words)
-
     new_article = {
         'title': title,
         'content': content,
         'privacy': privacy,
         'owner_id': ObjectId(owner),
         'slug': slug,
-        'words': words,
-        'unique_words': unique_words,
+        'unique_words': [],
         'language': source_language,
         'created_at': datetime.utcnow(),
         'last_read': datetime.utcnow(),
         'status': 'new',
         'user_id': ObjectId(current_user.id),
         'reading_index': 0,
-        'needs_processing': True,
+        'needs_processing': True
     }
-
-    add_words(unique_words, current_user.id, get_collection('dictionary'), get_collection('users'))
-    # Until here will be obsolete
 
     result = articles_collection.insert_one(new_article)
 

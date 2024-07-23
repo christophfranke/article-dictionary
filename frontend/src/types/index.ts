@@ -16,7 +16,7 @@ export interface Word extends PartialWord {
 export interface WordDetail extends Word {
   sentences: {
     text: string
-    words: string[]
+    tokens: Token[]
   }[];
   similar: string[];
 }
@@ -56,17 +56,21 @@ export interface ArticlePreview extends ArticleBase {
   }
 }
 
-type Token = {
+export type Token = {
   display: string;
   word: string;
   space: string;
-  lemma: string;
-  pos: string;
+  lemma?: string;
+  pos?: string;
   ignore: boolean;
 }
 
+export type Highlight = {
+  token: Token | null,
+  index: number
+}
+
 export interface ArticleDetail extends ArticleBase {
-  words: string[];
   tokens: Token[];
 }
 
