@@ -2,10 +2,14 @@ import spacy
 from langdetect import detect
 
 import en_core_web_sm
+import el_core_news_lg
 import de_core_news_sm
-import el_core_news_md
-
-from .translate import translate_token, translate_entity, translate_text
+import es_core_news_sm
+import ru_core_news_sm
+import pt_core_news_sm
+import pl_core_news_sm
+import it_core_news_sm
+import fr_core_news_sm
 
 
 def highlight_first_difference(str1, str2, context_range=5):
@@ -48,7 +52,8 @@ def should_ignore_token(token, language):
         token.is_bracket or
         token.is_quote or
         token.like_email or
-        token.like_url
+        token.like_url or
+        '\n' in token.text  # wrongly detected token
     ):
         return True
     try:
@@ -62,13 +67,15 @@ def should_ignore_entity(entity, language):
 
 
 def get_entity(token, src_language):
+    # TODO:
+    # Sometimes the entity recognizer wrongly detects entities with line breaks inbetween
     if token.ent_iob_ == 'B':
         doc = token.doc
         entity = next((ent for ent in doc.ents if token in ent), None)
         if entity is not None:
             return {
                 'display': entity.text,
-                'word': entity.text,
+                'word': entity.text.strip(),
                 'space': entity.text_with_ws[len(entity.text):],
                 'lemma': ''.join([f'{token.lemma_}{token.whitespace_}' for token in entity]).strip(),
                 'pos': entity.label_,
@@ -83,7 +90,7 @@ def get_word(token, src_language):
     if should_ignore_token(token, src_language):
         return {
             'display': token.text,
-            'word': token.text,
+            'word': token.text.strip(),
             'space': token.whitespace_,
             'lemma': token.lemma_,
             'pos': token.pos_,
@@ -92,7 +99,7 @@ def get_word(token, src_language):
     if token.pos_ == 'AUX' and token.dep_ == 'aux':
         return {
             'display': token.text,
-            'word': f'{token.text} {token.head.text}',
+            'word': f'{token.text} {token.head.text}'.strip(),
             'space': token.whitespace_,
             'lemma': token.head.lemma_,
             'pos': token.head.pos_,
@@ -100,11 +107,14 @@ def get_word(token, src_language):
         }
     else:
         if token.pos_ == 'VERB':
-            subtoken = next((sub for sub in token.subtree if sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == token), None)
+            subtoken = next(
+                (sub for sub in token.subtree if sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == token),
+                None
+            )
             if subtoken:
                 return {
                     'display': token.text,
-                    'word': f'{subtoken.text} {token.text}',
+                    'word': f'{subtoken.text} {token.text}'.strip(),
                     'space': token.whitespace_,
                     'lemma': token.lemma_,
                     'pos': token.pos_,
@@ -112,7 +122,7 @@ def get_word(token, src_language):
                 }
         return {
             'display': token.text,
-            'word': token.text,
+            'word': token.text.strip(),
             'space': token.whitespace_,
             'lemma': token.lemma_,
             'pos': token.pos_,
@@ -129,57 +139,34 @@ def get_token(token, lang):
 
 def process(text, src_language, tgt_language):
     doc = create_doc(text, src_language)
-    print(f'Analyzed document {dir(doc)}')
-
-    # for token in doc:
-    #     entity = next((ent for ent in doc.ents if token in ent), None)
-    #     if entity is not None:
-    #         if not should_ignore_entity(entity, src_language) and token.ent_iob_== 'B':
-    #             # translation = translate_entity(entity, src_language, tgt_language)
-    #             # print(f'{token.text} -> {[sub.text for sub in token.subtree]}')
-    #             print(f'{entity.text} - {spacy.explain(entity.label_)}')
-    #     else:
-    #         if not should_ignore_token(token, src_language):
-    #             # print(f'{token.text} -> {[sub.text for sub in token.subtree]}')
-    #             if token.pos_ == 'AUX' and token.dep_ == 'aux':
-    #                 text = f'{token.text} {token.head.text}'
-    #                 # translation = translate_text(text, src_language, tgt_language)
-    #                 lemma = token.head.lemma_
-    #                 pos = token.head.pos_
-    #                 print(f'{text} - {spacy.explain(pos)} - {lemma} - {token.ent_iob_}')
-    #             else:
-    #                 subtoken = next((sub for sub in token.subtree if sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == token), None)
-    #                 if subtoken:
-    #                     text = f'{subtoken.text} {token.text}'
-    #                     # translation = translate_text(text, src_language, tgt_language)
-    #                     print(f'{text} - {spacy.explain(token.pos_)} ({token.pos_}) - {token.lemma_} - {token.ent_iob_}')
-    #                 else:
-    #                     # translation = translate_token(token, src_language, tgt_language)
-    #                     print(f'{token.text} - {spacy.explain(token.pos_)} - {token.lemma_} - {token.ent_iob_}')
-
-    # ignored_tokens = [token.text for token in tokens if should_ignore_token(token, src_language)]
-    # print(f'Ignored: {ignored_tokens}')
-
-    # found_entities = [(ent.text, ent.label_) for ent in doc.ents]
-    # print(f'Found entities: {found_entities}')
 
     tokens = [token for token in (get_token(t, src_language) for t in doc) if token is not None]
     content = ''.join([f'{token['display']}{token['space']}' for token in tokens])
-    # print('content:\n', content)
-    print('IS CORRECT:', content == text)
     if content != text:
         highlight_first_difference(text, content, context_range=50)
-    for token in tokens:
-        print(token)
+
+    return tokens
 
 
 def get_nlp(lang):
     if lang == 'en':
         return en_core_web_sm.load()
+    if lang == 'el':
+        return el_core_news_lg.load()
     if lang == 'de':
         return de_core_news_sm.load()
-    if lang == 'el':
-        return el_core_news_md.load()
+    if lang == 'es':
+        return es_core_news_sm.load()
+    if lang == 'ru':
+        return ru_core_news_sm.load()
+    if lang == 'pt':
+        return pt_core_news_sm.load()
+    if lang == 'pl':
+        return pl_core_news_sm.load()
+    if lang == 'it':
+        return it_core_news_sm.load()
+    if lang == 'fr':
+        return fr_core_news_sm.load()
     raise AssertionError(f"Language not supported: {lang}")
 
 

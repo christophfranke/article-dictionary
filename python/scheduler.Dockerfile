@@ -28,11 +28,30 @@ RUN apt-get install -y \
 # Upgrade pip, setuptools, and wheel
 RUN python3 -m pip install --upgrade pip setuptools wheel
 
-# Install SpaCy
+# Install with long compile times
 RUN pip3 install spacy
-
-# Install ctranslate2
 RUN pip3 install ctranslate2
+
+# Setup Argos with long download times
+RUN pip3 install argostranslate
+COPY ./setup-argos.py /app/setup-argos.py
+RUN python3 /app/setup-argos.py
+
+# Setup nltk, will be removed in the future
+RUN pip3 install nltk
+# Setup NLTK
+COPY ./setup-nltk.py /app/setup-nltk.py
+RUN python3 /app/setup-nltk.py
+
+RUN python3 -m spacy download en_core_web_sm
+RUN python3 -m spacy download el_core_news_lg
+RUN python3 -m spacy download de_core_news_sm
+RUN python3 -m spacy download es_core_news_sm
+RUN python3 -m spacy download ru_core_news_sm
+RUN python3 -m spacy download pt_core_news_sm
+RUN python3 -m spacy download pl_core_news_sm
+RUN python3 -m spacy download it_core_news_sm
+RUN python3 -m spacy download fr_core_news_sm
 
 # Copy and install other Python dependencies
 COPY ./scheduler/requirements.txt .
@@ -40,14 +59,6 @@ RUN pip3 install -r requirements.txt
 
 # For watch mode in development
 RUN pip3 install watchdog
-
-# Setup NLTK
-COPY ./setup-nltk.py /app/setup-nltk.py
-RUN python3 /app/setup-nltk.py
-
-# Setup Argos
-COPY ./setup-argos.py /app/setup-argos.py
-RUN python3 /app/setup-argos.py
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1

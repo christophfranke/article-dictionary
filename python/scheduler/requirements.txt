@@ -1,12 +1,7 @@
 schedule==1.1.0
 pymongo==4.6.1
-translate-shell==0.0.37 
-nltk==3.8.1
+translate-shell==0.0.37
 Levenshtein==0.23.0
 APScheduler==3.10.4
 requests==2.31.0
 langdetect==1.0.9
-argostranslate==1.9.6
-en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
-el_core_news_md @ https://github.com/explosion/spacy-models/releases/download/el_core_news_md-3.7.0/el_core_news_md-3.7.0-py3-none-any.whl
-de_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.7.0/de_core_news_sm-3.7.0-py3-none-any.whl

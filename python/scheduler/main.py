@@ -22,7 +22,6 @@ def run(debug=False):
 
     # dictionary.reset_clusters()
     # dictionary.add_missing_words()
-    # dictionary.reset_word_frequency()
     # cluster.update_aggregate_attributes()
 
     # statistics.jobs()
@@ -32,7 +31,7 @@ def run(debug=False):
 
     # statistics.repair()
     # user.repair()
-    # articles.repair()
+    articles.repair()
     # dictionary.repair()
 
     # Initialize the scheduler

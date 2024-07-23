@@ -5,11 +5,13 @@ from text_processing.language import get_languages
 
 
 def add_text(text, user_id, dictionary_collection, user_collection):
+    print("WARNING: add_text is deprecated")
     words = extract_unique_words(text)
     add_words(words, user_id, dictionary_collection, user_collection)
 
 
 def add_words(words, user_id, dictionary_collection, user_collection):
+    print('WARNING: add_words function is obsolete')
     source_language, target_language = get_languages(user_collection, user_id)
     user_id_obj = ObjectId(user_id)
 
@@ -38,7 +40,6 @@ def add_words(words, user_id, dictionary_collection, user_collection):
                 'last_viewed': None,
                 'review_level': 0,
                 'needs_retranslate': True,
-                'needs_recount': True,
                 'needs_clustering': True,
                 'translation_origin': None,
                 'cluster_id': None,
@@ -59,7 +60,8 @@ def add_words(words, user_id, dictionary_collection, user_collection):
                         'source_language': source_language,
                         'target_language': target_language,
                     },
-                    {'$set': {'needs_recount': True}}
+                    # TODO: watch out, this is will lead to bad frequencies
+                    {'$inc': {'frequency': 1}}
                 )
             )
 

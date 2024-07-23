@@ -1,4 +1,4 @@
-from .jobs import retranslate_word, update_clusters, update_word_frequency
+from .jobs import retranslate_word, update_clusters
 from .repair import remove_duplicates, remove_invalid_src_or_target, remove_no_original, add_cluster_id, add_review_level_and_last_reviewed, add_translation_origin
 
 
@@ -7,7 +7,6 @@ def jobs():
 
 
 def lazy_jobs():
-    update_word_frequency()
     update_clusters()
 
 

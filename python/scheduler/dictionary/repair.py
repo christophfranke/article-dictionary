@@ -10,15 +10,10 @@ from bson import ObjectId
 
 def reset_word_frequency():
     dictionary = get_collection('dictionary')
-    words = dictionary.find()
-
-    for word in words:
-        dictionary.update_one({'_id': word['_id']}, {
-            '$set': {
-                'needs_recount': True
-            }
-        })
-    print('Reset word frequency')
+    dictionary.update_many({}, {'$set': {
+        'frequency': 0
+    }})
+    print("set frequency to 0 for all words")
 
 
 def remove_zero_frequency():
