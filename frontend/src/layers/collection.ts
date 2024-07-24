@@ -26,24 +26,6 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
   const itemsByKey = ref<Record<string, T>>({});
   const itemsById = ref<Record<string, T>>({});
 
-  const assign = (original: T, updated: T) => {
-    if (!updated) {
-      return
-    }
-
-    for(const [key, value] of Object.entries(updated)) {
-        // @ts-expect-error
-      if (typeof value === 'object' && typeof original[key] === 'object') {
-        // @ts-expect-error
-        assign(original[key], value)
-        // @ts-expect-error
-      } else if (original[key] !== value) {
-        // @ts-expect-error
-        original[key] = value
-      }
-    }
-  }
-
   // this algorithm ensures to never throw away the old references
   // it is carefully crafted to have linear runtime
   const set = (newItems: T[]): T[] => {
@@ -59,7 +41,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
         // @ts-expect-error
         itemsById.value[item.id] = {}
       }
-      assign(itemsById.value[item.id], item)
+      Object.assign(itemsById.value[item.id], item)
     })
 
     // delete old items
@@ -90,13 +72,13 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
         if (itemsByKey.value[item[searchField]]) {
           const original = itemsByKey.value[item[searchField]]
           delete itemsById.value[original.id]
-          assign(original, item)
+          Object.assign(original, item)
           itemsById.value[original.id] = original
           items.value = items.value
         } else if (itemsById.value[item.id]) {
           const original = itemsById.value[item.id]
           delete itemsByKey.value[original[searchField]]
-          assign(original, item)
+          Object.assign(original, item)
           itemsByKey.value[original[searchField]] = original
           items.value = items.value
         } else {
@@ -173,7 +155,7 @@ export default <T extends { id: string } & Record<K, any>, K extends keyof T, L 
       updatedItems.forEach(updated => {
         const item = findById(updated.id) || find(updated[searchField]);
         if (item) {
-          assign(item, updated);
+          Object.assign(item, updated);
         } else {
           items.value.push(updated as any);
           itemsByKey.value[updated[searchField]] = updated;
