@@ -63,7 +63,7 @@ export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryC
     return result;
   }
 
-  const updateOne = (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
+  const updateOne = async (id: string, data: Record<string, unknown>): Promise<PartialWord | null> => {
     const word = collection.findById(id)
     const originalWord = word ? {
       ...word
@@ -71,8 +71,8 @@ export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryC
     if (word) {
       Object.assign(word, data)
     }
-    const result = collection.updateOne(id, data)
-    if (word && originalWord && ! result) {
+    const result = await collection.updateOne(id, data)
+    if (word && originalWord && !result) {
       Object.assign(word, originalWord)
     }
 

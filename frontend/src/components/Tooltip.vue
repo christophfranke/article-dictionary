@@ -42,10 +42,10 @@ const explanationTable = {
   PROPN: 'Proper Noun',
   NUM: 'Number',
   PERSON: 'Person',
-  GPE: 'Country, City, State',
-  PRODUCT: 'Object (Vehicle, Food, etc.)',
-  EVENT: 'Event (Battle, Hurricane, etc.)',
-  LOC: 'Location (Mountain Range, Waters, etc.)',
+  GPE: 'Location', // political location, country, city, etc
+  PRODUCT: 'Object', // food, etc
+  EVENT: 'Event', // battle, etc
+  LOC: 'Location', // geograical location, mountain range, water, etc
   PRON: 'Pronoun',
   ADP: 'Adposition',
   ORG: 'Organisation, Institution, etc.',
