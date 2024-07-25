@@ -42,12 +42,6 @@ def update_article(slug):
         article_data['needs_processing'] = True
         article_data['reading_index'] = 0
 
-        # TODO: Remove this, won't be needed
-        article_data['words'] = extract_words(content)
-        article_data['unique_words'] = get_unique_words(article_data['words'])
-        add_words(article_data['unique_words'], current_user.id, get_collection('dictionary'), get_collection('users'))
-        # Until here
-
     if 'title' in article_data:
         title = data['title']
         src_lang, target_lang = get_languages(get_collection('users'), current_user.id)

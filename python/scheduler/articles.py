@@ -44,7 +44,14 @@ def add_needs_processing():
     # Update all documents that match the query
     result = collection.update_many(query, {'$set': {'needs_processing': True}})
     if result.matched_count > 0:
+        result2 = get_collection('dictionary').update_many({}, {
+            '$set': {
+                'frequency': 0
+            }
+        })
+
         print(f"Added field 'needs_processing' to documents: {result.modified_count}/{result.matched_count}")
+        print(f"Reset frequency for {result2.matched_count} words")
 
 
 def add_words():

@@ -8,30 +8,6 @@ from text_processing.dictionary import add_to_cluster, add_text
 from bson import ObjectId
 
 
-def reset_word_frequency():
-    dictionary = get_collection('dictionary')
-    dictionary.update_many({}, {'$set': {
-        'frequency': 0
-    }})
-    print("set frequency to 0 for all words")
-
-
-def remove_zero_frequency():
-    dictionary = get_collection('dictionary')
-
-    # Find word that meets the specified criteria
-    query = {
-        'frequency': 0,  # Document must have the 'frequency' field
-    }
-    word = dictionary.find_one(query)
-
-    if word:
-        dictionary.delete_one({'_id': word['_id']})
-        if word['cluster_id'] is not None:
-            get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
-        print(f'Removed word: {word['original']} ({word['frequency']})')
-
-
 def remove_no_original():
     dictionary = get_collection('dictionary')
 
