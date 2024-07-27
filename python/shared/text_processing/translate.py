@@ -10,7 +10,7 @@ def translate_single_word(word, source_language, target_language, language_colle
             {
                 'original': word,
                 'source_language': source_language,
-                'target_language': target_language
+                'target_language': target_language,
             },
             {
                 'translations': 1,

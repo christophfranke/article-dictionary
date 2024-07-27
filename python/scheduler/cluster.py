@@ -47,25 +47,40 @@ def update_aggregate_attributes():
             print(f'Error: Could not find cluster words for cluster: {entry["_id"]} ({lead_word["original"]})')
             continue
 
-        status = max_status(one['status'] for one in cluster_words)
-        frequency = sum(word['frequency'] for word in cluster_words)
-        originals = [word['original'] for word in cluster_words]
-        translations = list(set([
-            translation
-            for word in cluster_words
-            for translation in word['translations']
-        ]))
+        try:
+            status = max_status(one['status'] for one in cluster_words)
+            frequency = sum(word['frequency'] for word in cluster_words)
+            originals = [word['original'] for word in cluster_words]
+            translations = list(set([
+                translation
+                for word in cluster_words
+                for translation in word['translations']
+            ]))
 
-        data = {
-            'user_id': lead_word['user_id'],
-            'source_language': lead_word['source_language'],
-            'target_language': lead_word['target_language'],
-            'originals': originals,
-            'translations': translations,
-            'status': status,
-            'frequency': frequency,
-            'needs_recalculation': False
-        }
+            data = {
+                'user_id': lead_word['user_id'],
+                'source_language': lead_word['source_language'],
+                'target_language': lead_word['target_language'],
+                'originals': originals,
+                'translations': translations,
+                'status': status,
+                'frequency': frequency,
+                'needs_recalculation': False
+            }
 
-        cluster.update_one({'_id': entry['_id']}, {'$set': data})
-        print(f'Updated cluster data: {str(originals)} -> {str(translations)} (freq: {frequency}, status: {status})')
+            cluster.update_one({'_id': entry['_id']}, {'$set': data})
+            print(f'Updated cluster data: {str(originals)} -> {str(translations)} (freq: {frequency}, status: {status})')
+
+        except TypeError as e:
+            print(f"TypeError encountered: {e}")
+            dictionary.update_many({'cluster_id': entry['_id']}, {'$set': {
+                'needs_retranslate': True
+            }})
+            get_collection('translations').delete_many({'original': {
+                '$in': [word['original'] for word in cluster_words]
+            }})
+            print(f"Data causing error: {cluster_words}")
+            print(f"Try to fix with retranslate...")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            print(f"Data causing error: {cluster_words}")
