@@ -115,10 +115,12 @@ const tooltipDisplay = {
 };
 
 const router = useRouter()
-const navigate = (params: { word: string }) => {
+const navigate = (params: { token: Token }) => {
   highlighted.value.token = null
   highlighted.value.index = -1
-  router.push(`/dictionary/${params.word}`)
+  if (params.token) {
+    router.push(`/dictionary/${params.token.word}`)
+  }
 };
 
 
