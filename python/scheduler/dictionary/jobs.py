@@ -4,7 +4,7 @@ from datetime import datetime
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 from text_processing.extract import extract_words
-from text_processing.dictionary import add_to_cluster, add_text
+from text_processing.dictionary import add_text
 from bson import ObjectId
 
 
@@ -56,16 +56,26 @@ def update_clusters():
 
     query = {
         'needs_clustering': True,
-        'needs_retranslate': False,
+        'lemma': {'$exists': True},
     }
 
-    words = dictionary.find(query).limit(25)
+    words = dictionary.find(query, {'original': 1, 'lemma': 1}).limit(25)
 
     for word in words:
-        word['needs_clustering'] = False
-        add_to_cluster(get_collection, word)
-        dictionary.update_one({'_id': word['_id']}, {'$set': {'needs_clustering': False }})
-        updated_word = dictionary.find_one({'_id': word['_id']})
-        leader_word = dictionary.find_one({'_id': updated_word['cluster_id']})
-        cluster_size = dictionary.count_documents({'cluster_id': leader_word['_id']})
-        print(f'Updated cluster: {updated_word['original']} -> {leader_word['original']} (size: {cluster_size})')
+        lemma = word.get('lemma')
+        if word['original'] == lemma:
+            leader = word
+        else:
+            leader = dictionary.find_one({'original': lemma}, {'_id': 1, 'original': 1})
+
+        if leader is None:
+            print(f"Could not update word {word.get('original')}, lemma is not in dictionary.")
+            continue
+
+        dictionary.update_one({'_id': word['_id']}, {'$set': {
+            'needs_clustering': False,
+            'cluster_id': leader.get('_id')
+        }})
+
+        cluster_size = dictionary.count_documents({'cluster_id': leader['_id']})
+        print(f'Updated cluster: {word['original']} -> {leader['original']} (size: {cluster_size})')

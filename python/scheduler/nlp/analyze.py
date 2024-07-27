@@ -1,15 +1,15 @@
 import spacy
 from langdetect import detect
 
-import en_core_web_sm
+import en_core_web_lg
 import el_core_news_lg
-import de_core_news_sm
-import es_core_news_sm
-import ru_core_news_sm
-import pt_core_news_sm
-import pl_core_news_sm
-import it_core_news_sm
-import fr_core_news_sm
+import de_core_news_lg
+import es_core_news_lg
+import ru_core_news_lg
+import pt_core_news_lg
+import pl_core_news_lg
+import it_core_news_lg
+import fr_core_news_lg
 
 
 def highlight_first_difference(str1, str2, context_range=5):
@@ -150,23 +150,23 @@ def process(text, src_language, tgt_language):
 
 def get_nlp(lang):
     if lang == 'en':
-        return en_core_web_sm.load()
+        return en_core_web_lg.load()
     if lang == 'el':
         return el_core_news_lg.load()
     if lang == 'de':
-        return de_core_news_sm.load()
+        return de_core_news_lg.load()
     if lang == 'es':
-        return es_core_news_sm.load()
+        return es_core_news_lg.load()
     if lang == 'ru':
-        return ru_core_news_sm.load()
+        return ru_core_news_lg.load()
     if lang == 'pt':
-        return pt_core_news_sm.load()
+        return pt_core_news_lg.load()
     if lang == 'pl':
-        return pl_core_news_sm.load()
+        return pl_core_news_lg.load()
     if lang == 'it':
-        return it_core_news_sm.load()
+        return it_core_news_lg.load()
     if lang == 'fr':
-        return fr_core_news_sm.load()
+        return fr_core_news_lg.load()
     raise AssertionError(f"Language not supported: {lang}")
 
 

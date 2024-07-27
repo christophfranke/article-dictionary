@@ -69,7 +69,7 @@ def list_articles():
             'createdAt': article['created_at'],
             'lastRead': article['last_read'] if is_owned else article['created_at'],
             'status': article['status'] if is_owned else 'new',
-            'needsProcessing': article['needs_processing'],
+            'needsProcessing': article.get('needs_processing', True),
             'statistics': statistics
         }
 

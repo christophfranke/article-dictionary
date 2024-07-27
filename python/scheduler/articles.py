@@ -46,7 +46,8 @@ def add_needs_processing():
     if result.matched_count > 0:
         result2 = get_collection('dictionary').update_many({}, {
             '$set': {
-                'frequency': 0
+                'frequency': 0,
+                'needs_clustering': True
             }
         })
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from utils.mongo_external import get_collection
 from text_processing.translate import translate_single_word
 from text_processing.extract import extract_words
-from text_processing.dictionary import add_to_cluster, add_text
+from text_processing.dictionary import add_text
 from bson import ObjectId
 
 

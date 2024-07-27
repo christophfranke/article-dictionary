@@ -25,7 +25,7 @@ class FlaskAppTestCase(unittest.TestCase):
 
     def test_list_and_detail(self):
         # Perform login
-        login_response = self.login('test@test.de', 'test')
+        login_response = self.login('test@test.de', '1234')
         self.assertEqual(login_response.status_code, 200)
 
         # Test that the home page loads correctly after login
@@ -34,7 +34,7 @@ class FlaskAppTestCase(unittest.TestCase):
 
         # Parse response data to JSON
         data = json.loads(response.data.decode('utf-8'))
-        
+
         # Ensure data is a list and not empty
         self.assertTrue(isinstance(data, list) and len(data) > 0)
 

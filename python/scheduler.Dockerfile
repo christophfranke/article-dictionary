@@ -43,15 +43,15 @@ RUN pip3 install nltk
 COPY ./setup-nltk.py /app/setup-nltk.py
 RUN python3 /app/setup-nltk.py
 
-RUN python3 -m spacy download en_core_web_sm
+RUN python3 -m spacy download en_core_web_lg
 RUN python3 -m spacy download el_core_news_lg
-RUN python3 -m spacy download de_core_news_sm
-RUN python3 -m spacy download es_core_news_sm
-RUN python3 -m spacy download ru_core_news_sm
-RUN python3 -m spacy download pt_core_news_sm
-RUN python3 -m spacy download pl_core_news_sm
-RUN python3 -m spacy download it_core_news_sm
-RUN python3 -m spacy download fr_core_news_sm
+RUN python3 -m spacy download de_core_news_lg
+RUN python3 -m spacy download es_core_news_lg
+RUN python3 -m spacy download ru_core_news_lg
+RUN python3 -m spacy download pt_core_news_lg
+RUN python3 -m spacy download pl_core_news_lg
+RUN python3 -m spacy download it_core_news_lg
+RUN python3 -m spacy download fr_core_news_lg
 
 # Copy and install other Python dependencies
 COPY ./scheduler/requirements.txt .
