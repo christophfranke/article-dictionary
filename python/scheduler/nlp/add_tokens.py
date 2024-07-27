@@ -83,15 +83,16 @@ def add_tokens(tokens, user_id, with_frequency=True):
 
     bulk_lemmata_inserts = []
 
-    unique_lemmata = set(lemmata)
+    unique_lemmata = list(set(lemmata.values()))
     existing_lemmata = dictionary_collection.find({
-        'original': {'$in': list(unique_lemmata)},
+        'original': {'$in': unique_lemmata},
         'user_id': user_id_obj,
         'source_language': source_language,
         'target_language': target_language,
     })
     existing_lemmata_set = set([word['original'] for word in existing_lemmata])
-    for lemma in set(lemmata):
+
+    for lemma in unique_lemmata:
         if lemma not in existing_lemmata_set:
             # If the word is not in the dictionary, prepare a bulk insert operation
             new_word = {
@@ -117,4 +118,4 @@ def add_tokens(tokens, user_id, with_frequency=True):
     if len(bulk_lemmata_inserts) > 0:
         dictionary_collection.bulk_write(bulk_lemmata_inserts)
 
-    print(f'Inserted {len(bulk_insert_operations)} and updated {len(bulk_update_operations)} words ({len(bulk_insert_operations) + len(bulk_update_operations) + len(bulk_lemmata_inserts)}/{len(unique_words)})')
+    print(f'Inserted {len(bulk_insert_operations)} and updated {len(bulk_update_operations)} words, addded {len(bulk_lemmata_inserts)} lemmata ({len(bulk_insert_operations) + len(bulk_update_operations) + len(bulk_lemmata_inserts)}/{len(unique_words)})')

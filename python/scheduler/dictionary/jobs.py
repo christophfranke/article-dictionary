@@ -69,7 +69,7 @@ def update_clusters():
             leader = dictionary.find_one({'original': lemma}, {'_id': 1, 'original': 1})
 
         if leader is None:
-            print(f"Could not update word {word.get('original')}, lemma is not in dictionary.")
+            print(f"Could not update word {word.get('original')}, lemma '{lemma}' is not in dictionary.")
             continue
 
         dictionary.update_one({'_id': word['_id']}, {'$set': {
