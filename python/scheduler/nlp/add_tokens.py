@@ -8,7 +8,28 @@ from text_processing.dictionary import add_words
 from text_processing.language import get_languages
 
 
-def add_tokens(tokens, user_id, with_frequency=True):
+def add_tree(tree, user_id):
+    tokens = get_tokens(tree)
+    add_tokens(tokens, user_id)
+
+
+def get_tokens(tree):
+    result = []
+    for elem in tree:
+        elem_type = elem.get('type')
+        if elem_type == 'SENTENCE':
+            result.extend(get_tokens(elem['children']))
+        elif elem_type == 'WORD':
+            result.append(elem)
+        elif elem_type == 'ENTITY':
+            result.append(elem)
+        else:
+            print(f'Unknown type: {elem}')
+
+    return result
+
+
+def add_tokens(tokens, user_id):
     user_collection = get_collection('users')
     dictionary_collection = get_collection('dictionary')
     source_language, target_language = get_languages(user_collection, user_id)
@@ -18,7 +39,7 @@ def add_tokens(tokens, user_id, with_frequency=True):
     bulk_insert_operations = []
     bulk_update_operations = []
 
-    words = [token['word'] for token in tokens if not token['ignore']]
+    words = [token['word'] for token in tokens if not token.get('ignore', False)]
     frequency = Counter(words)
     unique_words = set(words)
     lemmata = {word: next(token['lemma'] for token in tokens if token['word'] == word) for word in unique_words}
@@ -35,7 +56,7 @@ def add_tokens(tokens, user_id, with_frequency=True):
     existing_words_set = set([word['original'] for word in existing_words])
 
     for word in unique_words:
-        freq = frequency[word] if with_frequency else 0
+        freq = frequency[word]
         if word not in existing_words_set:
             # If the word is not in the dictionary, prepare a bulk insert operation
             new_word = {

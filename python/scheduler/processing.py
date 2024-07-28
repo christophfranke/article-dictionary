@@ -7,7 +7,8 @@ from nlp.analyze import process
 from text_processing.dictionary import add_words
 from text_processing.language import get_languages
 
-from nlp.add_tokens import add_tokens
+from nlp.add_tokens import add_tree
+from nlp.token_tree import create_token_tree
 
 
 def process_article():
@@ -27,13 +28,14 @@ def process_article():
             return
 
         src_lang, target_lang = user.get('source_language'), user.get('target_language')
-        tokens = process(article['content'], src_lang, target_lang)
+        tokens, doc = process(article['content'], src_lang, target_lang)
 
-        add_tokens(tokens, user_id)
+        tree = create_token_tree(tokens, doc)
+        add_tree(tree, user_id)
 
         collection.update_one({'_id': ObjectId(article.get('_id'))}, {
             '$set': {
-                'tokens': tokens,
+                'tree': tree,
                 'needs_processing': False,
             }
         })

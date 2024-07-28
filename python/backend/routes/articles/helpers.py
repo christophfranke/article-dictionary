@@ -120,8 +120,24 @@ def create_statistics(article):
     }
 
 
+def get_tokens(tree):
+    result = []
+    for elem in tree:
+        elem_type = elem.get('type')
+        if elem_type == 'SENTENCE':
+            result.extend(get_tokens(elem['children']))
+        elif elem_type == 'WORD':
+            result.append(elem)
+        elif elem_type == 'ENTITY':
+            result.append(elem)
+        else:
+            print(f'Unknown type: {elem}')
+
+    return result
+
+
 def serialize(article, user_id):
-    tokens = [token for token in article.get('tokens', []) if not token['ignore']]
+    tokens = get_tokens(article.get('tree', []))
     needs_processing = article.get('needs_processing', True)
     # status = 202 if needs_processing else 200
 
