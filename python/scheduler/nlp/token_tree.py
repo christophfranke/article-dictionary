@@ -112,7 +112,7 @@ def create_token_tree(tokens, doc):
         children = redirect(collapse(stripped, sent), sent)
         tree.append({
             'display': display,
-            'children': stripped,
+            'children': children,
             'type': 'SENTENCE',
         })
 
