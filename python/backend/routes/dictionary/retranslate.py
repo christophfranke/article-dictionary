@@ -18,13 +18,13 @@ def retranslate(id):
         return jsonify({'error': f'Word not found: {id}'}), 404
 
     source_language, target_language = get_languages(get_collection('users'), ObjectId(current_user.id))
-    word['translations'] = translate_single_word(
+    word['translations'], success = translate_single_word(
         word['original'],
         source_language,
         target_language,
         get_collection('translations')
     )
-    word['needs_retranslate'] = False
+    word['needs_retranslate'] = not success
     word['needs_clustering'] = True
     word['translation_origin'] = 'google'
 

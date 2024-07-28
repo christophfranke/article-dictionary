@@ -28,7 +28,7 @@ def retranslate_word():
 
         if word:
             # Translate
-            translations = translate_single_word(
+            translations, success = translate_single_word(
                 word['original'],
                 word['source_language'],
                 word['target_language'],
@@ -37,7 +37,7 @@ def retranslate_word():
 
             # Update entry with translations
             word['translations'] = translations
-            word['needs_retranslate'] = False
+            word['needs_retranslate'] = not success
             word['needs_clustering'] = True
             word['translation_origin'] = 'google'
             if word['original'] in translations:
