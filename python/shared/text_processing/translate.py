@@ -19,7 +19,7 @@ def translate_single_word(word, source_language, target_language, language_colle
         )
 
         if existing_translation:
-            return existing_translation['translations']
+            return existing_translation['translations'], True
 
     # If not found in the collection, use the translate function
     success = False

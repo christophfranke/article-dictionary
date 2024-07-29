@@ -38,7 +38,6 @@ def retranslate_word():
             # Update entry with translations
             word['translations'] = translations
             word['needs_retranslate'] = not success
-            word['needs_clustering'] = True
             word['translation_origin'] = 'google'
             if word['original'] in translations:
                 word['status'] = 'ignore'

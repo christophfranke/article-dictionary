@@ -28,7 +28,6 @@ def get_word(id):
         get_collection('translations')
     )
     word['needs_retranslate'] = not success
-    word['needs_clustering'] = True
     word['translation_origin'] = 'google'
     if word['status'] == 'new' and word['original'] in word['translations']:
         word['status'] = 'ignore'

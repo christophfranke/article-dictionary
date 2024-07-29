@@ -25,7 +25,6 @@ def retranslate(id):
         get_collection('translations')
     )
     word['needs_retranslate'] = not success
-    word['needs_clustering'] = True
     word['translation_origin'] = 'google'
 
     dictionary_collection.replace_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)}, word)
