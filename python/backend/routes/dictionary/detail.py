@@ -20,26 +20,20 @@ def get_detail(original):
 
     articles = articles_collection.find(
         {'user_id': ObjectId(current_user.id), 'unique_words': {'$elemMatch': {'$eq': original}}},
-        {'content': 1}
+        {'tree': 1}
     )
 
     raw_sentences = [
         sentence
         for article in articles
-        for paragraph in article['content'].split('\n')
-        for sentence in extract_sentences(paragraph)
-        if original in extract_words(sentence)
+        for sentence in article.get('tree', [])
+        if original in sentence['display']
     ]
 
     sentences = [{
-        'text': sentence,
-        'tokens': [{
-            'display': word,
-            'word': word,
-            'space': '',
-            'ignore': False,
-        } for word in extract_words(sentence)]
-    } for sentence in set(raw_sentences)]
+        'text': sentence['display'],
+        'tokens': sentence['children'],
+    } for sentence in raw_sentences]
 
     similar = dictionary.find({
         'user_id': ObjectId(current_user.id),

@@ -1,4 +1,7 @@
 import spacy
+from spacy.tokens import Doc
+from spacy.vocab import Vocab
+
 import re
 from langdetect import detect
 
@@ -59,14 +62,14 @@ def preprocess(text):
 
 def process(text, src_language, tgt_language):
     processed_text = preprocess(text)
-    doc = create_doc(processed_text, src_language)
+    docs = create_docs(processed_text, src_language)
 
-    tokens = [token for token in (get_token(t, src_language) for t in doc) if token is not None]
+    tokens = [token for token in (get_token(t, src_language) for doc in docs for t in doc) if token is not None]
     content = ''.join([f'{token['display']}{token['space']}' for token in tokens])
     if content != processed_text:
         highlight_first_difference(processed_text, content, context_range=50)
 
-    return tokens, doc
+    return tokens, docs
 
 
 def get_nlp(lang):
@@ -91,6 +94,15 @@ def get_nlp(lang):
     raise AssertionError(f"Language not supported: {lang}")
 
 
-def create_doc(text, lang):
+def split_paragraphs(text):
+    # Regular expression to match paragraphs with newlines
+    matches = re.findall(r'[^\n]+(?:\n+|$)', text)
+    return matches
+
+
+def create_docs(text, lang):
     nlp = get_nlp(lang)
-    return nlp(text)
+    # paragraphs = [t + '\n\n' for t in text.split('\n\n')]
+    # return [nlp(par) for par in paragraphs]
+    doc = nlp(text)
+    return [doc]

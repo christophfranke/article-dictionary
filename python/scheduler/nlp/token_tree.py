@@ -104,17 +104,18 @@ def finalize(tree):
     return tree
 
 
-def create_token_tree(tokens, doc):
+def create_token_tree(tokens, docs):
     tree = []
-    for sent in doc.sents:
-        prespace, stripped = strip_ignore([tokens[tok.i] for tok in sent])
-        display = prespace + ''.join([f'{token['display']}{token['space']}' for token in stripped])
-        children = redirect(collapse(stripped, sent), sent)
-        tree.append({
-            'display': display,
-            'children': children,
-            'type': 'SENTENCE',
-        })
+    for doc in docs:
+        for sent in doc.sents:
+            prespace, stripped = strip_ignore([tokens[tok.i] for tok in sent])
+            display = prespace + ''.join([f'{token['display']}{token['space']}' for token in stripped])
+            children = redirect(collapse(stripped, sent), sent)
+            tree.append({
+                'display': display,
+                'children': children,
+                'type': 'SENTENCE',
+            })
 
     return finalize(tree)
 

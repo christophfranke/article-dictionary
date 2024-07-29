@@ -29,6 +29,12 @@ def get_tokens(tree):
     return result
 
 
+def get_unique_words(tree):
+    tokens = get_tokens(tree)
+    unique_words = list(set([token['word'] for token in tokens if token.get('word') is not None]))
+    return unique_words
+
+
 def add_tokens(tokens, user_id):
     user_collection = get_collection('users')
     dictionary_collection = get_collection('dictionary')
