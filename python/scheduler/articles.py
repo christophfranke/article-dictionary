@@ -15,7 +15,6 @@ def jobs():
 def repair():
     add_needs_processing()
     add_reading_index()
-    add_words()
     add_language()
     add_dates()
     add_status()
@@ -41,9 +40,11 @@ def add_needs_processing():
         'needs_processing': {'$exists': False},
     }
 
+    count = collection.count_documents(query)
+
     # Update all documents that match the query
-    result = collection.update_many(query, {'$set': {'needs_processing': True}})
-    if result.matched_count > 0:
+    if count > 0:
+        result = collection.update_many({}, {'$set': {'needs_processing': True}})
         result2 = get_collection('dictionary').update_many({}, {
             '$set': {
                 'frequency': 0,
@@ -53,28 +54,6 @@ def add_needs_processing():
 
         print(f"Added field 'needs_processing' to documents: {result.modified_count}/{result.matched_count}")
         print(f"Reset frequency for {result2.matched_count} words")
-
-
-def add_words():
-    collection = get_collection('articles')
-    query = {
-        'content': {'$exists': True},
-        '$or': [
-            {'words': {'$exists': False}},
-            {'unique_words': {'$exists': False}},
-        ]
-    }
-
-    update = {
-        'needs_processing': True,
-        'words': [],
-        'unique_words': [],
-    }
-
-    # Update all documents that match the query
-    result = collection.update_many(query, {'$set': update})
-    if result.matched_count > 0:
-        print(f"Added fields {update} to documents: {result.modified_count}/{result.matched_count}")
 
 
 def add_language():

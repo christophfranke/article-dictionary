@@ -7,7 +7,7 @@ from nlp.analyze import process
 from text_processing.dictionary import add_words
 from text_processing.language import get_languages
 
-from nlp.add_tokens import add_tree, get_unique_words
+from nlp.add_tokens import add_tree, remove_tree_frequency, get_unique_words
 from nlp.token_tree import create_token_tree
 
 
@@ -26,6 +26,10 @@ def process_article():
         if user is None:
             print(f"Article has invalid user_id: {article.title}, {user_id}")
             return
+
+        old_tree = article.get('tree', None)
+        if old_tree is not None:
+            remove_tree_frequency(old_tree, user_id)
 
         src_lang, target_lang = user.get('source_language'), user.get('target_language')
         tokens, docs = process(article['content'], src_lang, target_lang)

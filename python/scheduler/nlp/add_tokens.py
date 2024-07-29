@@ -35,6 +35,36 @@ def get_unique_words(tree):
     return unique_words
 
 
+def remove_tree_frequency(tree, user_id):
+    tokens = get_tokens(tree)
+    words = [token['word'] for token in tokens if not token.get('ignore', False)]
+    frequency = Counter(words)
+    unique_words = set(words)
+
+    source_language, target_language = get_languages(get_collection('users'), user_id)
+
+    bulk_update_operations = [
+        UpdateOne(
+            {
+                'original': word,
+                'user_id': ObjectId(user_id),
+                'source_language': source_language,
+                'target_language': target_language,
+            },
+            {
+                '$inc': {'frequency': -frequency[word]},
+            }
+        )
+        for word in unique_words
+    ]
+
+    # Execute bulk update operations
+    if len(bulk_update_operations) > 0:
+        get_collection('dictionary').bulk_write(bulk_update_operations)
+
+    print(f"Updated Frequency for {len(bulk_update_operations)} words.")
+
+
 def add_tokens(tokens, user_id):
     user_collection = get_collection('users')
     dictionary_collection = get_collection('dictionary')
