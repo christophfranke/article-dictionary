@@ -133,6 +133,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "1025:25" # Mapping port 25 to 1025 on localhost for development
+    volumes:
+      - ./email/postfix/main.cf:/etc/postfix/main.cf
     environment:
       - DEBUG=true
 
