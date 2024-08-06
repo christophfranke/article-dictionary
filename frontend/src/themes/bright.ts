@@ -4,6 +4,7 @@ const baseColors = {
     viewColor: "#007bff",
     actionColor: "#4caf50",
     errorColor: "#f8d7da",
+    successColor: "#4e9b49",
 };
 
 const wordColors = {
@@ -49,6 +50,10 @@ export default {
     errorColor: baseColors.errorColor,
     errorColorDark: darken(baseColors.errorColor, 10),
     errorColorDarker: darken(baseColors.errorColor, 30),
+
+    successColor: baseColors.successColor,
+    successColorDark: darken(baseColors.successColor, 10),
+    successColorDarker: darken(baseColors.successColor, 30),
 
     contentNewWordColor: wordColors.new,
     contentSeenWordColor: wordColors.seen,

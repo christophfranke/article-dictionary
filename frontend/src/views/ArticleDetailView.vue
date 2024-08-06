@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -78,11 +78,17 @@ const wordIndexMap = computed(() => {
   return map;
 });
 
-const displayFilter = (word: PartialWord): boolean => (
-  wordIndexMap.value[word.original] > -1
-  && (word.status === 'new' || word.status === 'seen')
-  && paginatedTokens.value.some(token => token.word === word.original)
-);
+const displayFilter = (word: PartialWord): boolean => {
+  return (
+    wordIndexMap.value[word.original] > -1
+    && (word.status === 'new' || word.status === 'seen')
+    && paginatedTokens.value.some(token => token.word === word.original)
+  );
+}
+
+watchEffect(() => {
+  console.log(paginatedTokens.value.map(token => wordIndexMap.value[token.word]))
+})
 
 const { dictionary } = useDictionaryView(displayFilter);
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);

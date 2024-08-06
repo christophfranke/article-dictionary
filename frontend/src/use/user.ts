@@ -175,6 +175,32 @@ export const useRegister = () => {
 	}
 };
 
+export const useReset = () => {
+	const { fetchAuthorized, errorMessage, isLoading } = useApi();
+
+	const requestReset = async (email: string): Promise<boolean> => {
+		const result = await fetchAuthorized('/api/auth/reset', {
+			method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+		})
+
+		if (!result) {
+			return false
+		}
+
+		return true
+	}
+
+	return {
+		requestReset,
+		isLoading,
+		errorMessage
+	}
+}
+
 export const useLogout = () => {
 	const { fetchAuthorized } = useApi();
 	return async (): Promise<boolean> => {

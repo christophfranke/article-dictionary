@@ -53,6 +53,8 @@ const explanationTable = {
   CCONJ: 'Coordinating Conjunction',
   SCONJ: 'Subordinating Conjunction',
   PART: 'Particle',
+  PUNCT: 'Punctuation',
+  AUX: 'Auxiliary Verb',
   X: 'Other',
 }
 const explain = (mark: string): string => {

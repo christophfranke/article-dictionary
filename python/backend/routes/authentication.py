@@ -6,6 +6,7 @@ from users import User
 
 auth = Blueprint('auth', __name__)
 
+
 @auth.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -40,6 +41,22 @@ def register():
 
     return jsonify({'message': 'User registered successfully'}), 201
 
+
+@auth.route('/reset', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    email = data.get('email')
+
+    if email is None:
+        return jsonify({'message': 'Email required for password reset.'}), 400
+
+    # TODO:
+    # 1. Create temporary password reset link
+    # 2. Send Link per email
+
+    return jsonify({'success': True}), 200
+
+
 @auth.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -57,6 +74,7 @@ def login():
     else:
         return jsonify({'error': 'Invalid credentials'}), 403
 
+
 @auth.route('/logout')
 @login_required
 def logout():
@@ -64,4 +82,3 @@ def logout():
     return jsonify({'message': 'Logout successful'})
 
 # Other routes and functionality for authentication can be added as needed
-

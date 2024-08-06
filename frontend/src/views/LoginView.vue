@@ -41,6 +41,7 @@ const loginAndRedirect = async () => {
     </FormGroup>
     <FormGroup>
       <Button type="submit" :disabled="isLoading" role="view">{{ __('Login') }}</Button>
+      <InternalLink to="/password-reset" class="password-reset-link">{{ __('Reset password') }}</InternalLink>
       <InternalLink to="/register" class="register-link">{{ __("Don't have an account? Register here") }}</InternalLink>
     </FormGroup>
     <ErrorMessage :message="errorMessage" />
@@ -60,6 +61,10 @@ const loginAndRedirect = async () => {
 
 .register-link {
   margin-top: 20px;
+}
+
+.password-reset-link {
+  float: right;
 }
 
 .error-message {
