@@ -17,7 +17,7 @@ const { requestReset, errorMessage, isLoading } = useReset();
 const email = ref('')
 const passwordResetSuccess = ref(false)
 const resetPassword = async () => {
-    passwordResetSuccess.value = await requestReset(email)
+    passwordResetSuccess.value = await requestReset(email.value)
 }
 </script>
 

@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image (Debian-based)
-FROM python:3.12-slim
+FROM python:3.12.4-slim-bookworm
 
 # Set the working directory to /app/scheduler
 WORKDIR /app/scheduler
