@@ -63,5 +63,10 @@ services:
       - frontend-build
       - backend
 
+  postfix:
+    build:
+      context: ./email
+      dockerfile: Dockerfile
+
 volumes:
   frontend-dist:
