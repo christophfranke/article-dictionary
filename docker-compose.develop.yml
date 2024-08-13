@@ -60,6 +60,9 @@ services:
       - ./python/shared:/app/shared
     environment:
       - FORCE_COLOR=1
+      - TESTING=True,
+      - SECRET_KEY=test,
+      - SESSION_COOKIE_SECURE=False
     env_file:
       - .env.mongodb
     depends_on:

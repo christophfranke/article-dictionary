@@ -2,7 +2,10 @@ from flask import Blueprint, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.mongo import get_collection
+from smtplib import SMTPException
 from users import User
+
+from reset_password import create_password_link, send_reset_mail
 
 auth = Blueprint('auth', __name__)
 
@@ -50,9 +53,16 @@ def reset_password():
     if email is None:
         return jsonify({'message': 'Email required for password reset.'}), 400
 
-    # TODO:
-    # 1. Create temporary password reset link
-    # 2. Send Link per email
+    users = get_collection('users')
+
+    existing_user = users.find_one({'email': email})
+    if existing_user is None:
+        return jsonify({'error': 'User does not exist'}), 400
+
+    reset_link = create_password_link(email)
+    print(f'Reset link is: {reset_link}')
+    if not send_reset_mail(email, reset_link):
+        return jsonify({'error': 'Internal error: Failed to send reset link'}), 500
 
     return jsonify({'success': True}), 200
 
