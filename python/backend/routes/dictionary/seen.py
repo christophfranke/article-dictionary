@@ -18,18 +18,35 @@ def seen_word(id):
     if word is None:
         return jsonify({'error': f'Word not found: {id}'}), 404
 
-    updated_word = word.copy()
-    updated_word['last_viewed'] = datetime.utcnow()
-    if updated_word['status'] == 'new':
-        updated_word['status'] = 'seen'
-    if updated_word.get('review_level', 0) == 0:
-        updated_word['review_level'] = 1
-    dictionary_collection.update_one({'_id': _id}, {
+    last_viewed = datetime.utcnow()
+    old_status = word.get('status', 'new')
+    if old_status == 'new':
+        status = 'seen'
+    else:
+        status = old_status
+
+    old_review_level = word.get('review_level', 0)
+    if old_review_level == 0:
+        review_level = 1
+    else:
+        review_level = old_review_level
+
+    result = dictionary_collection.update_one({'_id': _id}, {
         '$set': {
-            'last_viewed': updated_word['last_viewed'],
-            'status': updated_word['status'],
-            'review_level': updated_word['review_level'],
+            'last_viewed': last_viewed,
+            'status': status,
+            'review_level': review_level,
         }
     })
 
-    return serialize(updated_word)
+    if result.modified_count > 0:
+        return jsonify({
+            'id': id,
+            'lastViewed': last_viewed,
+            'status': status,
+            'reviewLevel': review_level,
+        })
+
+    return jsonify({
+        'id': id
+    })

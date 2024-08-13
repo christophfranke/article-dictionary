@@ -40,6 +40,10 @@ export default (request: DictionaryApi, _words: PartialWord[] = []): DictionaryC
     }
     for await (const seenWord of request.markSeen(id)) {
       if (seenWord) {
+        if (word && word?.status !== originalStatus) {
+          seenWord.status = word.status
+        }
+
         collection.updateLocal([seenWord]);
         result = seenWord;
       }
