@@ -86,10 +86,6 @@ const displayFilter = (word: PartialWord): boolean => {
   );
 }
 
-watchEffect(() => {
-  console.log(paginatedTokens.value.map(token => wordIndexMap.value[token.word]))
-})
-
 const { dictionary } = useDictionaryView(displayFilter);
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
