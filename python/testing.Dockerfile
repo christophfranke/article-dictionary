@@ -13,9 +13,6 @@ RUN python3 /app/setup-nltk.py
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH="${PYTHONPATH}:/app/shared:/app/backend"
 
-# cache buster
-RUN date > /app/timestamp.txt
-
 COPY ./shared /app/shared
 COPY ./backend /app/backend
 COPY ./testing /app/testing

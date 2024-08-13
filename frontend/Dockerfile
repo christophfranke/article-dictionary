@@ -17,9 +17,6 @@ RUN npm install
 RUN rm -rf /dist
 RUN mkdir -p /dist
 
-# cache buster
-RUN date > /app/frontend/timestamp.txt
-
 # Copy the rest of the application code into the container
 COPY . .
 
