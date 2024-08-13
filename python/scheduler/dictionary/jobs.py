@@ -28,7 +28,7 @@ def retranslate_word():
 
         if word:
             # Translate
-            translations, success = translate_single_word(
+            translations, success, origin = translate_single_word(
                 word['original'],
                 word['source_language'],
                 word['target_language'],
@@ -38,14 +38,16 @@ def retranslate_word():
             # Update entry with translations
             word['translations'] = translations
             word['needs_retranslate'] = not success
-            word['translation_origin'] = 'google'
+            word['translation_origin'] = origin
             if word['original'] in translations:
                 word['status'] = 'ignore'
-            dictionary.replace_one({'_id': word['_id']}, word)
             if word['cluster_id'] is not None:
                 get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
 
-            print(f'Retranslated word {word["original"]}: {", ".join(map(str, translations))}')
+            if success:
+                dictionary.replace_one({'_id': word['_id']}, word)
+                print(f'Retranslated word {word["original"]}: {", ".join(map(str, translations))}')
+
     except Exception as e:
         print('Error retranslating word: ' + str(e))
 

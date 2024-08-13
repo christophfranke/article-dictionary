@@ -21,18 +21,18 @@ def get_word(id):
         return serialize(word)
 
     source_language, target_language = get_languages(get_collection('users'), ObjectId(current_user.id))
-    word['translations'], success = translate_single_word(
+    word['translations'], success, origin = translate_single_word(
         word['original'],
         source_language,
         target_language,
         get_collection('translations')
     )
     word['needs_retranslate'] = not success
-    word['translation_origin'] = 'google'
+    word['translation_origin'] = origin
     if word['status'] == 'new' and word['original'] in word['translations']:
         word['status'] = 'ignore'
 
-    dictionary_collection.replace_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)}, word)
+    if success:
+        dictionary_collection.replace_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)}, word)
 
-    updated_word = dictionary_collection.find_one({'_id': ObjectId(id), 'user_id': ObjectId(current_user.id)})
-    return serialize(updated_word)
+    return serialize(word)

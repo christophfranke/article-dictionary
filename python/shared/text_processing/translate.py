@@ -14,25 +14,22 @@ def translate_single_word(word, source_language, target_language, language_colle
             },
             {
                 'translations': 1,
-                '_id': 0
+                'origin': 1,
+                '_id': 0,
             }
         )
 
         if existing_translation:
-            return existing_translation['translations'], True
+            print(f"Found word in cached translations: {word}")
+            return existing_translation['translations'], True, existing_translation['origin']
 
     # If not found in the collection, use the translate function
-    success = False
     try:
         translation_result = translate(word, source_lang=source_language, target_lang=target_language).results[0]
-        success = True
     except Exception as e:
         # Code that runs if any other exception occurs
         print(f"Failed to translate word '{word}': {e}")
-        translation_result = {
-            'paraphrase': [word],
-            'alternatives': []
-        }
+        return [word], False, 'google'
 
     primary = translation_result['paraphrase']
     alternatives = translation_result['alternatives']
@@ -40,7 +37,7 @@ def translate_single_word(word, source_language, target_language, language_colle
     # Combine primary and alternatives into one list
     translations = [primary] + alternatives
 
-    if success and language_collection is not None:
+    if language_collection is not None:
         # Store the new translation in the collection
         language_collection.insert_one({
             'original': word,
@@ -51,4 +48,4 @@ def translate_single_word(word, source_language, target_language, language_colle
             'translation_date': datetime.utcnow()
         })
 
-    return translations, success
+    return translations, True, 'google'
