@@ -30,12 +30,12 @@ RUN python3 -m pip install --upgrade pip setuptools wheel
 
 # Install with long compile times
 RUN pip3 install spacy
-RUN pip3 install ctranslate2
+# RUN pip3 install ctranslate2
 
 # Setup Argos with long download times
-RUN pip3 install argostranslate
-COPY ./setup-argos.py /app/setup-argos.py
-RUN python3 /app/setup-argos.py
+# RUN pip3 install argostranslate
+# COPY ./setup-argos.py /app/setup-argos.py
+# RUN python3 /app/setup-argos.py
 
 # Setup nltk, will be removed in the future
 RUN pip3 install nltk
