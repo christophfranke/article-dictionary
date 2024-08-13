@@ -75,6 +75,7 @@ const changePassword = async () => {
     </Form>
 </template>
 
+
 <style scoped lang="scss">
 .reset-form {
   max-width: 600px;
