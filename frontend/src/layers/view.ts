@@ -42,10 +42,19 @@ export default <T extends { id: string } & Record<K, any> & Record<L, any>, K ex
     return item ? filter.value(item) : false;
   };
 
-  const all = computed(() => collection.all.value.map((item, index) => ({
-    ...item,
-    order: order.value ? order.value(item) ?? index : index,
-  })));
+  const all = computed(() => {
+    // set the order inline, not with a map function
+    // otherwise the complete list will be rerendered each time a single value is changed
+    collection.all.value.forEach((item, index) => {
+      const newOrder = order.value ? order.value(item) ?? index : index
+      if (newOrder !== (item as WithOrder<T>).order) {
+        (item as WithOrder<T>).order = newOrder
+      }
+    })
+
+    return collection.all.value as WithOrder<T>[]
+  })
+
   const items = computed(() => {
     const filtered = all.value.filter(filter.value)
     // console.log('filtered items', filtered.length)

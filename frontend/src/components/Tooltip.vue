@@ -108,7 +108,7 @@ const markArticleAsSeen = (article: ArticleBase, index: number) => {
 
 
 // time how long a translation must be shown before it counts as seen
-const UPDATE_TIME = 500
+const UPDATE_TIME = 300
 let original: string | undefined
 let timeoutId: ReturnType<typeof setTimeout> | null = null
 watch(isVisible, async (newValue, oldValue) => {
