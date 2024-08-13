@@ -1,4 +1,4 @@
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 import time
 import sys
 import os
@@ -31,11 +31,11 @@ def run(debug=False):
 
     # statistics.repair()
     # user.repair()
-    articles.repair()
+    # articles.repair()
     # dictionary.repair()
 
     # Initialize the scheduler
-    scheduler = BlockingScheduler()
+    scheduler = BackgroundScheduler()
 
     # Schedule your tasks with more readable intervals
     scheduler.add_job(statistics.jobs, 'interval', hours=1, id='statistics_jobs')
@@ -53,9 +53,16 @@ def run(debug=False):
     try:
         print(f"Scheduler is running (Debug={debug})")
         scheduler.start()
+
+        # Keep the main thread alive to allow the scheduler to run
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
-        # Handle the shutdown gracefully
-        print("Shutting down...")
+        print("Shutting down due to KeyboardInterrupt...")
+        scheduler.shutdown()
+        sys.exit(0)
+    except SystemExit:
+        print("Shutting down due to SystemExit...")
         scheduler.shutdown()
         sys.exit(0)
 
