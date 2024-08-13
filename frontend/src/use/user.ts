@@ -194,8 +194,25 @@ export const useReset = () => {
 		return true
 	}
 
+	const completeReset = async (token: string, password: string): Promise<boolean> => {
+		const result = await fetchAuthorized('/api/auth/change-password', {
+			method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, password }),
+		})
+
+		if (!result) {
+			return false
+		}
+
+		return true
+	}
+
 	return {
 		requestReset,
+		completeReset,
 		isLoading,
 		errorMessage
 	}

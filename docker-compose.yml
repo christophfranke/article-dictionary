@@ -18,7 +18,7 @@ services:
       context: ./python
       dockerfile: backend.Dockerfile
     env_file:
-      - .env.mongodb
+      - .env
     depends_on:
       - mongodb
     command: gunicorn --capture-output --enable-stdio-inheritance -c /app/backend/gunicorn_config.py live:app
@@ -27,7 +27,7 @@ services:
   mongodb:
     image: mongo:7.0.4
     env_file:
-      - .env.mongodb
+      - .env
     volumes:
       - /database/mongodb:/data/db
     command: mongod --quiet --logpath /dev/null
@@ -38,7 +38,7 @@ services:
       context: ./database
       dockerfile: backup.Dockerfile
     env_file:
-      - .env.mongodb
+      - .env
     volumes:
       - /database/backups:/backups
       - /database/uploads:/uploads:ro
@@ -50,7 +50,7 @@ services:
       context: ./python
       dockerfile: scheduler.Dockerfile
     env_file:
-      - .env.mongodb
+      - .env
     depends_on:
       - mongodb
     restart: always

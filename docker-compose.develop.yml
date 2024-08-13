@@ -42,7 +42,7 @@ services:
       - ./python/backend:/app/backend
       - ./python/shared:/app/shared
     env_file:
-      - .env.mongodb
+      - .env
     ports:
       - "9301:5000"
     depends_on:
@@ -64,7 +64,7 @@ services:
       - SECRET_KEY=test,
       - SESSION_COOKIE_SECURE=False
     env_file:
-      - .env.mongodb
+      - .env
     depends_on:
       - mongodb
     command: ptw backend/
@@ -74,7 +74,7 @@ services:
     ports:
       - "27017:27017"
     env_file:
-      - .env.mongodb
+      - .env
     volumes:
       - ./database/mongodb:/data/db
     command: mongod --quiet --logpath /dev/null
@@ -84,7 +84,7 @@ services:
       context: ./python
       dockerfile: scheduler.Dockerfile
     env_file:
-      - .env.mongodb
+      - .env
     environment:
       - DEBUG=true
     volumes:
@@ -126,7 +126,7 @@ services:
       - ./database/scripts:/scripts
       - ./database/backups:/backups  # Local directory to store backups
     env_file:
-      - .env.mongodb
+      - .env
     depends_on:
       - mongodb
 

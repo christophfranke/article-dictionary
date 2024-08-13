@@ -5,7 +5,7 @@ from utils.mongo import get_collection
 from smtplib import SMTPException
 from users import User
 
-from reset_password import create_password_link, send_reset_mail
+from reset_password import create_password_link, send_reset_mail, get_email_from_token
 
 auth = Blueprint('auth', __name__)
 
@@ -63,6 +63,33 @@ def reset_password():
     print(f'Reset link is: {reset_link}')
     if not send_reset_mail(email, reset_link):
         return jsonify({'error': 'Internal error: Failed to send reset link'}), 500
+
+    return jsonify({'success': True}), 200
+
+
+@auth.route('/change-password', methods=['POST'])
+def change_password():
+    data = request.get_json()
+    token = data.get('token')
+    password = data.get('password')
+
+    # Return 400 if no token or no password
+    if not token or not password:
+        return jsonify({'error': 'Token and password are required.'}), 400
+
+    email, message = get_email_from_token(token)
+    if email is None:
+        return jsonify({'error': message}), 400
+
+    # Check if the user exists
+    users = get_collection('users')
+    user = users.find_one({'email': email})
+    if not user:
+        return jsonify({'error': 'User does not exist.'}), 404
+
+    # Hash the new password and update the user's password in the database
+    hashed_password = generate_password_hash(password)
+    users.update_one({'email': email}, {'$set': {'password': hashed_password}})
 
     return jsonify({'success': True}), 200
 

@@ -1,4 +1,4 @@
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mail import Message
 from flask import current_app
 from mail import mail
@@ -13,9 +13,21 @@ def create_password_link(email):
 
     # Generate a password reset link using the token
     frontend_base_url = f"{current_app.config['EXTERNAL_PROTOCOL']}://{current_app.config['EXTERNAL_HOSTNAME']}"
-    reset_link = f"{frontend_base_url}/reset-password?token={token}"
+    reset_link = f"{frontend_base_url}/password-reset?token={token}"
 
     return reset_link
+
+
+def get_email_from_token(token):
+    # Validate email from token
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = s.loads(token, salt=current_app.config['SECURITY_PASSWORD_SALT'], max_age=1800)
+        return email, None
+    except SignatureExpired:
+        return None, 'The token has expired.'
+    except BadSignature:
+        return None, 'Invalid token.'
 
 
 def send_reset_mail(email, reset_link):
