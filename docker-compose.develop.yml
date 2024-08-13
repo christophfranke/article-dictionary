@@ -127,16 +127,6 @@ services:
     depends_on:
       - mongodb
 
-  postfix:
-    build:
-      context: ./email
-      dockerfile: Dockerfile
-    ports:
-      - "1025:25" # Mapping port 25 to 1025 on localhost for development
-    volumes:
-      - ./email/postfix/main.cf:/etc/postfix/main.cf
-    environment:
-      - DEBUG=true
 
 volumes:
   node_modules:

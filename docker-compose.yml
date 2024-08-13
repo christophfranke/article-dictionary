@@ -69,12 +69,6 @@ services:
       - backend
     restart: always
 
-  postfix:
-    build:
-      context: ./email
-      dockerfile: Dockerfile
-    restart: always
-
 
 volumes:
   frontend-dist:
