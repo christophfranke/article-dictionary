@@ -29,7 +29,7 @@ def process_article():
 
         src_lang, target_lang = user.get('source_language'), user.get('target_language')
         tokens, docs = process(article['content'], src_lang, target_lang)
-        tree = create_token_tree(tokens, docs)
+        tree = create_token_tree(tokens, docs, src_lang)
 
         # make sure to do the heavy workload before writing stuff to the database
         old_tree = article.get('tree', None)

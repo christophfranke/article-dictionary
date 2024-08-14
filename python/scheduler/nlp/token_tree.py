@@ -1,3 +1,5 @@
+from langdetect import detect
+
 
 def strip_ignore(tokens):
     prespace = ''
@@ -149,16 +151,26 @@ def finalize(tree):
     return tree
 
 
-def create_token_tree(tokens, docs):
+def ignore_if_wrong_language(tokens, language):
+    for token in tokens:
+        try:
+            token['ignore'] = language != detect(token['word'])
+        except Exception:
+            token['ignore'] = True
+
+
+def create_token_tree(tokens, docs, language):
     tree = []
     for doc in docs:
         for sent in doc.sents:
             prespace, stripped = strip_ignore([tokens[tok.i] for tok in sent])
             display = prespace + ''.join([f'{token['display']}{token['space']}' for token in stripped])
             children = redirect(collapse(stripped, sent), sent)
+            ignore_if_wrong_language(children, language)
+            _, stripped_children = strip_ignore(children)
             tree.append({
                 'display': display,
-                'children': children,
+                'children': stripped_children,
                 'type': 'SENTENCE',
             })
 

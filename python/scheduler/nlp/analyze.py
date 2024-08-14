@@ -3,7 +3,6 @@ from spacy.tokens import Doc
 from spacy.vocab import Vocab
 
 import re
-from langdetect import detect
 
 from .helper import highlight_first_difference
 
@@ -31,10 +30,7 @@ def should_ignore_token(token, language):
         '[' in token.text
     ):
         return True
-    try:
-        return language != detect(token.text)
-    except Exception:
-        return True
+    return False
 
 
 def get_token(token, lang):
