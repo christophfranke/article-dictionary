@@ -27,12 +27,12 @@ def process_article():
             print(f"Article has invalid user_id: {article.title}, {user_id}")
             return
 
+        src_lang, target_lang = user.get('source_language'), user.get('target_language')
+        tokens, docs = process(article['content'], src_lang, target_lang)
+
         old_tree = article.get('tree', None)
         if old_tree is not None:
             remove_tree_frequency(old_tree, user_id)
-
-        src_lang, target_lang = user.get('source_language'), user.get('target_language')
-        tokens, docs = process(article['content'], src_lang, target_lang)
 
         tree = create_token_tree(tokens, docs)
         add_tree(tree, user_id)
