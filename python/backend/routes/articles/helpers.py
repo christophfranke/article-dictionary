@@ -89,7 +89,7 @@ def get_cluster_status(original, status_map):
 def create_statistics(article):
     status_map = create_status_map()
     index = article.get('reading_index', 0)
-    tokens = article.get('tokens', [])
+    tokens = get_tokens(article.get('tree', []))
     unread_words = tokens[index:]
 
     return {
