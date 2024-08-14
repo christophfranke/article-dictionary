@@ -4,7 +4,7 @@ from bson import ObjectId
 
 from utils.mongo import get_collection
 from text_processing.language import get_languages
-from .helpers import create_status_map, get_word_status, get_cluster_status
+from .helpers import create_status_map, get_word_status, get_cluster_status, get_tokens
 
 
 @login_required
@@ -27,7 +27,7 @@ def list_articles():
     formatted_articles = []
     for article in all_articles:
         index = article.get('reading_index', 0)
-        tokens = article.get('tokens', [])
+        tokens = get_tokens(article.get('tree', []))
         unread_words = tokens[index:]
 
         statistics = {
