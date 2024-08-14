@@ -13,7 +13,7 @@ def jobs():
 
 
 def repair():
-    add_needs_processing()
+    # initiate_reprocessing_of_articles()
     add_reading_index()
     add_language()
     add_dates()
@@ -34,7 +34,7 @@ def remove_words():
         print('Removed words from article: ' + article['title'])
 
 
-def add_needs_processing():
+def initiate_reprocessing_of_articles():
     collection = get_collection('articles')
     query = {
         'needs_processing': True,
