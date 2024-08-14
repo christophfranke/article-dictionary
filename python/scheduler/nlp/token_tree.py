@@ -76,7 +76,7 @@ def combine_with_auxiliaries(head):
     return ' '.join(subtokens)
 
 
-def redirect_auxiliaries(tokens, sent):
+def redirect_auxiliaries(tokens):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
         if token is not None:
@@ -90,8 +90,53 @@ def redirect_auxiliaries(tokens, sent):
     return tokens
 
 
+def find_determiner(token):
+    try:
+        return next(
+            t for t in token.children if t.pos_ == 'DET' and t.dep_ == 'det' and t.head == token
+        )
+    except StopIteration:
+        return None
+
+
+def redirect_articles(tokens):
+    for t in tokens:
+        token = t['token'] if t['type'] == 'WORD' else None
+        if token is not None:
+            # combine det with non-entity
+            if token.pos_ == 'DET' and token.dep_ == 'det' and token.head.ent_iob_ == 'O':
+                t['word'] = f'{token.text} {token.head.text}'
+                t['lemma'] = token.head.lemma_
+                t['pos'] = token.head.pos_
+            # combine det with entity
+            if token.pos_ == 'DET' and token.dep_ == 'det' and token.head.ent_iob_ != 'O':
+                for ent in token.sent.ents:
+                    if token.head in ent:
+                        t['word'] = f'{token.text} {ent.text}'
+                        t['lemma'] = ent.lemma_
+                        t['pos'] = ent.label_
+                        break
+            # combine non-entity with det
+            determiner = find_determiner(token)
+            if determiner:
+                t['word'] = f'{determiner.text} {token.text}'
+
+        # combine entity with det
+        if t['type'] == 'ENTITY':
+            children = [child['token'] for child in t['children'] if child['type'] == 'WORD']
+            for token in children:
+                determiner = find_determiner(token)
+                if determiner:
+                    t['word'] = f'{determiner.text} {t['display']}'
+                    break
+
+    return tokens
+
+
 def redirect(tokens, sent):
-    return redirect_auxiliaries(tokens, sent)
+    return redirect_articles(
+        redirect_auxiliaries(tokens)
+    )
 
 
 def finalize(tree):
