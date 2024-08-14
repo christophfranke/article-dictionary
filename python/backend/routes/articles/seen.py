@@ -5,7 +5,7 @@ from datetime import datetime
 
 from utils.mongo import get_collection
 
-from .helpers import serialize
+from .helpers import serialize, get_tokens
 
 
 @login_required
@@ -26,10 +26,10 @@ def seen_article():
         dictionary = get_collection('dictionary')
         new_index = data.get('index') + 1
         old_index = article.get('reading_index', 0) + 1
-        words = article.get('words', [])
+        tokens = get_tokens(article.get('tree', []))
         print(f'updating words for seen article {article.get("title")} ({old_index} - {new_index})')
 
-        words_to_update = words[old_index:min(new_index, len(words))]
+        words_to_update = [token['word'] for token in tokens[old_index:min(new_index, len(tokens))]]
 
         if words_to_update:
             print(f'viewed words: {words_to_update}')
