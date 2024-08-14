@@ -101,36 +101,80 @@ def find_determiner(token):
         return None
 
 
+def find_case(token):
+    try:
+        return next(
+            t for t in token.children if t.pos_ == 'ADP' and t.dep_ == 'case' and t.head == token
+        )
+    except StopIteration:
+        return None
+
+
+def is_part_of_entity(token):
+    return token.head.ent_iob_ == 'B' or token.head.ent_iob_ == 'I'
+
+
 def redirect_articles(tokens):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
         if token is not None:
             # combine det with non-entity
-            if token.pos_ == 'DET' and token.dep_ == 'det' and token.head.ent_iob_ == 'O':
+            if token.pos_ == 'DET' and token.dep_ == 'det' and not is_part_of_entity(token.head):
                 t['word'] = f'{token.text} {token.head.text}'
                 t['lemma'] = token.head.lemma_
                 t['pos'] = token.head.pos_
+            else:
+                # combine adp with non-entity
+                if token.pos_ == 'ADP' and token.dep_ == 'case' and not is_part_of_entity(token.head):
+                    t['word'] = f'{token.text} {token.head.text}'
+                    t['lemma'] = token.head.lemma_
+                    t['pos'] = token.head.pos_
             # combine det with entity
-            if token.pos_ == 'DET' and token.dep_ == 'det' and token.head.ent_iob_ != 'O':
+            if token.pos_ == 'DET' and token.dep_ == 'det' and is_part_of_entity(token.head):
                 for ent in token.sent.ents:
                     if token.head in ent:
                         t['word'] = f'{token.text} {ent.text}'
                         t['lemma'] = ent.lemma_
                         t['pos'] = ent.label_
                         break
+            else:
+                # combine adp with entity
+                if token.pos_ == 'ADP' and token.dep_ == 'case' and is_part_of_entity(token.head):
+                    for ent in token.sent.ents:
+                        if token.head in ent:
+                            t['word'] = f'{token.text} {ent.text}'
+                            t['lemma'] = ent.lemma_
+                            t['pos'] = ent.label_
+                            break
             # combine non-entity with det
             determiner = find_determiner(token)
             if determiner:
                 t['word'] = f'{determiner.text} {token.text}'
+            else:
+                # combine non-entity with adp
+                adpunct = find_case(token)
+                if adpunct:
+                    t['word'] = f'{adpunct.text} {token.text}'
 
         # combine entity with det
+        entity_has_determiner = False
         if t['type'] == 'ENTITY':
             children = [child['token'] for child in t['children'] if child['type'] == 'WORD']
             for token in children:
                 determiner = find_determiner(token)
                 if determiner:
                     t['word'] = f'{determiner.text} {t['display']}'
+                    entity_has_determiner = True
                     break
+        # combine entity with adp
+        if not entity_has_determiner:
+            if t['type'] == 'ENTITY':
+                children = [child['token'] for child in t['children'] if child['type'] == 'WORD']
+                for token in children:
+                    adpunct = find_case(token)
+                    if adpunct:
+                        t['word'] = f'{adpunct.text} {t['display']}'
+                        break
 
     return tokens
 
