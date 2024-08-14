@@ -31,7 +31,7 @@ def run(debug=False):
 
     # statistics.repair()
     # user.repair()
-    # articles.repair()
+    articles.repair()
     # dictionary.repair()
 
     # Initialize the scheduler

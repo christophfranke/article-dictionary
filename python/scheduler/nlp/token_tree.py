@@ -71,21 +71,21 @@ def collapse(tokens, sent):
     return collapse_entities(tokens, sent)
 
 
+def combine_with_auxiliaries(head):
+    subtokens = [sub.text for sub in head.subtree if sub == head or (sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == head)]
+    return ' '.join(subtokens)
+
+
 def redirect_auxiliaries(tokens, sent):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
         if token is not None:
             if token.pos_ == 'AUX' and token.dep_ == 'aux':
-                t['word'] = f'{token.text} {token.head.text}'
+                t['word'] = combine_with_auxiliaries(token.head)
                 t['lemma'] = token.head.lemma_
                 t['pos'] = token.head.pos_
-            if token.pos_ == 'VERB':
-                subtoken = next(
-                    (sub for sub in token.subtree if sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == token),
-                    None
-                )
-                if subtoken:
-                    t['word'] = f'{subtoken.text} {token.text}'
+            else:
+                t['word'] = combine_with_auxiliaries(token)
 
     return tokens
 
@@ -118,50 +118,3 @@ def create_token_tree(tokens, docs):
             })
 
     return finalize(tree)
-
-
-def get_word(token, src_language):
-    if token.ent_iob_ != 'O':
-        return None
-    if should_ignore_token(token, src_language):
-        return {
-            'display': token.text,
-            'word': token.text.strip(),
-            'space': token.whitespace_,
-            'lemma': token.lemma_,
-            'pos': token.pos_,
-            'ignore': True
-        }
-    if token.pos_ == 'AUX' and token.dep_ == 'aux':
-        return {
-            'display': token.text,
-            'word': f'{token.text} {token.head.text}'.strip(),
-            'space': token.whitespace_,
-            'lemma': token.head.lemma_,
-            'pos': token.head.pos_,
-            'ignore': False
-        }
-    else:
-        if token.pos_ == 'VERB':
-            subtoken = next(
-                (sub for sub in token.subtree if sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == token),
-                None
-            )
-            if subtoken:
-                return {
-                    'display': token.text,
-                    'word': f'{subtoken.text} {token.text}'.strip(),
-                    'space': token.whitespace_,
-                    'lemma': token.lemma_,
-                    'pos': token.pos_,
-                    'ignore': False
-                }
-        return {
-            'display': token.text,
-            'word': token.text.strip(),
-            'space': token.whitespace_,
-            'lemma': token.lemma_,
-            'pos': token.pos_,
-            'ignore': False
-        }
-

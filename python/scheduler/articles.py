@@ -37,23 +37,17 @@ def remove_words():
 def add_needs_processing():
     collection = get_collection('articles')
     query = {
-        'needs_processing': {'$exists': False},
+        'needs_processing': True,
     }
 
     count = collection.count_documents(query)
 
     # Update all documents that match the query
-    if count > 0:
+    if count == 0:
         result = collection.update_many({}, {'$set': {'needs_processing': True}})
-        result2 = get_collection('dictionary').update_many({}, {
-            '$set': {
-                'frequency': 0,
-                'needs_clustering': True
-            }
-        })
-
         print(f"Added field 'needs_processing' to documents: {result.modified_count}/{result.matched_count}")
-        print(f"Reset frequency for {result2.matched_count} words")
+    else:
+        print(f"Some documents ({count}) need processing, no reset.")
 
 
 def add_language():
