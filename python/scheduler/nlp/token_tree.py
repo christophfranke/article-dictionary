@@ -74,7 +74,7 @@ def collapse(tokens, sent):
 
 
 def combine_with_auxiliaries(head):
-    subtokens = [sub.text for sub in head.subtree if sub == head or (sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == head)]
+    subtokens = (sub.norm_ for sub in head.subtree if sub == head or (sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == head))
     return ' '.join(subtokens)
 
 
@@ -82,12 +82,17 @@ def redirect_auxiliaries(tokens):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
         if token is not None:
-            if token.pos_ == 'AUX' and token.dep_ == 'aux':
+            if token.pos_ == 'AUX' and token.dep_ == 'aux' and 'redirect' not in t:
                 t['word'] = combine_with_auxiliaries(token.head)
                 t['lemma'] = token.head.lemma_
                 t['pos'] = token.head.pos_
+                t['redirect'] = 'aux'
             else:
-                t['word'] = combine_with_auxiliaries(token)
+                if 'redirect' not in t:
+                    new_word = combine_with_auxiliaries(token)
+                    if t['word'] != new_word:
+                        t['word'] = new_word
+                        t['redirect'] = 'aux'
 
     return tokens
 
@@ -110,71 +115,73 @@ def find_case(token):
         return None
 
 
+def is_determiner(t, head):
+    return t.pos_ == 'DET' and t.dep_ == 'det' and t.head == head
+
+
+def is_determiner_in(t, entity):
+    return t.pos_ == 'DET' and t.dep_ == 'det' and t.head in entity
+
+
+def is_adpunct(t, head):
+    return t.pos_ == 'ADP' and t.dep_ == 'case' and t.head == head
+
+
+def is_adpunct_in(t, entity):
+    return t.pos_ == 'ADP' and t.dep_ == 'case' and t.head in entity
+
+
+def combine_det_case_tok(token):
+    return ' '.join(t.norm_ for t in token.subtree if is_determiner(t, token) or is_adpunct(t, token) or t == token)
+
+
+def combine_det_case_ent(ent):
+    return ' '.join(t.text for t in ent.sent if is_determiner_in(t, ent) or is_adpunct_in(t, ent) or t in ent)
+
+
 def is_part_of_entity(token):
-    return token.head.ent_iob_ == 'B' or token.head.ent_iob_ == 'I'
+    return token.ent_iob_ == 'B' or token.ent_iob_ == 'I'
 
 
 def redirect_articles(tokens):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
         if token is not None:
-            # combine det with non-entity
-            if token.pos_ == 'DET' and token.dep_ == 'det' and not is_part_of_entity(token.head):
-                t['word'] = f'{token.text} {token.head.text}'
-                t['lemma'] = token.head.lemma_
-                t['pos'] = token.head.pos_
-            else:
-                # combine adp with non-entity
-                if token.pos_ == 'ADP' and token.dep_ == 'case' and not is_part_of_entity(token.head):
-                    t['word'] = f'{token.text} {token.head.text}'
+            if is_adpunct(token, token.head) or is_determiner(token, token.head) and not 'redirect' in t:
+                # combine det/case with non-entity
+                if not is_part_of_entity(token.head):
+                    t['word'] = combine_det_case_tok(token.head)
                     t['lemma'] = token.head.lemma_
                     t['pos'] = token.head.pos_
-            # combine det with entity
-            if token.pos_ == 'DET' and token.dep_ == 'det' and is_part_of_entity(token.head):
-                for ent in token.sent.ents:
-                    if token.head in ent:
-                        t['word'] = f'{token.text} {ent.text}'
-                        t['lemma'] = ent.lemma_
-                        t['pos'] = ent.label_
-                        break
-            else:
-                # combine adp with entity
-                if token.pos_ == 'ADP' and token.dep_ == 'case' and is_part_of_entity(token.head):
+                    t['redirect'] = 'det'
+                # combine det/case with entity
+                else:
                     for ent in token.sent.ents:
                         if token.head in ent:
-                            t['word'] = f'{token.text} {ent.text}'
+                            t['word'] = combine_det_case_ent(ent)
                             t['lemma'] = ent.lemma_
                             t['pos'] = ent.label_
+                            t['redirect'] = 'det'
                             break
-            # combine non-entity with det
-            determiner = find_determiner(token)
-            if determiner:
-                t['word'] = f'{determiner.text} {token.text}'
             else:
-                # combine non-entity with adp
-                adpunct = find_case(token)
-                if adpunct:
-                    t['word'] = f'{adpunct.text} {token.text}'
+                if not 'redirect' in t:
+                    # combine non-entity with det/case
+                    new_word = combine_det_case_tok(token)
+                    if new_word != t['word']:
+                        t['word'] = new_word
+                        t['redirect'] = 'det'
 
-        # combine entity with det
-        entity_has_determiner = False
+        # combine entity with det/case
         if t['type'] == 'ENTITY':
-            children = [child['token'] for child in t['children'] if child['type'] == 'WORD']
-            for token in children:
-                determiner = find_determiner(token)
-                if determiner:
-                    t['word'] = f'{determiner.text} {t['display']}'
-                    entity_has_determiner = True
+            # every entity has at least one child which is a word
+            token = t['children'][0]['token']
+            for ent in token.sent.ents:
+                if token in ent:
+                    t['word'] = combine_det_case_ent(ent)
+                    t['lemma'] = ent.lemma_
+                    t['pos'] = ent.label_
+                    t['redirect'] = 'det'
                     break
-        # combine entity with adp
-        if not entity_has_determiner:
-            if t['type'] == 'ENTITY':
-                children = [child['token'] for child in t['children'] if child['type'] == 'WORD']
-                for token in children:
-                    adpunct = find_case(token)
-                    if adpunct:
-                        t['word'] = f'{adpunct.text} {t['display']}'
-                        break
 
     return tokens
 
