@@ -121,12 +121,12 @@ const info = (token: Token): string[] => {
       reflection += ' ' + explain(token.morph.Number, numberTable)
     }
 
-    if (token.morph.Voice && token.morph.Voice !== 'Act') {
-      reflection += ' ' + explain(token.morph.Voice, voiceTable)
-    }
-
     if (reflection) {
       result.push(reflection)
+    }
+
+    if (token.morph.Voice && token.morph.Voice !== 'Act') {
+      result.push(explain(token.morph.Voice, voiceTable))
     }
 
     if (token.morph.Tense) {
