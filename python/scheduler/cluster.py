@@ -3,6 +3,19 @@ from utils.mongo_external import get_collection
 
 def jobs():
     update_aggregate_attributes()
+    recalculate_all()
+
+
+def recalculate_all():
+    collection = get_collection('cluster')
+
+    count = collection.count_documents({
+        'needs_recalculation': True
+    })
+
+    if count == 0:
+        result = collection.update_many({}, {'$set': {'needs_recalculation': True}})
+        print(f"Added field 'needs_recalculation' to clusters: {result.modified_count}/{result.matched_count}")
 
 
 def max_status(statuses):
@@ -30,7 +43,7 @@ def update_aggregate_attributes():
         'needs_recalculation': True
     }
 
-    for entry in cluster.find(query).limit(25):
+    for entry in cluster.find(query).limit(50):
         lead_word = dictionary.find_one({'_id': entry['_id']})
         if not lead_word:
             cluster.delete_one({'_id': entry['_id']})
