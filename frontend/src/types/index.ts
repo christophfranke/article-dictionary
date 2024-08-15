@@ -64,6 +64,7 @@ export type Token = {
   space: string;
   lemma?: string;
   pos?: string;
+  morph?: Record<string, string>;
   ignore: boolean;
 }
 

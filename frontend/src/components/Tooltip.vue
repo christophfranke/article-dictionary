@@ -34,7 +34,7 @@ const props = defineProps({
   }
 });
 
-const explanationTable = {
+const posTable = {
   VERB: 'Verb',
   NOUN: 'Noun',
   ADJ: 'Adjective',
@@ -57,15 +57,93 @@ const explanationTable = {
   AUX: 'Auxiliary Verb',
   X: 'Other',
 }
-const explain = (mark: string): string => {
-  // @ts-ignore
-  return explanationTable[mark] ?? mark
+const genderTable = {
+  'Neut': 'Neutrum',
+  'Fem': 'Feminine',
+  'Masc': 'Masculine',
+}
+const caseTable = {
+  'Nom': 'Nominative',
+  'Gen': 'Genitive',
+  'Dat': 'Dative',
+  'Acc': 'Accusative',
+}
+const numberTable = {
+  'Sing': 'Singular',
+  'Plur': 'Plural',
+}
+const personTable = {
+  '1': 'First Person',
+  '2': 'Second Person',
+  '3': 'Third Person'
+}
+const voiceTable = {
+  'Pass': 'Passive',
+  'Act': 'Active',
+}
+const tenseTable = {
+  'Past': 'Past',
+  'Pres': 'Present',
+  'Fut': 'Future',
+}
+const explain = (mark: string, table: Record<string, string>): string => {
+  if (mark in table) {
+    return table[mark]
+  }
+
+  return mark
 }
 
 const showStatus = computed<string[]>(() => ['new', 'seen', 'known'].filter(status => props.display[status]));
 const isVisible = computed(() => !!props.highlighted.token?.word
     && showStatus.value.includes(props.dictionary.find(props.highlighted.token?.word || '')?.status || '')
 );
+
+const info = (token: Token): string[] => {
+  let result = []
+
+  if (token.pos) {
+    result.push(explain(token.pos, posTable))
+  }
+
+  if (token.morph) {
+    // console.log(token.morph)
+    let reflection = ''
+    if (token.morph.Case) {
+      reflection = explain(token.morph.Case, caseTable)
+    }
+
+    if (token.morph.Person) {
+      reflection += ' ' + explain(token.morph.Person, personTable)
+    }
+
+    if (token.morph.Number) {
+      reflection += ' ' + explain(token.morph.Number, numberTable)
+    }
+
+    if (token.morph.Voice && token.morph.Voice !== 'Act') {
+      reflection += ' ' + explain(token.morph.Voice, voiceTable)
+    }
+
+    if (reflection) {
+      result.push(reflection)
+    }
+
+    if (token.morph.Tense) {
+      result.push(explain(token.morph.Tense, tenseTable))
+    }
+
+    if (token.morph.Gender) {
+      result.push(explain(token.morph.Gender, genderTable))
+    }
+  }
+
+  if (token.lemma && token.lemma !== token.word) {
+    result.push(token.lemma)
+  }
+
+  return result
+}
 
 const content = computed(() => {
   if (isVisible.value) {
@@ -83,12 +161,12 @@ const content = computed(() => {
     }
 
     if (word.needsRetranslate) {
-      return { text: '...', info: __('translating') }
+      return { text: '...', info: [__('translating')] }
     }
 
     return {
       text: word.translations.join(', ') || '',
-      info: token.pos ? explain(token.pos) : null
+      info: info(token)
     }
   }
 
@@ -156,7 +234,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="isVisible && !!content" class="tooltip" :style="{ top: `${position.y}px`, left: `${position.x}px` }">
-		{{ content.text }}<span v-if="content.info"> | <i class="italic">{{ content.info }}</i></span>
+		{{ content.text }}<span v-for="info in content.info"> | <i class="italic">{{ info }}</i></span>
   </div>	
 </template>
 
@@ -165,6 +243,7 @@ onBeforeUnmount(() => {
 
 .tooltip {
   position: fixed;
+  margin: 0 50px 50px 0;
   z-index: 10;
   background-color: $tooltip-background-color;
   color: $tooltip-color;
