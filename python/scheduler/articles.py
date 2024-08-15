@@ -44,10 +44,9 @@ def initiate_reprocessing_of_articles():
 
     # Update all documents that match the query
     if count == 0:
+        get_collection('dictionary').update_many({}, {'$set': {'needs_clustering': True}})
         result = collection.update_many({}, {'$set': {'needs_processing': True}})
         print(f"Added field 'needs_processing' to documents: {result.modified_count}/{result.matched_count}")
-    else:
-        print(f"Some documents ({count}) need processing, no reset.")
 
 
 def add_language():
