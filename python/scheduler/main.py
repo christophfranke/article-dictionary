@@ -41,7 +41,7 @@ def run(debug=False):
     scheduler.add_job(statistics.jobs, 'interval', hours=1, id='statistics_jobs')
     scheduler.add_job(dictionary.jobs, 'interval', seconds=1, id='dictionary_jobs')
     scheduler.add_job(dictionary.lazy_jobs, 'interval', seconds=10, id='dictionary_lazy_jobs')
-    # scheduler.add_job(cluster.jobs, 'interval', seconds=30, id='cluster_jobs')
+    scheduler.add_job(cluster.jobs, 'interval', seconds=30, id='cluster_jobs')
     scheduler.add_job(articles.jobs, 'interval', seconds=5, id='articles_jobs')
     scheduler.add_job(database.jobs, 'interval', hours=12, id='database_jobs')
 
