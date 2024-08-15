@@ -60,23 +60,36 @@ def update_clusters():
         'lemma': {'$exists': True},
     }
 
-    words = dictionary.find(query, {'original': 1, 'lemma': 1}).limit(25)
+    words = dictionary.find(query, {'original': 1, 'lemma': 1}).limit(10)
 
     for word in words:
         lemma = word.get('lemma')
         if word['original'] == lemma:
             leader = word
         else:
-            leader = dictionary.find_one({'original': lemma}, {'_id': 1, 'original': 1})
+            leader = dictionary.find_one({'original': lemma}, {'_id': 1})
 
         if leader is None:
             print(f"Could not update word {word.get('original')}, lemma '{lemma}' is not in dictionary.")
             continue
 
+        cluster_id = leader.get('_id')
+        statuses = [doc['status'] for doc in dictionary.find({'cluster_id': cluster_id}, {'status': 1})]
+
+        if 'known' in statuses:
+            cluster_status = 'known'
+        elif 'seen' in statuses:
+            cluster_status = 'seen'
+        elif all(status == 'ignore' for status in statuses):
+            cluster_status = 'ignore'
+        else:
+            cluster_status = 'new'
+
         dictionary.update_one({'_id': word['_id']}, {'$set': {
             'needs_clustering': False,
-            'cluster_id': leader.get('_id')
+            'cluster_id': leader.get('_id'),
+            'status': cluster_status,
         }})
 
         cluster_size = dictionary.count_documents({'cluster_id': leader['_id']})
-        print(f'Updated cluster: {word['original']} -> {leader['original']} (size: {cluster_size})')
+        print(f'Updated cluster: {word['original']} -> {lemma} (size: {cluster_size})')

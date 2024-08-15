@@ -29,7 +29,6 @@ def serialize_many(words):
 def update_word_data(word, data):
     if 'translations' in data:
         word['needs_retranslate'] = False
-        word['needs_clustering'] = True
         word['translation_origin'] = 'user'
 
     if 'review_level' not in word:

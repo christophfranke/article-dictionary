@@ -94,8 +94,6 @@ def redirect_auxiliaries(tokens):
                         t['word'] = new_word
                         t['redirect'] = 'aux'
 
-    return tokens
-
 
 def find_determiner(token):
     try:
@@ -147,7 +145,7 @@ def redirect_articles(tokens):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
         if token is not None:
-            if is_adpunct(token, token.head) or is_determiner(token, token.head) and not 'redirect' in t:
+            if is_adpunct(token, token.head) or is_determiner(token, token.head) and 'redirect' not in t:
                 # combine det/case with non-entity
                 if not is_part_of_entity(token.head):
                     t['word'] = combine_det_case_tok(token.head)
@@ -164,7 +162,7 @@ def redirect_articles(tokens):
                             t['redirect'] = 'det'
                             break
             else:
-                if not 'redirect' in t:
+                if 'redirect' not in t:
                     # combine non-entity with det/case
                     new_word = combine_det_case_tok(token)
                     if new_word != t['word']:
@@ -183,13 +181,10 @@ def redirect_articles(tokens):
                     t['redirect'] = 'det'
                     break
 
-    return tokens
-
 
 def redirect(tokens, sent):
-    return redirect_articles(
-        redirect_auxiliaries(tokens)
-    )
+    redirect_articles(tokens)
+    redirect_auxiliaries(tokens)
 
 
 def finalize(tree):
@@ -216,7 +211,8 @@ def create_token_tree(tokens, docs, language):
         for sent in doc.sents:
             prespace, stripped = strip_ignore([tokens[tok.i] for tok in sent])
             display = prespace + ''.join([f'{token['display']}{token['space']}' for token in stripped])
-            children = redirect(collapse(stripped, sent), sent)
+            children = collapse(stripped, sent)
+            redirect(children, sent)
             ignore_if_wrong_language(children, language)
             _, stripped_children = strip_ignore(children)
             tree.append({
