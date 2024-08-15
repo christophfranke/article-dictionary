@@ -13,7 +13,7 @@ def jobs():
 
 
 def repair():
-    # initiate_reprocessing_of_articles()
+    initiate_reprocessing_of_articles()
     add_reading_index()
     add_language()
     add_dates()
