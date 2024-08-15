@@ -34,6 +34,9 @@ const props = defineProps({
   }
 });
 
+const inflectable = (x: string) => ['VERB', 'AUX'].includes(x)
+const declinable = (x: string) => ['NOUN', 'ADJ', 'PROPN', 'NUM', 'PERSON', 'GPE', 'PRODUCT', 'EVENT', 'LOC', 'PRON', 'ORG', 'DET', 'X'].includes(x)
+
 const posTable = {
   VERB: 'Verb',
   NOUN: 'Noun',
@@ -106,14 +109,14 @@ const info = (token: Token): string[] => {
     result.push(explain(token.pos, posTable))
   }
 
-  if (token.morph) {
-    // console.log(token.morph)
+  if (token.morph && token.pos) {
+    // console.log(token.display, token.word, token.morph)
     let reflection = ''
-    if (token.morph.Case) {
+    if (token.morph.Case && declinable(token.pos)) {
       reflection = explain(token.morph.Case, caseTable)
     }
 
-    if (token.morph.Person) {
+    if (token.morph.Person && inflectable(token.pos)) {
       reflection += ' ' + explain(token.morph.Person, personTable)
     }
 
@@ -125,16 +128,16 @@ const info = (token: Token): string[] => {
       result.push(reflection)
     }
 
-    if (token.morph.Voice && token.morph.Voice !== 'Act') {
+    if (token.morph.Gender && declinable(token.pos)) {
+      result.push(explain(token.morph.Gender, genderTable))
+    }
+
+    if (token.morph.Voice && token.morph.Voice !== 'Act' && inflectable(token.pos)) {
       result.push(explain(token.morph.Voice, voiceTable))
     }
 
-    if (token.morph.Tense) {
+    if (token.morph.Tense && inflectable(token.pos)) {
       result.push(explain(token.morph.Tense, tenseTable))
-    }
-
-    if (token.morph.Gender) {
-      result.push(explain(token.morph.Gender, genderTable))
     }
   }
 
