@@ -90,7 +90,7 @@ const contentDisplay = {
     new: false,
     seen: false,
     mark: true,
-    underline: false,
+    underline: true,
   }
 };
 
