@@ -1,5 +1,6 @@
 export interface PartialWord {
   id: string;
+  clusterId: string;
   original: string;
   translations: string[];
   status: string;
