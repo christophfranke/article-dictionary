@@ -60,7 +60,7 @@ def update_clusters():
         'lemma': {'$exists': True},
     }
 
-    words = dictionary.find(query, {'original': 1, 'lemma': 1}).limit(10)
+    words = dictionary.find(query, {'original': 1, 'lemma': 1, 'status': 1}).limit(150)
 
     for word in words:
         lemma = word.get('lemma')
@@ -74,13 +74,14 @@ def update_clusters():
             continue
 
         cluster_id = leader.get('_id')
+        status = word.get('status', 'new')
         statuses = [doc['status'] for doc in dictionary.find({'cluster_id': cluster_id}, {'status': 1})]
 
-        if 'known' in statuses:
+        if 'known' in statuses or status == 'known':
             cluster_status = 'known'
-        elif 'seen' in statuses:
+        elif 'seen' in statuses or status == 'seen':
             cluster_status = 'seen'
-        elif all(status == 'ignore' for status in statuses):
+        elif all(status == 'ignore' for status in statuses) and status == 'ignore':
             cluster_status = 'ignore'
         else:
             cluster_status = 'new'
