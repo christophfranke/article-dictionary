@@ -60,6 +60,10 @@ const filterFn = (word: PartialWord) => {
     return false;
   }
 
+  if (clusterOnly.value) {
+    return word.clusterId == word.id
+  }
+
   if (filter.value) {
     return (
       word.original.toLowerCase().includes(filter.value.toLowerCase()) ||
@@ -82,6 +86,7 @@ const statusFilters = ref({
   known: true,
   ignore: false,
 } as { [key: string]: boolean });
+const clusterOnly = ref(true)
 
 onMounted(async () => {
   await new Promise(resolve => requestAnimationFrame(resolve))
@@ -130,6 +135,11 @@ onMounted(async () => {
           <Input id="ignoreCheckbox" type="checkbox" v-model="statusFilters.ignore" />
           {{ __('Ignore') }}
         </Label>
+
+        <Label for="clustCheckbox">
+          <Input id="clustCheckbox" type="checkbox" v-model="clusterOnly" />
+          {{ __('Base Form') }}
+        </Label>
       </div>
 
       <DictionaryTable :dictionary="dictionary!" :display="tableDisplayConfig" v-if="isDictionaryReady" />
@@ -156,6 +166,7 @@ h1 {
 
 label {
   margin-bottom: 5px;
+  white-space: nowrap;
 }
 
 .status-filters {

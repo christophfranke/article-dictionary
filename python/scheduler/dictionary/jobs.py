@@ -60,7 +60,7 @@ def update_clusters():
         'lemma': {'$exists': True},
     }
 
-    words = dictionary.find(query, {'original': 1, 'lemma': 1, 'status': 1}).limit(150)
+    words = dictionary.find(query, {'original': 1, 'lemma': 1, 'status': 1}).limit(10)
 
     for word in words:
         lemma = word.get('lemma')
