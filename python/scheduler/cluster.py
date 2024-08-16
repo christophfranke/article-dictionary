@@ -3,7 +3,7 @@ from utils.mongo_external import get_collection
 
 def jobs():
     update_aggregate_attributes()
-    recalculate_all()
+    # recalculate_all()
 
 
 def recalculate_all():
