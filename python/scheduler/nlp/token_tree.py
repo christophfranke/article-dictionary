@@ -65,6 +65,8 @@ def collapse_entities(tokens, sent):
             t['lemma'] += children[-1]['lemma']
             t['space'] = children[-1]['space']
             t['word'] = t['display']
+            # TODO: find root token instead
+            t['morph'] = children[0]['token'].morph.to_dict()
 
     return result
 
@@ -74,43 +76,25 @@ def collapse(tokens, sent):
 
 
 def combine_with_auxiliaries(head):
-    subtokens = (sub.norm_ for sub in head.subtree if sub == head or (sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == head))
+    subtokens = (sub.text for sub in head.subtree if sub == head or (sub.pos_ == 'AUX' and sub.dep_ == 'aux' and sub.head == head))
     return ' '.join(subtokens)
 
 
 def redirect_auxiliaries(tokens):
     for t in tokens:
-        token = t['token'] if t['type'] == 'WORD' else None
+        token = t['token'] if t['type'] == 'WORD' and 'redirect' not in t else None
         if token is not None:
-            if token.pos_ == 'AUX' and token.dep_ == 'aux' and 'redirect' not in t:
+            if token.pos_ == 'AUX' and token.dep_ == 'aux':
                 t['word'] = combine_with_auxiliaries(token.head)
                 t['lemma'] = token.head.lemma_
                 t['pos'] = token.head.pos_
+                t['morph'] = token.head.morph.to_dict()
                 t['redirect'] = 'aux'
             else:
-                if 'redirect' not in t:
-                    new_word = combine_with_auxiliaries(token)
-                    if t['word'] != new_word:
-                        t['word'] = new_word
-                        t['redirect'] = 'aux'
-
-
-def find_determiner(token):
-    try:
-        return next(
-            t for t in token.children if t.pos_ == 'DET' and t.dep_ == 'det' and t.head == token
-        )
-    except StopIteration:
-        return None
-
-
-def find_case(token):
-    try:
-        return next(
-            t for t in token.children if t.pos_ == 'ADP' and t.dep_ == 'case' and t.head == token
-        )
-    except StopIteration:
-        return None
+                new_word = combine_with_auxiliaries(token)
+                if t['word'] != new_word:
+                    t['word'] = new_word
+                    t['redirect'] = 'aux'
 
 
 def is_determiner(t, head):
@@ -130,7 +114,7 @@ def is_adpunct_in(t, entity):
 
 
 def combine_det_case_tok(token):
-    return ' '.join(t.norm_ for t in token.subtree if is_determiner(t, token) or is_adpunct(t, token) or t == token)
+    return ' '.join(t.text for t in token.subtree if is_determiner(t, token) or is_adpunct(t, token) or t == token)
 
 
 def combine_det_case_ent(ent):
@@ -144,13 +128,16 @@ def is_part_of_entity(token):
 def redirect_articles(tokens):
     for t in tokens:
         token = t['token'] if t['type'] == 'WORD' else None
+        if 'redirect' in t:
+            continue
         if token is not None:
-            if is_adpunct(token, token.head) or is_determiner(token, token.head) and 'redirect' not in t:
+            if is_adpunct(token, token.head) or is_determiner(token, token.head):
                 # combine det/case with non-entity
                 if not is_part_of_entity(token.head):
                     t['word'] = combine_det_case_tok(token.head)
                     t['lemma'] = token.head.lemma_
                     t['pos'] = token.head.pos_
+                    t['morph'] = token.head.morph.to_dict()
                     t['redirect'] = 'det'
                 # combine det/case with entity
                 else:
@@ -159,15 +146,15 @@ def redirect_articles(tokens):
                             t['word'] = combine_det_case_ent(ent)
                             t['lemma'] = ent.lemma_
                             t['pos'] = ent.label_
+                            t['morph'] = ent.root.morph.to_dict()
                             t['redirect'] = 'det'
                             break
             else:
-                if 'redirect' not in t:
-                    # combine non-entity with det/case
-                    new_word = combine_det_case_tok(token)
-                    if new_word != t['word']:
-                        t['word'] = new_word
-                        t['redirect'] = 'det'
+                # combine non-entity with det/case
+                new_word = combine_det_case_tok(token)
+                if new_word != t['word']:
+                    t['word'] = new_word
+                    t['redirect'] = 'det'
 
         # combine entity with det/case
         if t['type'] == 'ENTITY':

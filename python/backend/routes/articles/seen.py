@@ -29,7 +29,7 @@ def seen_article():
         tokens = get_tokens(article.get('tree', []))
         print(f'updating words for seen article {article.get("title")} ({old_index} - {new_index})')
 
-        words_to_update = [token['word'] for token in tokens[old_index:min(new_index, len(tokens))]]
+        words_to_update = list(set([token['word'] for token in tokens[old_index:min(new_index, len(tokens))]]))
 
         if words_to_update:
             print(f'viewed words: {words_to_update}')

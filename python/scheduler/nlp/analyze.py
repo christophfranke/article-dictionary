@@ -36,7 +36,7 @@ def should_ignore_token(token, language):
 def get_token(token, lang):
     return {
         'display': token.text,
-        'word': token.norm_,
+        'word': token.text,
         'space': token.whitespace_,
         'lemma': token.lemma_,
         'pos': token.pos_,
