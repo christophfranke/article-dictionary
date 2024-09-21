@@ -8,6 +8,9 @@ from text_processing.dictionary import add_text
 from bson import ObjectId
 
 
+WORD_CLUSTER_UPDATE_LIMIT = 1000
+
+
 def retranslate_word():
     try:
         dictionary = get_collection('dictionary')
@@ -60,18 +63,50 @@ def update_clusters():
         'lemma': {'$exists': True},
     }
 
-    words = dictionary.find(query, {'original': 1, 'lemma': 1, 'status': 1}).limit(10)
+    # words_to_update = dictionary.count_documents(query)
+    # print(f'\n\n\nUpdating cluster_id for {WORD_CLUSTER_UPDATE_LIMIT}/{words_to_update} words:\n')
+
+    words = dictionary.find(query).limit(WORD_CLUSTER_UPDATE_LIMIT)
 
     for word in words:
         lemma = word.get('lemma')
         if word['original'] == lemma:
             leader = word
         else:
-            leader = dictionary.find_one({'original': lemma}, {'_id': 1})
+            leader = dictionary.find_one({'original': lemma, 'user_id': word['user_id']})
+            if leader is not None:
+                if leader['original'] != leader['lemma']:
+                    new_leader = dictionary.find_one({'original': leader['lemma'], 'user_id': word['user_id']})
+                    if new_leader is None:
+                        dictionary.update_one({'_id': leader['_id']}, {'$set': {'lemma': leader['original'], 'cluster_id': leader['_id']}})
+                        print(f'Updated lemma to prevent circular lemma dependency: {leader['lemma']} -> {leader['original']}.')
+                    else:
+                        leader = new_leader
+                        if leader['original'] != leader['lemma']:
+                            dictionary.update_one({'_id': leader['_id']}, {'$set': {'lemma': leader['original'], 'cluster_id': leader['_id']}})
+                            print(f'Updated lemma to prevent circular lemma dependency: {leader['lemma']} -> {leader['original']}.')
 
         if leader is None:
-            print(f"Could not update word {word.get('original')}, lemma '{lemma}' is not in dictionary.")
-            continue
+            leader = {
+                'original': lemma,
+                'translations': [lemma],
+                'status': word['status'],
+                'last_viewed': None,
+                'review_level': word['review_level'],
+                'needs_retranslate': True,
+                'needs_clustering': True,
+                'translation_origin': None,
+                'cluster_id': None,
+                'frequency': 0,
+                'source_language': word['source_language'],
+                'target_language': word['target_language'],
+                'user_id': word['user_id'],
+                'lemma': lemma,
+            }
+            result = dictionary.insert_one(leader)
+            leader['_id'] = result.inserted_id
+
+            print(f"Inserted lemma {lemma} for {word.get('original')}, because it was not in the dictionary.")
 
         cluster_id = leader.get('_id')
         status = word.get('status', 'new')
@@ -92,5 +127,14 @@ def update_clusters():
             'status': cluster_status,
         }})
 
+        cluster = get_collection('cluster')
+        cluster_entry = cluster.update_one(
+            {'_id': leader['_id']},
+            {'$set': {
+                'needs_recalculation': True
+            }},
+            upsert=True
+        )
+
         cluster_size = dictionary.count_documents({'cluster_id': leader['_id']})
-        print(f'Updated cluster: {word['original']} -> {lemma} (size: {cluster_size})')
+        print(f'Updated cluster_id: {word['original']} -> {lemma} (size: {cluster_size})')

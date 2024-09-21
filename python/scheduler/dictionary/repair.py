@@ -7,12 +7,92 @@ from text_processing.dictionary import add_text
 from bson import ObjectId
 
 
+def get_tokens(tree):
+    result = []
+    for elem in tree:
+        elem_type = elem.get('type')
+        if elem_type == 'SENTENCE':
+            result.extend(get_tokens(elem['children']))
+        elif elem_type == 'WORD':
+            result.append(elem)
+        elif elem_type == 'ENTITY':
+            result.append(elem)
+        else:
+            print(f'Unknown type: {elem}')
+
+    return result
+
+
+article_user_cache = {}
+
+
+def fix_no_lemma():
+    cluster = get_collection('cluster')
+    dictionary = get_collection('dictionary')
+
+    query = {
+        'lemma': {'$exists': False}
+    }
+
+    words = dictionary.find(query)
+    for word in words:
+        user_id = word.get('user_id')
+        if user_id is None:
+            dictionary.delete_one({'_id': word['_id']})
+            if word.get('cluster_id'):
+                cluster.update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+            print(f'Removed {word['original']}: no user')
+            continue
+
+        article_collection = get_collection('articles')
+        articles = article_user_cache.get(
+            str(user_id),
+            article_collection.find({'user_id': user_id})
+        )
+        article_user_cache[str(user_id)] = articles
+
+        article_count = article_collection.count_documents({'user_id': user_id})
+        if article_count == 0:
+            user = get_collection('users').find_one({'_id': user_id})
+            print(f'Could not find articles for user {user['email']}. Ignored')
+            continue
+
+        has_found = False
+        for article in articles:
+            tokens = get_tokens(article.get('tree', []))  # Get tokens from the article
+
+            # Find a token where token['word'] == word['original']
+            matching_token = next((token for token in tokens if token.get('word') == word['original'] or token.get('lemma') == word['original']), None)
+
+            if matching_token is not None:
+                # Update the dictionary with the found lemma
+                lemma = matching_token.get('lemma')
+                if lemma:
+                    dictionary.update_one(
+                        {'_id': word['_id']},
+                        {'$set': {
+                            'lemma': lemma,
+                            'needs_clustering': True,
+                        }}
+                    )
+                    print(f'Set lemma: {word["original"]} -> {lemma}')
+                    has_found = True
+                    break
+                else:
+                    print(f'Warning: Token has no lemma: {str(token)}')
+
+        if not has_found:
+            dictionary.delete_one({'_id': word['_id']})
+            if word.get('cluster_id'):
+                cluster.update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+            print(f'Removed {word['original']}: No matching token found in {article_count} articles.')
+
+
 def remove_no_original():
     dictionary = get_collection('dictionary')
 
-    # Find word that meets the specified criteria
     query = {
-        'original': {'$exists': False},  # Document must have the 'original' field
+        'original': {'$exists': False},
     }
     word = dictionary.find_one(query)
 
@@ -90,35 +170,6 @@ def remove_duplicates():
 
     if not duplicate_groups:
         print('No duplicates found.')
-
-
-def add_cluster_id():
-    dictionary = get_collection('dictionary')
-
-    query = {
-        '$and': [
-            {
-                '$or': [
-                    {'needs_clustering': {'$exists': False}},
-                    {'needs_clustering': True}
-                ]
-            },
-            {
-                '$or': [
-                    {'cluster_id': {'$exists': False}},
-                    {'cluster_id': None}
-                ]
-            }
-        ]
-    }
-
-    words = dictionary.find(query)
-
-    for word in words:
-        word['cluster_id'] = word['_id']
-        word['needs_clustering'] = True
-        dictionary.replace_one({'_id': word['_id']}, word)
-        print('Added cluster_id to word: ' + word['original'])
 
 
 def reset_clusters():

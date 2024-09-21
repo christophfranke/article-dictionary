@@ -1,5 +1,5 @@
 from .jobs import retranslate_word, update_clusters
-from .repair import remove_duplicates, remove_invalid_src_or_target, remove_no_original, add_cluster_id, add_review_level_and_last_reviewed, add_translation_origin
+from .repair import remove_duplicates, remove_invalid_src_or_target, remove_no_original, add_review_level_and_last_reviewed, add_translation_origin, fix_no_lemma
 
 
 def jobs():
@@ -16,6 +16,6 @@ def repair():
     # remove_duplicates()
     remove_invalid_src_or_target()
     remove_no_original()
-    add_cluster_id()
     add_review_level_and_last_reviewed()
     add_translation_origin()
+    fix_no_lemma()

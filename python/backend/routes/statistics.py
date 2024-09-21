@@ -14,6 +14,7 @@ def get_week():
     result = calculate_statistics(7, current_user.id)
     return jsonify(result)
 
+
 @statistics.route('/month', methods=['GET'])
 @login_required
 def get_month():
@@ -24,15 +25,15 @@ def get_month():
 def calculate_statistics(days, user_id):
     statistics_collection = get_collection('statistics')
 
-    # Calculate the date 7 days ago from today
-    seven_days_ago = datetime.utcnow() - timedelta(days=days + 1)
+    # Calculate the date X days ago from today
+    x_days_ago = datetime.utcnow() - timedelta(days=days + 1)
 
     # MongoDB Aggregation Pipeline
     pipeline = [
         {
             '$match': {
                 'timestamp': {
-                    '$gte': seven_days_ago,
+                    '$gte': x_days_ago,
                     '$lt': datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
                 },
                 'user_id': ObjectId(user_id)  # Filter by current user_id

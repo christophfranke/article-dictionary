@@ -5,6 +5,7 @@ from bson import ObjectId
 
 from .helpers import serialize_many, update_word_data
 
+
 @login_required
 def update_many():
     dictionary_collection = get_collection('dictionary')

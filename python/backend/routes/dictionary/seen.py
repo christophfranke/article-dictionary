@@ -40,6 +40,11 @@ def seen_word(id):
     })
 
     if result.modified_count > 0:
+        if word.get('cluster_id') is not None:
+            if old_review_level != review_level or old_status != status:
+                get_collection('cluster').update_one({'_id': word['cluster_id']}, {'$set': {'needs_recalculation': True}}, upsert=True)
+                print('cluster needs recalculation, has been seen', word.get('original'))
+
         return jsonify({
             'id': id,
             'lastViewed': last_viewed,

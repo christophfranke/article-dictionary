@@ -32,7 +32,8 @@ def run(debug=False):
     # statistics.repair()
     # user.repair()
     articles.repair()
-    # dictionary.repair()
+    dictionary.repair()
+    cluster.repair()
 
     # Initialize the scheduler
     scheduler = BackgroundScheduler()
@@ -48,6 +49,7 @@ def run(debug=False):
     scheduler.add_job(dictionary.repair, 'interval', hours=2.7, id='dictionary_repair')
     scheduler.add_job(articles.repair, 'interval', hours=3.1, id='articles_repair')
     scheduler.add_job(user.repair, 'interval', hours=5.3, id='user_repair')
+    scheduler.add_job(cluster.repair, 'interval', minutes=1.3, id='cluster_repair')
 
     # Start the scheduler
     try:
