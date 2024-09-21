@@ -97,6 +97,10 @@ def update_aggregate_attributes():
             print(f'Deleted cluster, because it has no lead word: {entry.get("_id", "No Id")} ({str(entry.get("originals", []))}.')
             continue
 
+        if lead_word['needs_clustering']:
+            print(f'Skip cluster data, needs clustering first: {lead_word["original"]}')
+            continue
+
         if ObjectId(lead_word['cluster_id']) != ObjectId(lead_word['_id']):
             new_cluster_leader = dictionary.find_one({'_id': lead_word['cluster_id']})
             cluster.delete_one({'_id': entry['_id']})
@@ -107,10 +111,6 @@ def update_aggregate_attributes():
                 print(f'Lead word: {str(lead_word['original'])} has new cluster leader {str(new_cluster_leader['original'])}, cluster dropped: {entry["_id"]} ({lead_word["original"]})')
             else:
                 print(f'Lead word: {str(lead_word['original'])} has no cluster leader, cluster dropped: {entry["_id"]} ({lead_word["original"]})')
-            continue
-
-        if lead_word['needs_clustering']:
-            print(f'Skip cluster data, needs clustering first: {lead_word["original"]}')
             continue
 
         cluster_words = list(dictionary.find({'cluster_id': entry['_id']}))
