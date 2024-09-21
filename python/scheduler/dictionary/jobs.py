@@ -8,7 +8,7 @@ from text_processing.dictionary import add_text
 from bson import ObjectId
 
 
-WORD_CLUSTER_UPDATE_LIMIT = 1000
+WORD_CLUSTER_UPDATE_LIMIT = 100
 
 
 def retranslate_word():

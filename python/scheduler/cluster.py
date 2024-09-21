@@ -2,7 +2,7 @@ from utils.mongo_external import get_collection
 from bson import ObjectId
 
 
-CLUSTER_ATTRIBUTE_UPDATE_LIMIT = 250
+CLUSTER_ATTRIBUTE_UPDATE_LIMIT = 50
 
 
 def jobs():
