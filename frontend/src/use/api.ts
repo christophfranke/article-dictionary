@@ -48,10 +48,13 @@ interface UseApi {
   fetchAuthorized: FetchFn;
   errorMessage: Ref<string | null>;
   isLoading: ComputedRef<boolean>;
+  isSending: ComputedRef<boolean>;
 }
 
 const loadingCounter = ref<number>(0);
+const sendingCounter = ref<number>(0);
 const isLoading = computed<boolean>(() => loadingCounter.value > 0);
+const isSending = computed<boolean>(() => sendingCounter.value > 0);
 export default (): UseApi => {
   const router = useRouter();
   const route = useRoute();
@@ -59,9 +62,18 @@ export default (): UseApi => {
   const errorMessage = ref<string | null>(null);
 
   const fetchAuthorized = async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
+    let isSendingRequest = false
     try {
       loadingCounter.value += 1;
       errorMessage.value = null;
+
+      if (args[1] && args[1].method) {
+        const method = args[1].method
+        if (typeof method === 'string' && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase())) {
+          isSendingRequest = true
+          sendingCounter.value += 1
+        }
+      }
 
       if (SIMULATE_DELAY) {
         await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
@@ -72,12 +84,18 @@ export default (): UseApi => {
         redirectToLogin(router, route);
 
         loadingCounter.value -= 1;
+        if (isSendingRequest) {
+          sendingCounter.value -= 1;
+        }
         return null;
       }
 
       if (response.ok) {
         const data = await response.json() as T;
         loadingCounter.value -= 1;
+        if (isSendingRequest) {
+          sendingCounter.value -= 1;
+        }
         return data;
       }
 
@@ -92,6 +110,9 @@ export default (): UseApi => {
     }
 
     loadingCounter.value -= 1;
+    if (isSendingRequest) {
+      sendingCounter.value -= 1;
+    }
     return null;
   };
 
@@ -100,5 +121,6 @@ export default (): UseApi => {
     fetchAuthorized,
     errorMessage,
     isLoading,
+    isSending,
   }
 }

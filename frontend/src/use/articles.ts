@@ -1,4 +1,4 @@
-import { ref, watchEffect } from 'vue';
+import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import type { Ref } from 'vue';
 
@@ -18,6 +18,7 @@ import { profile } from './user';
 
 let articles: { [key: string]: ArticleCollection } = {}
 let isLoadingArticles: Ref<boolean> | null = null
+let isSendingArticles: Ref<boolean> | null = null
 let errorMessageArticles: Ref<string | null> | null = null
 export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	if (!profile.isLoggedIn || !profile.email) {
@@ -27,6 +28,7 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 
 		return {
 			isLoading: ref(false),
+			isSending: ref(false),
 			articles: createEmptyArticleView()
 		}
 	}
@@ -34,11 +36,12 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	const key = profile.email;
 
 	if (!articles[key]) {		
-		const { fetchAuthorized, isLoading, errorMessage } = useApi()
+		const { fetchAuthorized, isLoading, isSending, errorMessage } = useApi()
 		const articleApi = createArticleApi(fetchAuthorized)
 		const articleCollection = createArticleCollection(articleApi);
 		
 		isLoadingArticles = isLoading;
+		isSendingArticles = isSending;
 		errorMessageArticles = errorMessage;
 		articles[key] = createArticleStorage(articleCollection, `${key}-articles`);
 	}
@@ -46,6 +49,7 @@ export const useArticleView = (filter: FilterFunction = x => !!x) => {
 	return {
 		articles: createArticleView(articles[key], filter),
 		isLoading: isLoadingArticles!,
+		isSending: isSendingArticles!,
 		errorMessage: errorMessageArticles!
 	}
 }

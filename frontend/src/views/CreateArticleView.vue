@@ -17,7 +17,7 @@ const article = ref<ArticleData>({
 });
 
 const router = useRouter();
-const { articles, errorMessage, isLoading } = useArticleView();
+const { articles, errorMessage, isSending } = useArticleView();
 
 const submitForm = async (): Promise<void> => {
   const newArticle = await articles.add(article.value);
@@ -31,7 +31,7 @@ const submitForm = async (): Promise<void> => {
 <template>
   <div class="create-article">
     <Headline>{{ __('Create Article') }}</Headline>
-    <ArticleEditForm :article="article" :isLoading="isLoading" :errorMessage="errorMessage" @submit="submitForm" />
+    <ArticleEditForm :article="article" :isLoading="isSending" :errorMessage="errorMessage" @submit="submitForm" />
   </div>
 </template>
 
