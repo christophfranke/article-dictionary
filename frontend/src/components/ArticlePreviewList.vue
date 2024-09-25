@@ -8,30 +8,30 @@ import __ from '@/i18n'
 
 
 const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  articleList: {
-    type: Array as unknown as () => ArticlePreview[],
-    required: true,
-  },
-  showCreateButton: {
-    type: Boolean,
-    default: true
-  }
+    title: {
+        type: String,
+        required: true
+    },
+    articleList: {
+        type: Array as unknown as () => ArticlePreview[],
+        required: true,
+    },
+    showCreateButton: {
+        type: Boolean,
+        default: true
+    }
 })
 </script>
 
 <template>
-  <template v-if="props.articleList.length > 0">
-    <Headline type="h2" class="title">{{ props.title }}</Headline>
-    <div class="article-list">
-      <ArticlePreviewComponent v-for="article in props.articleList" :key="article.id" :article="article" />
-    </div>
+    <template v-if="props.articleList.length > 0">
+        <Headline type="h2" class="title">{{ props.title }}</Headline>
+        <div class="article-list">
+            <ArticlePreviewComponent v-for="article in props.articleList" :key="article.id" :article="article" />
+        </div>
 
-    <ButtonLink v-if="props.showCreateButton" to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
-  </template>
+        <ButtonLink v-if="props.showCreateButton" to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
+    </template>
 </template>
 
 <style scoped>

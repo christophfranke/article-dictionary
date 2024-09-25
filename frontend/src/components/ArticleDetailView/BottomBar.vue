@@ -6,28 +6,28 @@ import ErroMessage from '@/elements/ErrorMessage.vue';
 import __ from '@/i18n'
 
 const props = defineProps({
-  articleStatus: String,
-  isLoadingButton: Boolean,
-  errorMessage: String as PropType<string | null>,
+    articleStatus: String,
+    isLoadingButton: Boolean,
+    errorMessage: String as PropType<string | null>,
 });
 
 const emit = defineEmits(['markAsRead']);
 
 const onMarkAsRead = () => {
-  emit('markAsRead');
+    emit('markAsRead');
 };
 </script>
 
 <template>
-  <div>
-    <Button
-      v-if="props.articleStatus !== 'read'"
-      :disabled="props.isLoadingButton"
-      class="mark-as-read"
-      @click="onMarkAsRead"
-    >{{__('Mark as read')}}</Button>
-    <ErroMessage :message="props.errorMessage" />
-  </div>
+    <div>
+        <Button
+            v-if="props.articleStatus !== 'read'"
+            :disabled="props.isLoadingButton"
+            class="mark-as-read"
+            @click="onMarkAsRead"
+        >{{__('Mark as read')}}</Button>
+        <ErroMessage :message="props.errorMessage" />
+    </div>
 </template>
 
 <style scoped>

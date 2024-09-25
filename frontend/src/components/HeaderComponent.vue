@@ -10,25 +10,25 @@ const lang = ref<string>('en')
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <nav v-if="profile.isLoggedIn">
-        <RouterLink to="/home">{{ __('Home') }}</RouterLink>
-        <RouterLink to="/articles">{{ __('Articles') }}</RouterLink>
-        <RouterLink to="/dictionary">{{ __('Dictionary') }}</RouterLink>
-        <RouterLink to="/dictionary/review">{{ __('Review') }}</RouterLink>
-        <RouterLink to="/">{{ __('Introduction') }}</RouterLink>
-        <ProfileLink class="profile-link" />
-        <LogoutLink />
-      </nav>
-      <nav v-else>
-        <RouterLink to="/">{{ __('Introduction') }}</RouterLink>
-        <ProfileLink class="profile-link" />
-        <RouterLink to="/register">{{ __('Register') }}</RouterLink>
-        <Select class="interface" type="inline" :options="supportedLanguages" v-model="profile.interfaceLanguage" />
-      </nav>
-    </div>
-  </header>
+    <header>
+        <div class="wrapper">
+            <nav v-if="profile.isLoggedIn">
+                <RouterLink to="/home">{{ __('Home') }}</RouterLink>
+                <RouterLink to="/articles">{{ __('Articles') }}</RouterLink>
+                <RouterLink to="/dictionary">{{ __('Dictionary') }}</RouterLink>
+                <RouterLink to="/dictionary/review">{{ __('Review') }}</RouterLink>
+                <RouterLink to="/">{{ __('Introduction') }}</RouterLink>
+                <ProfileLink class="profile-link" />
+                <LogoutLink />
+            </nav>
+            <nav v-else>
+                <RouterLink to="/">{{ __('Introduction') }}</RouterLink>
+                <ProfileLink class="profile-link" />
+                <RouterLink to="/register">{{ __('Register') }}</RouterLink>
+                <Select class="interface" type="inline" :options="supportedLanguages" v-model="profile.interfaceLanguage" />
+            </nav>
+        </div>
+    </header>
 </template>
 
 <style scoped lang="scss">

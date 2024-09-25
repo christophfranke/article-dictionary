@@ -6,73 +6,73 @@ import { setTheme } from '@/themes';
 const PROFILE_KEY = 'profile'
 
 export const profile = reactive<Profile>(
-	JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}')
+    JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}')
 );
 
 // Watch for changes in the profile and update localStorage
 watch(profile, () => {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }, { deep: true });
 
 watchEffect(() => {
-	if (profile.isLoggedIn) {
-		setTheme(profile.theme);
-	} else {
-		setTheme();
-	} 
+    if (profile.isLoggedIn) {
+        setTheme(profile.theme);
+    } else {
+        setTheme();
+    } 
 });
 
 window.addEventListener('beforeunload', () => {
-	try {
-		localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-	} catch(e) {
-		console.error('Could not store profile to local storage', e);
-	}
+    try {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    } catch(e) {
+        console.error('Could not store profile to local storage', e);
+    }
 });
 
 const fetchPreview = (fetchAuthorized: FetchFn) => async  () => {
-  const data = await fetchAuthorized<ProfilePreview>('/api/profile/preview');
+    const data = await fetchAuthorized<ProfilePreview>('/api/profile/preview');
 
-  if (data) {
+    if (data) {
   	Object.assign(profile, data);
-  }
+    }
 };
 
 const fetchProfileSettings = (fetchAuthorized: FetchFn) => async () => {
-  const data = await fetchAuthorized<Profile>('/api/profile/settings');
+    const data = await fetchAuthorized<Profile>('/api/profile/settings');
 
-  if (data) {
+    if (data) {
   	Object.assign(profile, data);
-  }
+    }
 };
 
 export const useUser = () => {
-	const { fetchAuthorized } = useApi();
-	onMounted(fetchPreview(fetchAuthorized))
-	return { 
-		profile
-	}
+    const { fetchAuthorized } = useApi();
+    onMounted(fetchPreview(fetchAuthorized))
+    return { 
+        profile
+    }
 };
 
 export const useProfile = () => {
-	const { fetchAuthorized } = useApi();
-	onMounted(fetchProfileSettings(fetchAuthorized))
+    const { fetchAuthorized } = useApi();
+    onMounted(fetchProfileSettings(fetchAuthorized))
 
-	return {
-		profile
-	}
+    return {
+        profile
+    }
 }
 
 export const useUpdateProfile = () => {
-	const { fetchAuthorized, errorMessage, isLoading } = useApi();
+    const { fetchAuthorized, errorMessage, isLoading } = useApi();
 
-	const updateProfile = async (formData: any) => {
+    const updateProfile = async (formData: any) => {
 	  const data = await fetchAuthorized<Profile>('/api/profile/update', {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
 	    },
-			// remove sourceLanguage and targetLanguage, because not yet supported
+            // remove sourceLanguage and targetLanguage, because not yet supported
 	    body: JSON.stringify(formData),
 	  });
 
@@ -83,158 +83,158 @@ export const useUpdateProfile = () => {
 	  }
 
 	  return false;
-	}
+    }
 
-	return {
-		updateProfile,
-		errorMessage,
-		isLoading,
-	}
+    return {
+        updateProfile,
+        errorMessage,
+        isLoading,
+    }
 }
 
 
 export const useLogin = () => {
-	const { fetchAuthorized, errorMessage } = useApi();
-	const localEmail = ref('')
-	const localPassword = ref('')
-	const localIsLoading = ref(false);
+    const { fetchAuthorized, errorMessage } = useApi();
+    const localEmail = ref('')
+    const localPassword = ref('')
+    const localIsLoading = ref(false);
 
-	const login = async (): Promise<boolean> => {
-		localIsLoading.value = true;
-    const data = await fetchAuthorized<ProfilePreview>('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: localEmail.value, password: localPassword.value }),
-    });
+    const login = async (): Promise<boolean> => {
+        localIsLoading.value = true;
+        const data = await fetchAuthorized<ProfilePreview>('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: localEmail.value, password: localPassword.value }),
+        });
 
-    if (data) {
+        if (data) {
 	  	Object.assign(profile, data);
 	    await fetchPreview(fetchAuthorized)();
 
     	localIsLoading.value = false;
     	return true;
+        }
+
+        localIsLoading.value = false;
+        return false;
     }
 
-		localIsLoading.value = false;
-    return false;
-	}
-
-	return {
-		login,
-		email: localEmail,
-		password: localPassword,
-		errorMessage,
-		isLoading: localIsLoading,
-	}
+    return {
+        login,
+        email: localEmail,
+        password: localPassword,
+        errorMessage,
+        isLoading: localIsLoading,
+    }
 };
 
 export const useRegister = () => {
-	const { fetchAuthorized, errorMessage, isLoading } = useApi();
-	const localEmail = ref('')
-	const localName = ref('')
-	const localPassword = ref('')
-	const localSourceLanguage = ref('')
-	const localTargetLanguage = ref('')
+    const { fetchAuthorized, errorMessage, isLoading } = useApi();
+    const localEmail = ref('')
+    const localName = ref('')
+    const localPassword = ref('')
+    const localSourceLanguage = ref('')
+    const localTargetLanguage = ref('')
 
-	const register = async (): Promise<boolean> => {
-    const data = await fetchAuthorized<ProfilePreview>('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const register = async (): Promise<boolean> => {
+        const data = await fetchAuthorized<ProfilePreview>('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
       	email: localEmail.value,
       	name: localName.value,
       	password: localPassword.value,
       	sourceLanguage: localSourceLanguage.value,
       	targetLanguage: localTargetLanguage.value,
-      }),
-    });
+            }),
+        });
 
-    if (data) {
+        if (data) {
 	  	Object.assign(profile, data);
     	await fetchPreview(fetchAuthorized)();
 
     	return true;
+        }
+
+        return false;
     }
 
-    return false;
-	}
-
-	return {
-		register,
-		email: localEmail,
-		name: localName,
-		password: localPassword,
-		sourceLanguage: localSourceLanguage,
-		targetLanguage: localTargetLanguage,
-		errorMessage,
-		isLoading,
-	}
+    return {
+        register,
+        email: localEmail,
+        name: localName,
+        password: localPassword,
+        sourceLanguage: localSourceLanguage,
+        targetLanguage: localTargetLanguage,
+        errorMessage,
+        isLoading,
+    }
 };
 
 export const useReset = () => {
-	const { fetchAuthorized, errorMessage, isLoading } = useApi();
+    const { fetchAuthorized, errorMessage, isLoading } = useApi();
 
-	const requestReset = async (email: string): Promise<boolean> => {
-		const result = await fetchAuthorized('/api/auth/reset', {
-			method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-		})
+    const requestReset = async (email: string): Promise<boolean> => {
+        const result = await fetchAuthorized('/api/auth/reset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        })
 
-		if (!result) {
-			return false
-		}
+        if (!result) {
+            return false
+        }
 
-		return true
-	}
+        return true
+    }
 
-	const completeReset = async (token: string, password: string): Promise<boolean> => {
-		const result = await fetchAuthorized('/api/auth/change-password', {
-			method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ token, password }),
-		})
+    const completeReset = async (token: string, password: string): Promise<boolean> => {
+        const result = await fetchAuthorized('/api/auth/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, password }),
+        })
 
-		if (!result) {
-			return false
-		}
+        if (!result) {
+            return false
+        }
 
-		return true
-	}
+        return true
+    }
 
-	return {
-		requestReset,
-		completeReset,
-		isLoading,
-		errorMessage
-	}
+    return {
+        requestReset,
+        completeReset,
+        isLoading,
+        errorMessage
+    }
 }
 
 export const useLogout = () => {
-	const { fetchAuthorized } = useApi();
-	return async (): Promise<boolean> => {
-    const data = await fetchAuthorized('/api/auth/logout');
+    const { fetchAuthorized } = useApi();
+    return async (): Promise<boolean> => {
+        const data = await fetchAuthorized('/api/auth/logout');
 
-    if (data) {
-      Object.assign(profile, {
-        isLoggedIn: false,
-        name: '',
-        email: '',
-        sourceLanguage: '',
-        targetLanguage: '',
-      });
+        if (data) {
+            Object.assign(profile, {
+                isLoggedIn: false,
+                name: '',
+                email: '',
+                sourceLanguage: '',
+                targetLanguage: '',
+            });
 
 	    return true
-    }
+        }
 
 	  return false
-	};
+    };
 }

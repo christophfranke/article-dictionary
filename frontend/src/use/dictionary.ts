@@ -17,41 +17,41 @@ import { default as useApi, redirectToLogin } from './api';
 
 
 export const useCustomDictionary = (words: PartialWord[] = [], filter: FilterFunction): DictionaryView => {
-	const { fetchAuthorized } = useApi()
-	const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
-	const dictionary = createDictionaryCollection(dictionaryRequest, words)
+    const { fetchAuthorized } = useApi()
+    const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
+    const dictionary = createDictionaryCollection(dictionaryRequest, words)
 
-	return createDictionaryView(dictionary, filter)
+    return createDictionaryView(dictionary, filter)
 }
 
 
 const dictionary: { [key:string]: DictionaryCollection } = {}
 let isLoadingDictionary: Ref<boolean> | null = null
 export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
-	if (!profile.isLoggedIn || !profile.email) {
-		const route = useRouter();
-		const router = useRoute();
-		redirectToLogin(router, route);
+    if (!profile.isLoggedIn || !profile.email) {
+        const route = useRouter();
+        const router = useRoute();
+        redirectToLogin(router, route);
 
-		return {
-			isLoading: ref(false),
-			dictionary: createEmptyDictionaryView()
-		}
-	}
+        return {
+            isLoading: ref(false),
+            dictionary: createEmptyDictionaryView()
+        }
+    }
 
-	const key = profile.email
+    const key = profile.email
 
-	if (!dictionary[key]) {
-		const { fetchAuthorized, isLoading } = useApi()
-		const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
-		const dictionaryCollection = createDictionaryCollection(dictionaryRequest);
+    if (!dictionary[key]) {
+        const { fetchAuthorized, isLoading } = useApi()
+        const dictionaryRequest = createDictionaryRequest(fetchAuthorized)
+        const dictionaryCollection = createDictionaryCollection(dictionaryRequest);
 		
-		isLoadingDictionary = isLoading;
-		dictionary[key] = createDictionaryStorage(dictionaryCollection, `${key}-main-dictionary`)
-	}
+        isLoadingDictionary = isLoading;
+        dictionary[key] = createDictionaryStorage(dictionaryCollection, `${key}-main-dictionary`)
+    }
 
-	return {
-		dictionary: createDictionaryView(dictionary[key], filter),
-		isLoading: isLoadingDictionary!
-	}
+    return {
+        dictionary: createDictionaryView(dictionary[key], filter),
+        isLoading: isLoadingDictionary!
+    }
 }

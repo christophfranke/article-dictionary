@@ -2,18 +2,18 @@
 import { RouterLink } from 'vue-router';
 
 const { to } = defineProps({
-  to: {
-    type: String,
-    required: true,
-  },
+    to: {
+        type: String,
+        required: true,
+    },
 });
 
 </script>
 
 <template>
-	<RouterLink :to="to">
-		<slot />
-	</RouterLink>
+    <RouterLink :to="to">
+        <slot />
+    </RouterLink>
 </template>
 
 <style scoped lang="scss">

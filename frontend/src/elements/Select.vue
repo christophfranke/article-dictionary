@@ -3,38 +3,38 @@ import { ref, watch } from 'vue';
 import type { PropType } from 'vue';
 
 const props = defineProps({
-	options: {
-		type: Object as PropType<{ [key: string]: string } | null>,
-		default: {},
-	},
-	modelValue: {
-		type: String,
-		default: '',
-	},
-  type: {
-    type: String,
-    default: 'default'
-  }
+    options: {
+        type: Object as PropType<{ [key: string]: string } | null>,
+        default: {},
+    },
+    modelValue: {
+        type: String,
+        default: '',
+    },
+    type: {
+        type: String,
+        default: 'default'
+    }
 })
 
 const emit = defineEmits(['update:modelValue']);
 
 const valueRef = ref(props.modelValue);
 watch(valueRef, (newValue) => {
-  emit('update:modelValue', newValue);
+    emit('update:modelValue', newValue);
 });
 
 // Watch for external changes to modelValue and update valueRef accordingly
 watch(() => props.modelValue, (newVal) => {
-  valueRef.value = newVal;
+    valueRef.value = newVal;
 });
 
 </script>
 <template>
-	<select v-if="props.options" v-model="valueRef" :class="{ inline: props.type === 'inline' }">
-		<option v-for="(label, value) in props.options" :key="value" :value="value">{{ label }}</option>
-		<slot />
-	</select>
+    <select v-if="props.options" v-model="valueRef" :class="{ inline: props.type === 'inline' }">
+        <option v-for="(label, value) in props.options" :key="value" :value="value">{{ label }}</option>
+        <slot />
+    </select>
 </template>
 
 <style scoped lang="scss">

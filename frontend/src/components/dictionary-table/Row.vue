@@ -17,55 +17,55 @@ import __ from '@/i18n'
 
 
 const props = defineProps({
-	word: {
-		type: Object as PropType<Word>,
-		required: true,
-	},
-	isHighlighed: {
-		type: Boolean,
-		default: false,
-	},
-	display: {
-		type: Object,
-		default: {
-			col: {
-				number: false,
-				original: true,
-				translations: true,
-				frequency: true,
-				status: true,
-				actions: true,
-			},
-			action: {
-				known: true,
-				ignore: true,
-				add: true,
-				sort: true,
-				edit: true,
-				retranslate: true,
-				status: true,
-				glosbe: true,
-        detail: true,
-        link: true,
-			},
-		},
-	},
-	dictionary: {
-		type: Object as PropType<DictionaryView>,
-		required: true,
-	},
-	profile: {
-		type: Object as PropType<Profile>,
-		required: true,
-	},
+    word: {
+        type: Object as PropType<Word>,
+        required: true,
+    },
+    isHighlighed: {
+        type: Boolean,
+        default: false,
+    },
+    display: {
+        type: Object,
+        default: {
+            col: {
+                number: false,
+                original: true,
+                translations: true,
+                frequency: true,
+                status: true,
+                actions: true,
+            },
+            action: {
+                known: true,
+                ignore: true,
+                add: true,
+                sort: true,
+                edit: true,
+                retranslate: true,
+                status: true,
+                glosbe: true,
+                detail: true,
+                link: true,
+            },
+        },
+    },
+    dictionary: {
+        type: Object as PropType<DictionaryView>,
+        required: true,
+    },
+    profile: {
+        type: Object as PropType<Profile>,
+        required: true,
+    },
 });
 
 const {
-  editingTranslationId,
-  editTranslationsValue,
-  editTranslations,
-  cancelEditTranslations,
-  updateTranslation
+    editingTranslationId,
+    editTranslationsValue,
+    editTranslations,
+    cancelEditTranslations,
+    updateTranslation
 } = useEdit(props);
 
 const dictionaryLink = (word: Word): string => `https://glosbe.com/${props.profile.sourceLanguage}/${props.profile.targetLanguage}/${word.original}`;
@@ -73,38 +73,38 @@ const dictionaryLink = (word: Word): string => `https://glosbe.com/${props.profi
 const routerLink = (word: Word): string => `/dictionary/${word.original}`;
 
 const setStatus = async (word: Word, status: string): Promise<void> => {
-  await updateWord(word.id, { status });
+    await updateWord(word.id, { status });
 };
 
 const { timeAgo } = useTime();
 
 const lastSeen = computed(() => {
-  if (!props.display.col.lastSeen) {
-    return
-  }
+    if (!props.display.col.lastSeen) {
+        return
+    }
 
-  if (!props.word.lastViewed) {
-    return ''
-  }
+    if (!props.word.lastViewed) {
+        return ''
+    }
 
-  return timeAgo(props.word.lastViewed);
+    return timeAgo(props.word.lastViewed);
 });
 
 
 const statusOptions: string[] = ['new', 'seen', 'known'];
 const nextStatus = (status: string): string => {
-  const currentIndex: number = statusOptions.indexOf(status);
-  const newIndex: number = (currentIndex + 1) % statusOptions.length;
-  return statusOptions[newIndex];
+    const currentIndex: number = statusOptions.indexOf(status);
+    const newIndex: number = (currentIndex + 1) % statusOptions.length;
+    return statusOptions[newIndex];
 };
 const nextStatusLabel = (status: string): string => __(nextStatus(status))
 
 const changeStatus = async (word: Word): Promise<void> => {
-  if (!props.display.action.status) {
-    return
-  }
+    if (!props.display.action.status) {
+        return
+    }
 
-  await updateWord(word.id, { status: nextStatus(word.status) });
+    await updateWord(word.id, { status: nextStatus(word.status) });
 };
 
 
@@ -113,102 +113,102 @@ const retranslateWord = props.dictionary.retranslate;
 </script>
 
 <template>
-  <tr
-  	:class="{ highlighted: isHighlighed, needsRetranslate: word.needsRetranslate }"
-  	:id="`word-${word.id}`"
-  	>
-    <td v-if="display.col.number">{{ word.order + 1 }}</td>
-    <td v-if="display.col.original" :class="{ 'original-td-link': display.action.link }">
-      <RouterLink
-        v-if="display.action.link"
-        :to="routerLink(word)"
-        :title="__('Inspect word')"
-        class="original-link"
-      >
-        {{ word.original }}
-      </RouterLink>
-      <span v-else>{{ word.original }}</span>
-    </td>
-    <template v-if="display.col.translations">
-      <td
-        @mousedown="editTranslations(word.id)"
-        v-if="word.id !== editingTranslationId"
-        :class="{ 'edit-column': display.action.edit }"
-        :title="display.action.edit ? __('Edit translations') : undefined"
-      >{{ word.needsRetranslate ? '' : word.translations.join(', ') }}
-      </td>
-      <td v-else>
-        <form @submit.prevent="updateTranslation" class="edit-form">
-          <input type="submit" style="display: none;" />
-          <Button @click.prevent="cancelEditTranslations(word.id)" role="view">
-            <FontAwesomeIcon icon="times" />
-          </Button>
-          <Input
-            id="edit-translations"
-            v-model="editTranslationsValue"
-            @blur="cancelEditTranslations(word.id)"
-          />
-          <Button @mousedown="updateTranslation">
-            <FontAwesomeIcon icon="check" />
-          </Button>
-        </form>
-      </td>
-    </template>
-    <td v-if="display.col.frequency">{{ word.frequency }}</td>
-    <td
-      v-if="display.col.status"
-      @click="changeStatus(word)"
-      :title="display.action.status ? __('Change status to $1', nextStatus(word.status)) : undefined"
-      :class="{ 'status-column': display.action.status }"
-    >{{ __(word.status) }}
-    </td>
-    <td v-if="display.col.lastSeen">{{ lastSeen }}</td>
-    <td v-if="display.col.actions" class="actions-column">
-      <div>
-        <Button
-          v-if="display.action.known"
-          @click="setStatus(word, 'known')"
-          :title="__('Mark as known')"
-          size="small"
-        >
-          <FontAwesomeIcon icon="check-circle" />
-        </Button>
-        <Button
-          v-if="display.action.ignore"
-          @click="setStatus(word, 'ignore')"
-          :title="__('Ignore word')"
-          size="small"
-        >
-          <FontAwesomeIcon icon="ban" />
-        </Button>
-        <Button
-          v-if="display.action.retranslate"
-          @click="retranslateWord(word.id)"
-          :title="__('Retranslate word')"
-          size="small"
-        >
-          <FontAwesomeIcon icon="rotate-left" />
-        </Button>
-        <ButtonLink
-          v-if="display.action.detail"
-          :to="routerLink(word)"
-          :title="__('Inspect word')"
-          size="small"
-          class="inspect-word-action"
-        >
-          <FontAwesomeIcon icon="eye" />
-        </ButtonLink>
-        <a
-          v-if="display.action.glosbe"
-          :href="dictionaryLink(word)"
-          target="_blank"
-          :title="__('Open Glosbe Dictionary')"
-        >
-          <Button role="view" size="small"><FontAwesomeIcon icon="globe" /></Button>
-        </a>
-      </div>
-    </td>
-  </tr>	
+    <tr
+        :class="{ highlighted: isHighlighed, needsRetranslate: word.needsRetranslate }"
+        :id="`word-${word.id}`"
+    >
+        <td v-if="display.col.number">{{ word.order + 1 }}</td>
+        <td v-if="display.col.original" :class="{ 'original-td-link': display.action.link }">
+            <RouterLink
+                v-if="display.action.link"
+                :to="routerLink(word)"
+                :title="__('Inspect word')"
+                class="original-link"
+            >
+                {{ word.original }}
+            </RouterLink>
+            <span v-else>{{ word.original }}</span>
+        </td>
+        <template v-if="display.col.translations">
+            <td
+                @mousedown="editTranslations(word.id)"
+                v-if="word.id !== editingTranslationId"
+                :class="{ 'edit-column': display.action.edit }"
+                :title="display.action.edit ? __('Edit translations') : undefined"
+            >{{ word.needsRetranslate ? '' : word.translations.join(', ') }}
+            </td>
+            <td v-else>
+                <form @submit.prevent="updateTranslation" class="edit-form">
+                    <input type="submit" style="display: none;" />
+                    <Button @click.prevent="cancelEditTranslations(word.id)" role="view">
+                        <FontAwesomeIcon icon="times" />
+                    </Button>
+                    <Input
+                        id="edit-translations"
+                        v-model="editTranslationsValue"
+                        @blur="cancelEditTranslations(word.id)"
+                    />
+                    <Button @mousedown="updateTranslation">
+                        <FontAwesomeIcon icon="check" />
+                    </Button>
+                </form>
+            </td>
+        </template>
+        <td v-if="display.col.frequency">{{ word.frequency }}</td>
+        <td
+            v-if="display.col.status"
+            @click="changeStatus(word)"
+            :title="display.action.status ? __('Change status to $1', nextStatus(word.status)) : undefined"
+            :class="{ 'status-column': display.action.status }"
+        >{{ __(word.status) }}
+        </td>
+        <td v-if="display.col.lastSeen">{{ lastSeen }}</td>
+        <td v-if="display.col.actions" class="actions-column">
+            <div>
+                <Button
+                    v-if="display.action.known"
+                    @click="setStatus(word, 'known')"
+                    :title="__('Mark as known')"
+                    size="small"
+                >
+                    <FontAwesomeIcon icon="check-circle" />
+                </Button>
+                <Button
+                    v-if="display.action.ignore"
+                    @click="setStatus(word, 'ignore')"
+                    :title="__('Ignore word')"
+                    size="small"
+                >
+                    <FontAwesomeIcon icon="ban" />
+                </Button>
+                <Button
+                    v-if="display.action.retranslate"
+                    @click="retranslateWord(word.id)"
+                    :title="__('Retranslate word')"
+                    size="small"
+                >
+                    <FontAwesomeIcon icon="rotate-left" />
+                </Button>
+                <ButtonLink
+                    v-if="display.action.detail"
+                    :to="routerLink(word)"
+                    :title="__('Inspect word')"
+                    size="small"
+                    class="inspect-word-action"
+                >
+                    <FontAwesomeIcon icon="eye" />
+                </ButtonLink>
+                <a
+                    v-if="display.action.glosbe"
+                    :href="dictionaryLink(word)"
+                    target="_blank"
+                    :title="__('Open Glosbe Dictionary')"
+                >
+                    <Button role="view" size="small"><FontAwesomeIcon icon="globe" /></Button>
+                </a>
+            </div>
+        </td>
+    </tr>	
 </template>
 
 <style scoped lang="scss">

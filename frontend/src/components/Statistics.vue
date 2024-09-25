@@ -8,18 +8,18 @@ import useStatistics from '../use/statistics';
 import __ from '@/i18n'
 
 const { dictionary, article, showPercentage } = defineProps({
-  dictionary: {
-    type: Object as () => DictionaryView,
-    required: true,
-  },
-  article: {
-    type: Object as () => ArticleDetail,
-    default: undefined,
-  },
-  showPercentage: {
-    type: Boolean,
-    default: false,
-  },
+    dictionary: {
+        type: Object as () => DictionaryView,
+        required: true,
+    },
+    article: {
+        type: Object as () => ArticleDetail,
+        default: undefined,
+    },
+    showPercentage: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 
@@ -27,31 +27,31 @@ const statistics = useStatistics({ dictionary, article: article && ref(article) 
 </script>
 
 <template>
-  <div class="statistics" v-if="statistics.totalWords > 0">
-    <h3 v-if="article">{{ __('Words in this article') }}</h3>
-    <h3 v-else>{{ __('Words in dictionary') }}</h3>
-    <div class="word-statistics">
-      <div class="word-statistic">
-        <strong v-if="showPercentage">{{ statistics.newWordsPercentage }}%</strong>
-        <strong v-else>{{ statistics.newWords }}</strong>
-        <span>{{ __('New') }}</span>
-      </div>
-      <div class="word-statistic">
-        <strong v-if="showPercentage">{{ statistics.seenWordsPercentage }}%</strong>
-        <strong v-else>{{ statistics.seenWords }}</strong>
-        <span>{{ __('Seen') }}</span>
-      </div>
-      <div class="word-statistic">
-        <strong v-if="showPercentage">{{ statistics.knownWordsPercentage }}%</strong>
-        <strong v-else>{{ statistics.knownWords }}</strong>
-        <span>{{ __('Known') }}</span>
-      </div>
-      <div class="word-statistic total">
-        <strong>{{ statistics.totalWords }}</strong>
-        <span>{{ __('Total') }}</span>
-      </div>
+    <div class="statistics" v-if="statistics.totalWords > 0">
+        <h3 v-if="article">{{ __('Words in this article') }}</h3>
+        <h3 v-else>{{ __('Words in dictionary') }}</h3>
+        <div class="word-statistics">
+            <div class="word-statistic">
+                <strong v-if="showPercentage">{{ statistics.newWordsPercentage }}%</strong>
+                <strong v-else>{{ statistics.newWords }}</strong>
+                <span>{{ __('New') }}</span>
+            </div>
+            <div class="word-statistic">
+                <strong v-if="showPercentage">{{ statistics.seenWordsPercentage }}%</strong>
+                <strong v-else>{{ statistics.seenWords }}</strong>
+                <span>{{ __('Seen') }}</span>
+            </div>
+            <div class="word-statistic">
+                <strong v-if="showPercentage">{{ statistics.knownWordsPercentage }}%</strong>
+                <strong v-else>{{ statistics.knownWords }}</strong>
+                <span>{{ __('Known') }}</span>
+            </div>
+            <div class="word-statistic total">
+                <strong>{{ statistics.totalWords }}</strong>
+                <span>{{ __('Total') }}</span>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 

@@ -4,10 +4,6 @@ FROM node:22-alpine3.20
 # Set the working directory to /app/frontend
 WORKDIR /app/frontend
 
-# Move node modules outside the app folder
-ENV NODE_PATH /node_modules
-ENV PATH $PATH:/node_modules/.bin
-
 # Copy the package.json and package-lock.json files into the container
 COPY ./package*.json .
 

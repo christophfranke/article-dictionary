@@ -1,7 +1,7 @@
 <template>
-	<form class="form">
-		<slot />
-	</form>
+    <form class="form">
+        <slot />
+    </form>
 </template>
 
 <style scoped lang="scss">

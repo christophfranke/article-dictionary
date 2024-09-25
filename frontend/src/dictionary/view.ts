@@ -8,12 +8,12 @@ import createView from '@/layers/view';
 
 
 function isWord(word: PartialWord): word is Word {
-  return (word as Word).order !== undefined;
+    return (word as Word).order !== undefined;
 }
 
 function isWordDetail(word: PartialWord): word is WordDetail {
-  const asWordDetail = word as WordDetail;
-  return asWordDetail.sentences !== undefined && asWordDetail.similar !== undefined;
+    const asWordDetail = word as WordDetail;
+    return asWordDetail.sentences !== undefined && asWordDetail.similar !== undefined;
 }
 
 
@@ -30,20 +30,20 @@ export interface DictionaryView extends View<PartialWord, 'original', 'id'> {
 
 
 export default (collection: DictionaryCollection, filterFn: FilterFunction = x => !!x, orderFn: OrderFunction | null = null): DictionaryView => {
-  const view = createView(collection, filterFn, orderFn)
+    const view = createView(collection, filterFn, orderFn)
 
-  const detail = (original: string): ComputedRef<WordDetail | undefined> => computed<WordDetail | undefined>(() => {
-    const word = view.find(original);
-    if (word) {
-      return isWordDetail(word) ? word : undefined
+    const detail = (original: string): ComputedRef<WordDetail | undefined> => computed<WordDetail | undefined>(() => {
+        const word = view.find(original);
+        if (word) {
+            return isWordDetail(word) ? word : undefined
+        }
+
+        return undefined
+    });
+
+    return {
+        ...collection,
+        ...view,
+        detail
     }
-
-    return undefined
-  });
-
-  return {
-    ...collection,
-    ...view,
-    detail
-  }
 }

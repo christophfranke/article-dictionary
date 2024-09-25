@@ -6,11 +6,11 @@ import Spinner from '@/elements/Spinner.vue'
 </script>
 
 <template>
-  <div>
-    <HeaderComponent />
-    <RouterView />
-    <Spinner />
-  </div>
+    <div>
+        <HeaderComponent />
+        <RouterView />
+        <Spinner />
+    </div>
 </template>
 
 <style lang="scss">

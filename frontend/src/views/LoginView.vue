@@ -19,33 +19,33 @@ const router = useRouter();
 const { login, email, password, errorMessage, isLoading } = useLogin();
 
 const loginAndRedirect = async () => {
-  if (await login()) {    
-    const nextPath = Array.isArray(router.currentRoute.value.query.next)
-      ? router.currentRoute.value.query.next[0] || '/home'
-      : router.currentRoute.value.query.next || '/home';
-    router.push(nextPath);
-  }
+    if (await login()) {    
+        const nextPath = Array.isArray(router.currentRoute.value.query.next)
+            ? router.currentRoute.value.query.next[0] || '/home'
+            : router.currentRoute.value.query.next || '/home';
+        router.push(nextPath);
+    }
 }
 </script>
 
 
 <template>
-  <Form @submit.prevent="loginAndRedirect" class="login-form">
-    <FormGroup>
-      <Label for="email">{{ __('Email:') }}</Label>
-      <Input type="email" id="email" v-model="email" required />
-    </FormGroup>
-    <FormGroup>
-      <Label for="password">{{ __('Password:') }}</Label>
-      <Input type="password" id="password" v-model="password" required />
-    </FormGroup>
-    <FormGroup>
-      <Button type="submit" :disabled="isLoading" role="view">{{ __('Login') }}</Button>
-      <InternalLink to="/password-reset" class="password-reset-link">{{ __('Reset password') }}</InternalLink>
-      <InternalLink to="/register" class="register-link">{{ __("Don't have an account? Register here") }}</InternalLink>
-    </FormGroup>
-    <ErrorMessage :message="errorMessage" />
-  </Form>
+    <Form @submit.prevent="loginAndRedirect" class="login-form">
+        <FormGroup>
+            <Label for="email">{{ __('Email:') }}</Label>
+            <Input type="email" id="email" v-model="email" required />
+        </FormGroup>
+        <FormGroup>
+            <Label for="password">{{ __('Password:') }}</Label>
+            <Input type="password" id="password" v-model="password" required />
+        </FormGroup>
+        <FormGroup>
+            <Button type="submit" :disabled="isLoading" role="view">{{ __('Login') }}</Button>
+            <InternalLink to="/password-reset" class="password-reset-link">{{ __('Reset password') }}</InternalLink>
+            <InternalLink to="/register" class="register-link">{{ __("Don't have an account? Register here") }}</InternalLink>
+        </FormGroup>
+        <ErrorMessage :message="errorMessage" />
+    </Form>
 </template>
 
 

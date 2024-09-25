@@ -6,12 +6,12 @@ const emit = defineEmits(['update:modelValue']);
 
 const valueRef = ref(modelValue);
 watch(valueRef, (newValue) => {
-  emit('update:modelValue', newValue);
+    emit('update:modelValue', newValue);
 });
 </script>
 
 <template>
-  <textarea v-bind="$attrs" v-model="valueRef" />
+    <textarea v-bind="$attrs" v-model="valueRef" />
 </template>
 
 <style scoped lang="scss">

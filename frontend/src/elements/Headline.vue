@@ -1,18 +1,18 @@
 <script setup lang="ts">
 const { type } = defineProps({
-	type: {
-		type: String,
-		default: 'h1',
-	},
+    type: {
+        type: String,
+        default: 'h1',
+    },
 });
 
 const allowedTypes = ['h1', 'h2', 'h3'];
 </script>
 
 <template>
-	<component :is="type" v-if="allowedTypes.includes(type)">
-		<slot />
-	</component>
+    <component :is="type" v-if="allowedTypes.includes(type)">
+        <slot />
+    </component>
 </template>
 
 <style scoped lang="scss">

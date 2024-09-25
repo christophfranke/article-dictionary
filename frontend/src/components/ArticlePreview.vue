@@ -10,105 +10,105 @@ import Excerpt from '@/elements/Excerpt.vue'
 import __ from '@/i18n'
 
 const props = defineProps({
-  article: {
-    type: Object as PropType<ArticlePreview>,
-    required: true,
-  }
+    article: {
+        type: Object as PropType<ArticlePreview>,
+        required: true,
+    }
 });
 
 const familiarityScore = computed<number>(() => {
-  const total = props.article.statistics.seen.words
-    + props.article.statistics.known.words
-    + props.article.statistics.new.words;
+    const total = props.article.statistics.seen.words
+        + props.article.statistics.known.words
+        + props.article.statistics.new.words;
 
-  return Math.round(100 * (
-    0.2 * props.article.statistics.seen.words
-    + 1.0 * props.article.statistics.known.words
-    + 0.05 * props.article.statistics.new.words) / total)
+    return Math.round(100 * (
+        0.2 * props.article.statistics.seen.words
+        + 1.0 * props.article.statistics.known.words
+        + 0.05 * props.article.statistics.new.words) / total)
 });
 
 const difficultyScore = computed(() => 100 - familiarityScore.value);
 const percentage = (key: 'new' | 'seen' | 'known'): number =>
-  Math.round(100.0 * props.article.statistics[key].words / props.article.statistics.total)
+    Math.round(100.0 * props.article.statistics[key].words / props.article.statistics.total)
 
 const scoreDescription = computed(() => {
-  if (familiarityScore.value < 50) {
-    return __('Very Hard');
-  } else if (familiarityScore.value < 62) {
-    return __('Hard');
-  } else if (familiarityScore.value < 74) {
-    return __('Medium');
-  } else if (familiarityScore.value < 86) {
-    return __('Easy');
-  } else if (familiarityScore.value < 98) {
-    return __('Very Easy');
-  } else {
-    return __('Known');
-  }
+    if (familiarityScore.value < 50) {
+        return __('Very Hard');
+    } else if (familiarityScore.value < 62) {
+        return __('Hard');
+    } else if (familiarityScore.value < 74) {
+        return __('Medium');
+    } else if (familiarityScore.value < 86) {
+        return __('Easy');
+    } else if (familiarityScore.value < 98) {
+        return __('Very Easy');
+    } else {
+        return __('Known');
+    }
 });
 
 const lengthDescription = computed(() => {
-  if (props.article.statistics.total < 150) {
-    return __('Very Short');
-  } else if (props.article.statistics.total < 500) {
-    return __('Short');
-  } else if (props.article.statistics.total < 2000) {
-    return __('Medium');
-  } else if (props.article.statistics.total < 5000) {
-    return __('Long');
-  } else if (props.article.statistics.total < 10000) {
-    return __('Very Long');
-  } else {
-    return __('Epic');
-  }
+    if (props.article.statistics.total < 150) {
+        return __('Very Short');
+    } else if (props.article.statistics.total < 500) {
+        return __('Short');
+    } else if (props.article.statistics.total < 2000) {
+        return __('Medium');
+    } else if (props.article.statistics.total < 5000) {
+        return __('Long');
+    } else if (props.article.statistics.total < 10000) {
+        return __('Very Long');
+    } else {
+        return __('Epic');
+    }
 
 });
 
 const link = (article: ArticlePreview): string => article.owned
-  ? `/articles/${article.slug}`
-  : `/articles/import/${article.id}`
+    ? `/articles/${article.slug}`
+    : `/articles/import/${article.id}`
 </script>
 
 <template>
-  <div class="outer-container">
-    <div :class="{
-      'article-preview': true,
-      'needs-processing': props.article.needsProcessing
-    }">
-      <router-link :to="link(props.article)">
-        <Headline type="h3" class="title">{{ props.article.title }}</Headline>
-        <Excerpt class="excerpt">{{ props.article.excerpt }}...</Excerpt>
-        <div class="statistics" v-if="props.article.statistics.total > 0">
-          <span :title="__('$1 new words ($2%)', props.article.statistics.new.words, percentage('new'))">
-            <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
-          </span>
-          <span :title="__('$1 seen words ($2%)', props.article.statistics.seen.words, percentage('seen'))">
-            <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen.words }}
-          </span>
-          <span :title="__('$1 known words ($2%)', props.article.statistics.known.words, percentage('known'))">
-            <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known.words }}
-          </span>
-        </div>
+    <div class="outer-container">
+        <div :class="{
+            'article-preview': true,
+            'needs-processing': props.article.needsProcessing
+        }">
+            <router-link :to="link(props.article)">
+                <Headline type="h3" class="title">{{ props.article.title }}</Headline>
+                <Excerpt class="excerpt">{{ props.article.excerpt }}...</Excerpt>
+                <div class="statistics" v-if="props.article.statistics.total > 0">
+                    <span :title="__('$1 new words ($2%)', props.article.statistics.new.words, percentage('new'))">
+                        <FontAwesomeIcon icon="sun" /> {{ props.article.statistics.new.words }}
+                    </span>
+                    <span :title="__('$1 seen words ($2%)', props.article.statistics.seen.words, percentage('seen'))">
+                        <FontAwesomeIcon icon="eye" /> {{ props.article.statistics.seen.words }}
+                    </span>
+                    <span :title="__('$1 known words ($2%)', props.article.statistics.known.words, percentage('known'))">
+                        <FontAwesomeIcon icon="circle-check" /> {{ props.article.statistics.known.words }}
+                    </span>
+                </div>
 
-        <div class="difficulty" v-if="props.article.statistics.total > 0">
-          <div class="left" :title="__('Estimated difficulty: $1 ($2% unknown words)', scoreDescription, difficultyScore)">
-            <span>{{ scoreDescription }}</span>
-            <span><FontAwesomeIcon icon="lightbulb" /></span>
-            <span>{{ difficultyScore }}%</span>
-          </div>
-          <div class="right" :title="__('$1 words total', props.article.statistics.total)">
-            <span>{{ props.article.statistics.total }}</span>
-            <span><FontAwesomeIcon icon="database" /></span>
-            <span>{{ lengthDescription }}</span>
-          </div>
-        </div>
+                <div class="difficulty" v-if="props.article.statistics.total > 0">
+                    <div class="left" :title="__('Estimated difficulty: $1 ($2% unknown words)', scoreDescription, difficultyScore)">
+                        <span>{{ scoreDescription }}</span>
+                        <span><FontAwesomeIcon icon="lightbulb" /></span>
+                        <span>{{ difficultyScore }}%</span>
+                    </div>
+                    <div class="right" :title="__('$1 words total', props.article.statistics.total)">
+                        <span>{{ props.article.statistics.total }}</span>
+                        <span><FontAwesomeIcon icon="database" /></span>
+                        <span>{{ lengthDescription }}</span>
+                    </div>
+                </div>
 
-        <div class="processing" v-if="props.article.needsProcessing">
-          {{ __('This article is currently beeing analyzed...') }}
+                <div class="processing" v-if="props.article.needsProcessing">
+                    {{ __('This article is currently beeing analyzed...') }}
+                </div>
+            </router-link>
         </div>
-      </router-link>
     </div>
-  </div>
 </template>
 
 

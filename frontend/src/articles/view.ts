@@ -17,36 +17,36 @@ export interface ArticleView extends View<ArticleBase, 'slug', 'slug'> {
 }
 
 function isArticlePreview(article: ArticleBase): article is ArticlePreview {
-  return (article as ArticlePreview).excerpt !== undefined &&
+    return (article as ArticlePreview).excerpt !== undefined &&
          (article as ArticlePreview).lastRead !== undefined &&
          (article as ArticlePreview).createdAt !== undefined &&
          (article as ArticlePreview).statistics !== undefined;
 }
 
 function isArticleDetail(article: ArticleBase): article is ArticleDetail {
-  return (article as ArticleDetail).tokens !== undefined;
+    return (article as ArticleDetail).tokens !== undefined;
 }
 
 
 export default (collection: ArticleCollection, filterFn: FilterFunction = x => !!x, orderFn: OrderFunction | null = null): ArticleView => {
-  const view = createView(collection, filterFn, orderFn)
+    const view = createView(collection, filterFn, orderFn)
 
-  const previews = computed<ArticlePreview[]>(() => {
-    return view.items.value.filter(isArticlePreview) as unknown as ArticlePreview[]
-  })
-  const detail = (slug: string): ComputedRef<ArticleDetail | undefined> => computed<ArticleDetail | undefined>(() => {
-    const article = view.find(slug);
-    if (article) {
-      return isArticleDetail(article) ? article : undefined
+    const previews = computed<ArticlePreview[]>(() => {
+        return view.items.value.filter(isArticlePreview) as unknown as ArticlePreview[]
+    })
+    const detail = (slug: string): ComputedRef<ArticleDetail | undefined> => computed<ArticleDetail | undefined>(() => {
+        const article = view.find(slug);
+        if (article) {
+            return isArticleDetail(article) ? article : undefined
+        }
+
+        return undefined
+    });
+
+    return {
+        ...view,
+        previews,
+        detail,
+        markSeen: collection.markSeen,
     }
-
-    return undefined
-  });
-
-  return {
-    ...view,
-    previews,
-    detail,
-    markSeen: collection.markSeen,
-  }
 }

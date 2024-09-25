@@ -13,8 +13,8 @@ const { profile } = useUser();
 const logout = useLogout();
 
 const logoutAndRedirect = async () => {
-  if (await logout()) {
-    router.push('/login');
-  }
+    if (await logout()) {
+        router.push('/login');
+    }
 }
 </script>

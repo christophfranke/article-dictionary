@@ -20,47 +20,47 @@ import __ from '@/i18n'
 
 
 const props = defineProps({
-  dictionary: {
-    type: Object as PropType<DictionaryView>,
-    required: true,
-  },
-  highlight: {
-    type: String,
-    default: '',
-  },
-  display: {
-    type: Object,
-    default: {
-      header: true,
-      limit: 0,
-      sortBy: 'original',
-      sortOrder: 'asc',
-      col: {
-        number: false,
-        original: true,
-        translations: true,
-        frequency: true,
-        status: true,
-        lastSeen: true,
-        actions: true,
-      },
-      action: {
-        known: true,
-        ignore: true,
-        add: true,
-        sort: true,
-        edit: true,
-        retranslate: true,
-        status: true,
-        glosbe: true,
-        detail: true,
-      },
-      behaviour: {
-        highlight: true,
-        scroll: true,
-      }
+    dictionary: {
+        type: Object as PropType<DictionaryView>,
+        required: true,
+    },
+    highlight: {
+        type: String,
+        default: '',
+    },
+    display: {
+        type: Object,
+        default: {
+            header: true,
+            limit: 0,
+            sortBy: 'original',
+            sortOrder: 'asc',
+            col: {
+                number: false,
+                original: true,
+                translations: true,
+                frequency: true,
+                status: true,
+                lastSeen: true,
+                actions: true,
+            },
+            action: {
+                known: true,
+                ignore: true,
+                add: true,
+                sort: true,
+                edit: true,
+                retranslate: true,
+                status: true,
+                glosbe: true,
+                detail: true,
+            },
+            behaviour: {
+                highlight: true,
+                scroll: true,
+            }
+        }
     }
-  }
 });
 
 
@@ -71,108 +71,108 @@ const { profile } = useProfile();
 const isReady = ref<boolean>(false)
 const usedWords = computed(() => isReady.value ? sortedWords.value : [])
 onMounted(async () => {
-  await new Promise(resolve => requestAnimationFrame(resolve))
-  isReady.value = true
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    isReady.value = true
 })
 
 const highlightedWord = computed(() => {
-  return (props.display.behaviour.highlight || props.display.behaviour.highlight)
-    ? props.highlight
-    : ''
+    return (props.display.behaviour.highlight || props.display.behaviour.highlight)
+        ? props.highlight
+        : ''
 });
 
 const isWordHighlighted = ref<{ [key: string]: boolean }>({});
 const lastHighlightedWord = ref<string>('');
 watchEffect(() => {
-  if (props.display.behaviour.highlight) {
-    const word = props.dictionary.find(highlightedWord.value);
-    if (word) {
-      if (lastHighlightedWord.value) {
-        isWordHighlighted.value[lastHighlightedWord.value] = false;
-      }
-      isWordHighlighted.value[word.original] = true;
-      lastHighlightedWord.value = word.original;
+    if (props.display.behaviour.highlight) {
+        const word = props.dictionary.find(highlightedWord.value);
+        if (word) {
+            if (lastHighlightedWord.value) {
+                isWordHighlighted.value[lastHighlightedWord.value] = false;
+            }
+            isWordHighlighted.value[word.original] = true;
+            lastHighlightedWord.value = word.original;
+        } else {
+            isWordHighlighted.value[lastHighlightedWord.value] = false;
+            lastHighlightedWord.value = '';
+        }
     } else {
-      isWordHighlighted.value[lastHighlightedWord.value] = false;
-      lastHighlightedWord.value = '';
+        if (lastHighlightedWord.value) {
+            isWordHighlighted.value[lastHighlightedWord.value] = false;
+            lastHighlightedWord.value = '';    
+        }
     }
-  } else {
-    if (lastHighlightedWord.value) {
-      isWordHighlighted.value[lastHighlightedWord.value] = false;
-      lastHighlightedWord.value = '';    
-    }
-  }
 });
 
 
 const newWord = ref<string>('');
 const addWord = async (): Promise<void> => {
-  if (newWord.value) {
-    await props.dictionary.add({ original: newWord.value });
-    newWord.value = '';
-  }
+    if (newWord.value) {
+        await props.dictionary.add({ original: newWord.value });
+        newWord.value = '';
+    }
 };
 </script>
 
 <template>
-  <div class="dictionary-table">
-    <div v-if="display.action.add" class="add-word-section">
-      <Label for="newWord">{{ __('New Entry:') }}</Label>
-      <Input v-model="newWord" id="newWord" :placeholder="__('Add word to dictionary')" />
-      <Button @click="addWord">{{ __('Add') }}</Button>
-    </div>
+    <div class="dictionary-table">
+        <div v-if="display.action.add" class="add-word-section">
+            <Label for="newWord">{{ __('New Entry:') }}</Label>
+            <Input v-model="newWord" id="newWord" :placeholder="__('Add word to dictionary')" />
+            <Button @click="addWord">{{ __('Add') }}</Button>
+        </div>
 
-    <table class="word-table">
-      <thead>
-        <tr v-if="display.header">
-          <th
-            @click="sortTable('order')"
-            v-if="display.col.number"
-            :title="display.action.sort ? __('Sort by appearence in text') : undefined"
-            :class="{ 'no-sort': !display.action.sort }"
-          >#
-          </th>
-          <th
-            @click="sortTable('original')"
-            v-if="display.col.original"
-            :title="display.action.sort ? __('Sort by original word') : undefined"
-            :class="{ 'no-sort': !display.action.sort }"
-          >{{ __('Original') }}
-          </th>
-          <th
-            @click="sortTable('translations')"
-            v-if="display.col.translations"
-            :title="display.action.sort ? __('Sort by translation') : undefined"
-            :class="{ 'no-sort': !display.action.sort }"
-          >{{ __('Translations') }}
-          </th>
-          <th
-            @click="sortTable('frequency', 'desc')"
-            v-if="display.col.frequency"
-            :title="display.action.sort ? __('Sort by word frequency') : undefined"
-            :class="{ 'no-sort': !display.action.sort }"
-          >{{ __('Frequency') }}
-          </th>
-          <th
-            @click="sortTable('status')"
-            v-if="display.col.status"
-            :title="__('Sort by status')"
-          >{{ __('Status') }}
-          </th>
-          <th
-            @click="sortTable('lastViewed', 'desc')"
-            v-if="display.col.lastSeen"
-            :title="__('Sort by last seen')"
-          >{{ __('Last seen') }}
-          </th>
-          <th v-if="display.col.actions" class="no-sort">{{ __('Actions') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <Row v-for="(word) in usedWords" :key="word.id" :word="word" :isHighlighed="isWordHighlighted[word.original]" :display="props.display" :dictionary="props.dictionary" :profile="profile" />
-      </tbody>
-    </table>
-  </div>
+        <table class="word-table">
+            <thead>
+                <tr v-if="display.header">
+                    <th
+                        @click="sortTable('order')"
+                        v-if="display.col.number"
+                        :title="display.action.sort ? __('Sort by appearence in text') : undefined"
+                        :class="{ 'no-sort': !display.action.sort }"
+                    >#
+                    </th>
+                    <th
+                        @click="sortTable('original')"
+                        v-if="display.col.original"
+                        :title="display.action.sort ? __('Sort by original word') : undefined"
+                        :class="{ 'no-sort': !display.action.sort }"
+                    >{{ __('Original') }}
+                    </th>
+                    <th
+                        @click="sortTable('translations')"
+                        v-if="display.col.translations"
+                        :title="display.action.sort ? __('Sort by translation') : undefined"
+                        :class="{ 'no-sort': !display.action.sort }"
+                    >{{ __('Translations') }}
+                    </th>
+                    <th
+                        @click="sortTable('frequency', 'desc')"
+                        v-if="display.col.frequency"
+                        :title="display.action.sort ? __('Sort by word frequency') : undefined"
+                        :class="{ 'no-sort': !display.action.sort }"
+                    >{{ __('Frequency') }}
+                    </th>
+                    <th
+                        @click="sortTable('status')"
+                        v-if="display.col.status"
+                        :title="__('Sort by status')"
+                    >{{ __('Status') }}
+                    </th>
+                    <th
+                        @click="sortTable('lastViewed', 'desc')"
+                        v-if="display.col.lastSeen"
+                        :title="__('Sort by last seen')"
+                    >{{ __('Last seen') }}
+                    </th>
+                    <th v-if="display.col.actions" class="no-sort">{{ __('Actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <Row v-for="(word) in usedWords" :key="word.id" :word="word" :isHighlighed="isWordHighlighted[word.original]" :display="props.display" :dictionary="props.dictionary" :profile="profile" />
+            </tbody>
+        </table>
+    </div>
 </template>
 
 

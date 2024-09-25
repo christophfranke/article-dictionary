@@ -18,43 +18,43 @@ const MAX_LENGTH = 150000;
 
 
 const props = defineProps({
-  article: Object as PropType<ArticleData>,
-  isLoading: Boolean,
-  errorMessage: String as PropType<string | null>
+    article: Object as PropType<ArticleData>,
+    isLoading: Boolean,
+    errorMessage: String as PropType<string | null>
 });
 
 const emit = defineEmits(['submit']);
 
 const onSubmit = () => {
-  emit('submit');
+    emit('submit');
 };
 </script>
 
 <template>
-  <Form @submit.prevent="onSubmit" class="article-form" v-if="article">
-    <Label for="articleName" class="title">
-      {{__('Title:')}}
-    </Label>
-    <Input id="articleName" v-model="article.title" type="text" required :disabled="isLoading" />
+    <Form @submit.prevent="onSubmit" class="article-form" v-if="article">
+        <Label for="articleName" class="title">
+            {{__('Title:')}}
+        </Label>
+        <Input id="articleName" v-model="article.title" type="text" required :disabled="isLoading" />
 
-    <Label for="articleContent">{{__('Content:')}}</Label>
-    <Textarea id="articleContent" v-model="article.content" required :disabled="isLoading" :max-length="MAX_LENGTH" />
-    <span class="char-count">
-      {{ article.content.length }}/{{ MAX_LENGTH || '∞' }}
-    </span>      
+        <Label for="articleContent">{{__('Content:')}}</Label>
+        <Textarea id="articleContent" v-model="article.content" required :disabled="isLoading" :max-length="MAX_LENGTH" />
+        <span class="char-count">
+            {{ article.content.length }}/{{ MAX_LENGTH || '∞' }}
+        </span>      
 
-    <Label for="articlePrivacy">{{__('Privacy:')}}</Label>
-    <Select id="articlePrivacy" v-model="article.privacy" :disabled="isLoading">
-      <option value="public">Public</option>
-      <option value="private">Private</option>
-    </Select>
+        <Label for="articlePrivacy">{{__('Privacy:')}}</Label>
+        <Select id="articlePrivacy" v-model="article.privacy" :disabled="isLoading">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </Select>
 
-    <Button type="submit" class="submit-button" :disabled="isLoading">
-      {{__('Submit')}}
-    </Button>
+        <Button type="submit" class="submit-button" :disabled="isLoading">
+            {{__('Submit')}}
+        </Button>
 
-    <ErrorMessage class="error" :message="errorMessage" v-if="errorMessage" />
-  </Form>
+        <ErrorMessage class="error" :message="errorMessage" v-if="errorMessage" />
+    </Form>
 </template>
 
 <style scoped lang="scss">

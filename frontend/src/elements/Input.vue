@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 
 const props = defineProps({
-  modelValue: [String, Boolean]
+    modelValue: [String, Boolean]
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -12,18 +12,18 @@ const valueRef = ref(props.modelValue);
 
 // Watch for external changes to modelValue and update valueRef accordingly
 watch(() => props.modelValue, (newVal) => {
-  valueRef.value = newVal;
+    valueRef.value = newVal;
 });
 
 // Watch for changes in valueRef and emit update event
 watch(valueRef, (newValue) => {
-  emit('update:modelValue', newValue);
-  emit('change', newValue)
+    emit('update:modelValue', newValue);
+    emit('change', newValue)
 });
 </script>
 
 <template>
-  <input v-bind="$attrs" v-model="valueRef" />
+    <input v-bind="$attrs" v-model="valueRef" />
 </template>
 
 <style scoped lang="scss">

@@ -6,11 +6,11 @@ import __ from '@/i18n'
 </script>
 
 <template>
-  <div class="container">
-    <Headline>{{ __('404 - Not Found') }}</Headline>
-    <p>{{ __('The page you are looking for does not exist.') }}</p>
-    <InternalLink to="/" class="link">{{ __('Back to home page') }}</InternalLink>
-  </div>
+    <div class="container">
+        <Headline>{{ __('404 - Not Found') }}</Headline>
+        <p>{{ __('The page you are looking for does not exist.') }}</p>
+        <InternalLink to="/" class="link">{{ __('Back to home page') }}</InternalLink>
+    </div>
 </template>
 
 

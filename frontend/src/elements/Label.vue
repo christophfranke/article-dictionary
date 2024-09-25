@@ -1,7 +1,7 @@
 <template>
-	<label>
-		<slot />
-	</label>
+    <label>
+        <slot />
+    </label>
 </template>
 
 <style scoped lang="scss">

@@ -2,10 +2,10 @@ import { computed, ref } from 'vue';
 import type { Word } from '@/types';
 
 export default (props: any) => {
-	const sortedBy = ref<string>(props.display.sortBy);
-	const sortOrder = ref<string>(props.display.sortOrder);
+    const sortedBy = ref<string>(props.display.sortBy);
+    const sortOrder = ref<string>(props.display.sortOrder);
 
-	const sortTable = (column: string, defaultSortOrder: string = 'asc'): void => {
+    const sortTable = (column: string, defaultSortOrder: string = 'asc'): void => {
 	    if (!props.display.action.sort) {
 	    	return
 	    }
@@ -16,9 +16,9 @@ export default (props: any) => {
 	    	sortedBy.value = column;
 	    	sortOrder.value = defaultSortOrder;
 	    }
-	};
+    };
 
-	const sortedWords = computed<Array<Word>>(() => {
+    const sortedWords = computed<Array<Word>>(() => {
 	    const sorted = props.dictionary.items.value;
 	    if (sortedBy.value) {
 	    	sorted.sort((a: any, b: any) => {
@@ -50,7 +50,7 @@ export default (props: any) => {
 	    }
 
 	    return sorted;
-	});
+    });
 
-	return { sortedWords, sortTable }
+    return { sortedWords, sortTable }
 };

@@ -19,11 +19,11 @@ const router = useRouter();
 
 const { articles, errorMessage } = useArticleView();
 const importArticle = async () => {
-  const newArticle = await articles.add({ id });
+    const newArticle = await articles.add({ id });
 
-  if (newArticle) {
-    router.push(`/articles/${newArticle.slug}`);
-  }
+    if (newArticle) {
+        router.push(`/articles/${newArticle.slug}`);
+    }
 }
 
 onMounted(importArticle)
@@ -32,9 +32,9 @@ onMounted(importArticle)
 
 <template>
     <div class="container">
-      <Headline class="title">{{ __('Importing article...') }}</Headline>
-      <Paragraph>{{ __('This may take a minute.') }}</Paragraph>
-      <ErrorMessage :message="errorMessage" />
+        <Headline class="title">{{ __('Importing article...') }}</Headline>
+        <Paragraph>{{ __('This may take a minute.') }}</Paragraph>
+        <ErrorMessage :message="errorMessage" />
     </div>
 </template>
 

@@ -16,65 +16,65 @@ import __ from '@/i18n'
 
 
 const { email,
-  name,
-  password,
-  sourceLanguage,
-  targetLanguage,
-  register,
-  errorMessage,
-  isLoading,
+    name,
+    password,
+    sourceLanguage,
+    targetLanguage,
+    register,
+    errorMessage,
+    isLoading,
 } = useRegister();
 const router = useRouter();
 
 const registerAndRedirect = async () => {
-  const result = await register()
-  if (result) {
-    router.push('/')
-  }
+    const result = await register()
+    if (result) {
+        router.push('/')
+    }
 };
 
 const languages = useSupportedLanguages();
 const otherLanguages = computed(() => {
-  const result = { ...languages.value };
-  delete result[sourceLanguage.value];
+    const result = { ...languages.value };
+    delete result[sourceLanguage.value];
 
-  return result;
+    return result;
 });
 
 
 </script>
 
 <template>
-  <Form @submit.prevent="registerAndRedirect" class="register-form">
-    <FormGroup>
-      <Label for="email">{{ __('Email:') }}</Label>
-      <Input type="email" id="email" v-model="email" required />
-    </FormGroup>
-    <FormGroup>
-      <Label for="name">{{ __('Name:') }}</Label>
-      <Input type="text" id="name" v-model="name" />
-    </FormGroup>
-    <FormGroup>
-      <Label for="password">{{ __('Password:') }}</Label>
-      <Input type="password" id="password" v-model="password" required />
-    </FormGroup>
+    <Form @submit.prevent="registerAndRedirect" class="register-form">
+        <FormGroup>
+            <Label for="email">{{ __('Email:') }}</Label>
+            <Input type="email" id="email" v-model="email" required />
+        </FormGroup>
+        <FormGroup>
+            <Label for="name">{{ __('Name:') }}</Label>
+            <Input type="text" id="name" v-model="name" />
+        </FormGroup>
+        <FormGroup>
+            <Label for="password">{{ __('Password:') }}</Label>
+            <Input type="password" id="password" v-model="password" required />
+        </FormGroup>
 
-    <FormGroup>
-      <Label for="sourceLanguage">{{ __('I want to learn:') }}</Label>
-      <Select id="sourceLanguage" v-model="sourceLanguage" :options="languages" required />
-    </FormGroup>
+        <FormGroup>
+            <Label for="sourceLanguage">{{ __('I want to learn:') }}</Label>
+            <Select id="sourceLanguage" v-model="sourceLanguage" :options="languages" required />
+        </FormGroup>
 
-    <FormGroup>
-      <Label for="targetLanguage">{{ __('My language is:') }}</Label>
-      <Select id="targetLanguage" v-model="targetLanguage" :options="otherLanguages" required />
-    </FormGroup>
+        <FormGroup>
+            <Label for="targetLanguage">{{ __('My language is:') }}</Label>
+            <Select id="targetLanguage" v-model="targetLanguage" :options="otherLanguages" required />
+        </FormGroup>
 
-    <FormGroup>
-      <Button type="submit" :disabled="isLoading">{{ __('Register') }}</Button>
-    </FormGroup>
+        <FormGroup>
+            <Button type="submit" :disabled="isLoading">{{ __('Register') }}</Button>
+        </FormGroup>
 
-    <ErrorMessage :message="errorMessage" />
-  </Form>
+        <ErrorMessage :message="errorMessage" />
+    </Form>
 </template>
 
 

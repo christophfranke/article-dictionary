@@ -6,42 +6,42 @@ import type { FetchFn } from '@/types';
 const SIMULATE_DELAY = 0;
 
 export const redirectToLogin = (router: any, route: any) => {
-  // Redirect to login with the current path as the 'next' parameter using Vue Router
-  const currentPath = route?.fullPath;
-  if (router) {    
-    if (currentPath && !currentPath.startsWith('/login')) {
-      router.push(`/login?next=${encodeURIComponent(currentPath)}`);
+    // Redirect to login with the current path as the 'next' parameter using Vue Router
+    const currentPath = route?.fullPath;
+    if (router) {    
+        if (currentPath && !currentPath.startsWith('/login')) {
+            router.push(`/login?next=${encodeURIComponent(currentPath)}`);
+        }
     }
-  }
 }
 
 export const useFetchAuthorized = (): FetchFn => {  
-  const router = useRouter();
-  const route = useRoute();
+    const router = useRouter();
+    const route = useRoute();
   
-  // this is the adjusted fetch function
-  return async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
-    try {
-      if (SIMULATE_DELAY) {
-        await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
-      }
-      const response = await fetch(...args);
+    // this is the adjusted fetch function
+    return async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
+        try {
+            if (SIMULATE_DELAY) {
+                await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
+            }
+            const response = await fetch(...args);
 
-      if (response.status === 401) {
-        redirectToLogin(router, route)
-      }
+            if (response.status === 401) {
+                redirectToLogin(router, route)
+            }
 
-      if (response.ok) {
-        return response.json() as T;
-      }
+            if (response.ok) {
+                return response.json() as T;
+            }
 
-      console.error('Could not fetch', args[0], response.status);
-    } catch (error) {
-      console.error('Error while fetching:', args[0], error);
-    }
+            console.error('Could not fetch', args[0], response.status);
+        } catch (error) {
+            console.error('Error while fetching:', args[0], error);
+        }
 
-    return null
-  };
+        return null
+    };
 }
 
 interface UseApi {
@@ -56,71 +56,71 @@ const sendingCounter = ref<number>(0);
 const isLoading = computed<boolean>(() => loadingCounter.value > 0);
 const isSending = computed<boolean>(() => sendingCounter.value > 0);
 export default (): UseApi => {
-  const router = useRouter();
-  const route = useRoute();
+    const router = useRouter();
+    const route = useRoute();
 
-  const errorMessage = ref<string | null>(null);
+    const errorMessage = ref<string | null>(null);
 
-  const fetchAuthorized = async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
-    let isSendingRequest = false
-    try {
-      loadingCounter.value += 1;
-      errorMessage.value = null;
+    const fetchAuthorized = async <T>(...args: Parameters<typeof fetch>): Promise<T | null> => {
+        let isSendingRequest = false
+        try {
+            loadingCounter.value += 1;
+            errorMessage.value = null;
 
-      if (args[1] && args[1].method) {
-        const method = args[1].method
-        if (typeof method === 'string' && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase())) {
-          isSendingRequest = true
-          sendingCounter.value += 1
+            if (args[1] && args[1].method) {
+                const method = args[1].method
+                if (typeof method === 'string' && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase())) {
+                    isSendingRequest = true
+                    sendingCounter.value += 1
+                }
+            }
+
+            if (SIMULATE_DELAY) {
+                await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
+            }
+            const response = await fetch(...args);
+
+            if (response.status === 401) {
+                redirectToLogin(router, route);
+
+                loadingCounter.value -= 1;
+                if (isSendingRequest) {
+                    sendingCounter.value -= 1;
+                }
+                return null;
+            }
+
+            if (response.ok) {
+                const data = await response.json() as T;
+                loadingCounter.value -= 1;
+                if (isSendingRequest) {
+                    sendingCounter.value -= 1;
+                }
+                return data;
+            }
+
+            const { error } = await response.json();
+            if (error) {
+                errorMessage.value = error;
+            } else {
+                errorMessage.value = `Could not connect to server: ${response.status}`;
+            }
+        } catch (error) {
+            errorMessage.value = `Could not connect to server: ${error}`;
         }
-      }
-
-      if (SIMULATE_DELAY) {
-        await new Promise(resolve => setTimeout(resolve, SIMULATE_DELAY * Math.random()));
-      }
-      const response = await fetch(...args);
-
-      if (response.status === 401) {
-        redirectToLogin(router, route);
 
         loadingCounter.value -= 1;
         if (isSendingRequest) {
-          sendingCounter.value -= 1;
+            sendingCounter.value -= 1;
         }
         return null;
-      }
+    };
 
-      if (response.ok) {
-        const data = await response.json() as T;
-        loadingCounter.value -= 1;
-        if (isSendingRequest) {
-          sendingCounter.value -= 1;
-        }
-        return data;
-      }
 
-      const { error } = await response.json();
-      if (error) {
-        errorMessage.value = error;
-      } else {
-        errorMessage.value = `Could not connect to server: ${response.status}`;
-      }
-    } catch (error) {
-      errorMessage.value = `Could not connect to server: ${error}`;
+    return {
+        fetchAuthorized,
+        errorMessage,
+        isLoading,
+        isSending,
     }
-
-    loadingCounter.value -= 1;
-    if (isSendingRequest) {
-      sendingCounter.value -= 1;
-    }
-    return null;
-  };
-
-
-  return {
-    fetchAuthorized,
-    errorMessage,
-    isLoading,
-    isSending,
-  }
 }

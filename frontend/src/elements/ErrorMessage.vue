@@ -2,7 +2,7 @@
 const { message } = defineProps(['message']);
 </script>
 <template>
-	<p v-if="message" class="error-message">{{ message }}</p>
+    <p v-if="message" class="error-message">{{ message }}</p>
 </template>
 
 <style scoped lang="scss">

@@ -1,18 +1,14 @@
 # Use an official Node.js runtime as a parent image
-FROM node:22
+FROM node:22-bookworm
 
 # Set the working directory to /app/frontend
 WORKDIR /app/frontend
-
-# Move node modules outside the app folder
-ENV NODE_PATH /node_modules
-ENV PATH $PATH:/node_modules/.bin
 
 # Copy the package.json and package-lock.json files into the container
 COPY ./package*.json .
 
 # Install app dependencies
-RUN npm install
+RUN npm ci
 
 RUN rm -rf /dist
 RUN mkdir -p /dist

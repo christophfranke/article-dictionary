@@ -11,28 +11,28 @@ import ArticleEditForm from '@/components/ArticleEditForm.vue'; // Import the ne
 import __ from '@/i18n'
 
 const article = ref<ArticleData>({
-  title: '',
-  content: '',
-  privacy: 'public',
+    title: '',
+    content: '',
+    privacy: 'public',
 });
 
 const router = useRouter();
 const { articles, errorMessage, isSending } = useArticleView();
 
 const submitForm = async (): Promise<void> => {
-  const newArticle = await articles.add(article.value);
+    const newArticle = await articles.add(article.value);
 
-  if (newArticle) {
-    router.push(`/articles/${newArticle.slug}`);
-  }
+    if (newArticle) {
+        router.push(`/articles/${newArticle.slug}`);
+    }
 };
 </script>
 
 <template>
-  <div class="create-article">
-    <Headline>{{ __('Create Article') }}</Headline>
-    <ArticleEditForm :article="article" :isLoading="isSending" :errorMessage="errorMessage" @submit="submitForm" />
-  </div>
+    <div class="create-article">
+        <Headline>{{ __('Create Article') }}</Headline>
+        <ArticleEditForm :article="article" :isLoading="isSending" :errorMessage="errorMessage" @submit="submitForm" />
+    </div>
 </template>
 
 

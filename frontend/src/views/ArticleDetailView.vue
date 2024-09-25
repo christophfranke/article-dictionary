@@ -34,14 +34,14 @@ import __ from '@/i18n'
 
 
 const contentDisplayConfig = {
-  padding: true,
-  click: true,
-  highlight: {
-    new: true,
-    seen: true,
-    mark: false,
-    underline: true,
-  }  
+    padding: true,
+    click: true,
+    highlight: {
+        new: true,
+        seen: true,
+        mark: false,
+        underline: true,
+    }  
 }
 
 const route = useRoute();
@@ -51,109 +51,109 @@ const { articles, isLoading } = useArticleView();
 const article = articles.detail(slug.value)
 
 const {
-  currentPage,
-  numberOfPages,
-  paginatedContent,
-  paginatedTokens,
-  relativeIndex,
-  getAbsoluteIndex,
+    currentPage,
+    numberOfPages,
+    paginatedContent,
+    paginatedTokens,
+    relativeIndex,
+    getAbsoluteIndex,
 } = usePagination(article);
 
 watch(() => article.value?.content, () => {
-  if (relativeIndex.value.page > 0) {
-    currentPage.value = relativeIndex.value.page  
-  }
+    if (relativeIndex.value.page > 0) {
+        currentPage.value = relativeIndex.value.page  
+    }
 }, { immediate: true });
 
 
 const wordIndexMap = computed(() => {
-  const map: { [key: string]: number } = {};
-  article.value?.tokens.forEach((token, index) => {
-    const word = token.word
-    if (!(word in map)) {
-      map[word] = index;
-    }
-  });
+    const map: { [key: string]: number } = {};
+    article.value?.tokens.forEach((token, index) => {
+        const word = token.word
+        if (!(word in map)) {
+            map[word] = index;
+        }
+    });
 
-  return map;
+    return map;
 });
 
 const displayFilter = (word: PartialWord): boolean => {
-  return (
-    wordIndexMap.value[word.original] > -1
-    && (word.status === 'new' || word.status === 'seen')
-    && paginatedTokens.value.some(token => token.word === word.original)
-  );
+    return (
+        wordIndexMap.value[word.original] > -1
+        && (word.status === 'new' || word.status === 'seen')
+        && paginatedTokens.value.some(token => token.word === word.original)
+    );
 }
 
 const { dictionary } = useDictionaryView(displayFilter);
 dictionary.setOrder((word: PartialWord) => wordIndexMap.value[word.original] ?? Infinity);
 
 const highlighted = ref<Highlight>({
-  token: null,
-  index: -1,
+    token: null,
+    index: -1,
 });
 const absoluteHighlighted = computed<Highlight>(() => ({
-  ...highlighted.value,
-  index: getAbsoluteIndex(highlighted.value?.index ?? -1),
+    ...highlighted.value,
+    index: getAbsoluteIndex(highlighted.value?.index ?? -1),
 }));
 
 const statusDescription = computed(() => {
-  if (article.value?.status === 'read') {
-    return __('You have read this article.');
-  } else if (article.value?.status === 'seen') {
-    return __('You have been reading this article.');
-  } else {
-    return __('New article');
-  }
+    if (article.value?.status === 'read') {
+        return __('You have read this article.');
+    } else if (article.value?.status === 'seen') {
+        return __('You have been reading this article.');
+    } else {
+        return __('New article');
+    }
 
-  return ''
+    return ''
 })
 
 const { fetchAuthorized: fetchAuthorizedButton, errorMessage } = useApi();
 
 const scrollToTop = async () => {
-  await new Promise(resolve => setTimeout(resolve, 50));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+    await new Promise(resolve => setTimeout(resolve, 50));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 const isLoadingButton = ref<boolean>(false)
 const markArticleAsRead = async () => {
-  isLoadingButton.value = true
-  const slug = article.value?.slug
-  if (slug) {
-    await articles.updateOne(slug, { status: 'read' });
+    isLoadingButton.value = true
+    const slug = article.value?.slug
+    if (slug) {
+        await articles.updateOne(slug, { status: 'read' });
 
-    currentPage.value = 1;
-  }
+        currentPage.value = 1;
+    }
 
-  isLoadingButton.value = false
+    isLoadingButton.value = false
 }
 const changePage = async () => {
-  await scrollToTop();
-  if (article.value) {
-    await articles.updateOne(article.value.slug, { readingIndex: getAbsoluteIndex(0) });
-  }
+    await scrollToTop();
+    if (article.value) {
+        await articles.updateOne(article.value.slug, { readingIndex: getAbsoluteIndex(0) });
+    }
 }
 
 const readDisplayStateFromStorage = () => {
-  try {
-    return !!JSON.parse(localStorage.getItem('showDictionary') ?? 'true')
-  } catch(e) {}
+    try {
+        return !!JSON.parse(localStorage.getItem('showDictionary') ?? 'true')
+    } catch(e) {}
 
-  return true
+    return true
 }
 const saveDisplayStateToStorage = () => {
-  try {
-    localStorage.setItem('showDictionary', JSON.stringify(showDictionary.value))
-  } catch(e) {
-    console.error('Could not save dictionary display state to local storage', e)
-  }
+    try {
+        localStorage.setItem('showDictionary', JSON.stringify(showDictionary.value))
+    } catch(e) {
+        console.error('Could not save dictionary display state to local storage', e)
+    }
 }
 const showDictionary = ref(readDisplayStateFromStorage());
 const toggleShowDictionary = () => {
-  showDictionary.value = !showDictionary.value;
-  saveDisplayStateToStorage();
+    showDictionary.value = !showDictionary.value;
+    saveDisplayStateToStorage();
 };
 
 const toggleStatusSeen = useToggleStatusSeen(dictionary)
@@ -163,57 +163,57 @@ const SECOND = 1000;
 const DICTIONARY_POLL_DELAY = 30 * SECOND
 let dictionaryPollId: ReturnType<typeof setTimeout> | null = null;
 const pollForDictionaryUpdates = () => {
-  if (dictionary.items.value.some(item => item.needsRetranslate)) {
-    dictionaryPollId = setTimeout(async () => {
-      await dictionary.load()
-      pollForDictionaryUpdates()
-    }, DICTIONARY_POLL_DELAY)
-  }
+    if (dictionary.items.value.some(item => item.needsRetranslate)) {
+        dictionaryPollId = setTimeout(async () => {
+            await dictionary.load()
+            pollForDictionaryUpdates()
+        }, DICTIONARY_POLL_DELAY)
+    }
 }
 onBeforeUnmount(() => {
-  if (dictionaryPollId) {
-    clearTimeout(dictionaryPollId)
-  }
+    if (dictionaryPollId) {
+        clearTimeout(dictionaryPollId)
+    }
 })
 
 const ARTICLE_POLL_DELAY = 10 * SECOND
 let articlePollId: ReturnType<typeof setTimeout> | null = null;
 const pollForArticleUpdates = async () => {
-  if (article.value?.needsProcessing) {
-    articlePollId = setTimeout(async () => {
-      await articles.get(slug.value)
-      pollForArticleUpdates()
-    }, ARTICLE_POLL_DELAY)
-  } else {
-    await dictionary.load()
-    pollForDictionaryUpdates()
-  }
+    if (article.value?.needsProcessing) {
+        articlePollId = setTimeout(async () => {
+            await articles.get(slug.value)
+            pollForArticleUpdates()
+        }, ARTICLE_POLL_DELAY)
+    } else {
+        await dictionary.load()
+        pollForDictionaryUpdates()
+    }
 }
 onBeforeUnmount(() => {
-  if (articlePollId) {
-    clearTimeout(articlePollId)
-  }
+    if (articlePollId) {
+        clearTimeout(articlePollId)
+    }
 })
 
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 onMounted(async () => {
-  await articles.get(slug.value)
-  pollForArticleUpdates()
+    await articles.get(slug.value)
+    pollForArticleUpdates()
 
-  if(article.value?.status === 'read') {
-    timeoutId = setTimeout(() => {
-      if (article.value) {
-        articles.updateOne(article.value.slug, { status: 'seen' });
-      }
-    }, 60 * SECOND);
-  }
+    if(article.value?.status === 'read') {
+        timeoutId = setTimeout(() => {
+            if (article.value) {
+                articles.updateOne(article.value.slug, { status: 'seen' });
+            }
+        }, 60 * SECOND);
+    }
 });
 
 onBeforeUnmount(() => {
-  if (timeoutId) {
-    clearTimeout(timeoutId);
-  }
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+    }
 });
 
 
@@ -221,39 +221,39 @@ onBeforeUnmount(() => {
 
 
 <template>
-  <div class="article-page" v-if="!article && isLoading">
-    <Headline type="h2">{{ __('Loading...') }}</Headline>
-  </div>
-  <div class="article-page" v-else>
-    <template v-if="article">
-      <div class="processing" v-if="article.needsProcessing">
-        <Headline type="h2">{{ __('Please wait until the text is processed. This may take a few minutes...') }}</Headline>
-      </div>
-      <div :class="{
-        content: true,
-        'no-dictionary': !showDictionary || dictionary.items.value.length === 0,
-        'needs-processing': article.needsProcessing
-      }">
-        <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
-        <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
-        <Headline type="h3" class="title" v-else>{{ article.title }} ({{ currentPage }}/{{ numberOfPages }})</Headline>
-        <Paragraph>
-          <ProcessedContent :tokens="paginatedTokens" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="relativeIndex.page === currentPage ? relativeIndex.index : 0" :key="currentPage" />
-        </Paragraph>
-        <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" v-if="currentPage === numberOfPages" />
-        <Pagination 
-          class="bottom-pagination"
-          v-model:currentPage="currentPage" 
-          :numberOfPages="numberOfPages"
-          v-if="numberOfPages > 1"
-          @change="changePage"
-        />
-        <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
-      </div>
-      <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.token?.word" :toggleShowDictionary="toggleShowDictionary" v-if="dictionary.items.value.length > 0"/>
-    </template>
-    <NotFoundView v-else />
-  </div>
+    <div class="article-page" v-if="!article && isLoading">
+        <Headline type="h2">{{ __('Loading...') }}</Headline>
+    </div>
+    <div class="article-page" v-else>
+        <template v-if="article">
+            <div class="processing" v-if="article.needsProcessing">
+                <Headline type="h2">{{ __('Please wait until the text is processed. This may take a few minutes...') }}</Headline>
+            </div>
+            <div :class="{
+                content: true,
+                'no-dictionary': !showDictionary || dictionary.items.value.length === 0,
+                'needs-processing': article.needsProcessing
+            }">
+                <ArticleTopBar :article="article" :dictionary="dictionary" :statusDescription="statusDescription" />
+                <Headline class="title" v-if="currentPage === 1">{{ article.title }}</Headline>
+                <Headline type="h3" class="title" v-else>{{ article.title }} ({{ currentPage }}/{{ numberOfPages }})</Headline>
+                <Paragraph>
+                    <ProcessedContent :tokens="paginatedTokens" :content="paginatedContent" :dictionary="dictionary" v-model="highlighted" @click="toggleStatusSeen" :display="contentDisplayConfig" :scrollToIndex="relativeIndex.page === currentPage ? relativeIndex.index : 0" :key="currentPage" />
+                </Paragraph>
+                <ArticleBottomBar :articleStatus="article.status" :isLoadingButton="isLoadingButton" :errorMessage="errorMessage" @markAsRead="markArticleAsRead" v-if="currentPage === numberOfPages" />
+                <Pagination 
+                    class="bottom-pagination"
+                    v-model:currentPage="currentPage" 
+                    :numberOfPages="numberOfPages"
+                    v-if="numberOfPages > 1"
+                    @change="changePage"
+                />
+                <Tooltip :dictionary="dictionary" :highlighted="absoluteHighlighted" :article="article" />
+            </div>
+            <DictionarySidebar :showDictionary="showDictionary" :dictionary="dictionary" :highlightedWord="highlighted.token?.word" :toggleShowDictionary="toggleShowDictionary" v-if="dictionary.items.value.length > 0"/>
+        </template>
+        <NotFoundView v-else />
+    </div>
 </template>
 
 <style scoped lang="scss">

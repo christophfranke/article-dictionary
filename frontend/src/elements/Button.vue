@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 const { role, size } = defineProps({
-  role: {
-    type: String,
-    default: 'action',
-  },
-  size: {
-    type: String,
-    default: 'default',
-  },
+    role: {
+        type: String,
+        default: 'action',
+    },
+    size: {
+        type: String,
+        default: 'default',
+    },
 });
 
 </script>
 
 <template>
-	<button :class="{ [role]: true, [size]: true }">
-		<slot />
-	</button>
+    <button :class="{ [role]: true, [size]: true }">
+        <slot />
+    </button>
 </template>
 
 <style scoped lang="scss">

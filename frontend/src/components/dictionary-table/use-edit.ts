@@ -5,7 +5,7 @@ const editingTranslationId = ref<string>('');
 const editTranslationsValue = ref<string>('');
 
 export default (props: any) => {
-	const editTranslations = async (id: string): Promise<void> => {
+    const editTranslations = async (id: string): Promise<void> => {
 	  if (props.display.action.edit) {
 	    editingTranslationId.value = id;
 	    if (id) {
@@ -24,19 +24,19 @@ export default (props: any) => {
 	      }
 	    }
 	  }
-	};
+    };
 
-	const cancelEditTranslations = async (id: string): Promise<void> => {
+    const cancelEditTranslations = async (id: string): Promise<void> => {
 	  await new Promise(resolve => setTimeout(resolve, 0));
 
 	  if (editingTranslationId.value === id) {
 	    editingTranslationId.value = '';
 	  }
-	};
+    };
 
 
-	const isUpdating = ref(false)
-	const updateTranslation = async (): Promise<void> => {
+    const isUpdating = ref(false)
+    const updateTranslation = async (): Promise<void> => {
 	  if (isUpdating.value) {
 	    return
 	  }
@@ -51,13 +51,13 @@ export default (props: any) => {
 	  }
 
 	  isUpdating.value = false;
-	};
+    };
 
-	return {
-		editingTranslationId,
-		editTranslationsValue,
-		editTranslations,
-		cancelEditTranslations,
-		updateTranslation
-	}
+    return {
+        editingTranslationId,
+        editTranslationsValue,
+        editTranslations,
+        cancelEditTranslations,
+        updateTranslation
+    }
 }

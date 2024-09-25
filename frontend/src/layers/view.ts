@@ -30,47 +30,47 @@ export interface View<T extends { id: string } & Record<K, any> & Record<L, any>
 }
 
 export default <T extends { id: string } & Record<K, any> & Record<L, any>, K extends keyof T, L extends keyof T>(
-  collection: Collection<T, K, L>,
-  filterFn: FilterFunction<T> = x => !!x,
-  orderFn: OrderFunction<T> | null = null
+    collection: Collection<T, K, L>,
+    filterFn: FilterFunction<T> = x => !!x,
+    orderFn: OrderFunction<T> | null = null
 ): View<T, K, L> => {
-  const filter = ref(filterFn);
-  const order = ref<OrderFunction<T> | null>(orderFn);
+    const filter = ref(filterFn);
+    const order = ref<OrderFunction<T> | null>(orderFn);
 
-  const isVisible = (keyValue: string): boolean => {
-    const item = collection.find(keyValue);
-    return item ? filter.value(item) : false;
-  };
+    const isVisible = (keyValue: string): boolean => {
+        const item = collection.find(keyValue);
+        return item ? filter.value(item) : false;
+    };
 
-  const all = computed(() => {
+    const all = computed(() => {
     // set the order inline, not with a map function
     // otherwise the complete list will be rerendered each time a single value is changed
-    collection.all.value.forEach((item, index) => {
-      const newOrder = order.value ? order.value(item) ?? index : index
-      if (newOrder !== (item as WithOrder<T>).order) {
-        (item as WithOrder<T>).order = newOrder
-      }
+        collection.all.value.forEach((item, index) => {
+            const newOrder = order.value ? order.value(item) ?? index : index
+            if (newOrder !== (item as WithOrder<T>).order) {
+                (item as WithOrder<T>).order = newOrder
+            }
+        })
+
+        return collection.all.value as WithOrder<T>[]
     })
 
-    return collection.all.value as WithOrder<T>[]
-  })
+    const items = computed(() => {
+        const filtered = all.value.filter(filter.value)
+        // console.log('filtered items', filtered.length)
+        return filtered
+    });
 
-  const items = computed(() => {
-    const filtered = all.value.filter(filter.value)
-    // console.log('filtered items', filtered.length)
-    return filtered
-  });
+    const setOrder = (orderFn?: OrderFunction<T>) => {
+        order.value = orderFn || null;
+    }
 
-  const setOrder = (orderFn?: OrderFunction<T>) => {
-    order.value = orderFn || null;
-  }
-
-  return {
-    ...collection,
-    isVisible,
-    items,
-    all,
-    setFilter: fn => { filter.value = fn; },
-    setOrder,
-  }
+    return {
+        ...collection,
+        isVisible,
+        items,
+        all,
+        setFilter: fn => { filter.value = fn; },
+        setOrder,
+    }
 }

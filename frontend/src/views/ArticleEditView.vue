@@ -18,29 +18,29 @@ const router = useRouter();
 const { articles, errorMessage, isLoading } = useArticleView();
 
 const submitForm = async (): Promise<void> => {
-  if (article.value) {    
-    const updatedArticle = await articles.updateOne(slug.value, article.value)
+    if (article.value) {    
+        const updatedArticle = await articles.updateOne(slug.value, article.value)
 
-    if (updatedArticle) {
-      router.push(`/articles/${updatedArticle.slug}`);
+        if (updatedArticle) {
+            router.push(`/articles/${updatedArticle.slug}`);
+        }
     }
-  }
 };
 
 onMounted(async () => {
-  article.value = await articles.get(slug.value);
+    article.value = await articles.get(slug.value);
 
-  if (!article.value) {
-    router.push('/404-not-found');
-  }
+    if (!article.value) {
+        router.push('/404-not-found');
+    }
 });
 </script>
 
 <template>
-  <div class="create-article" v-if="article">
-    <Headline>{{ __('Edit Article') }}</Headline>
-    <ArticleEditForm :article="article" :isLoading="isLoading" :errorMessage="errorMessage" @submit="submitForm" />
-  </div>
+    <div class="create-article" v-if="article">
+        <Headline>{{ __('Edit Article') }}</Headline>
+        <ArticleEditForm :article="article" :isLoading="isLoading" :errorMessage="errorMessage" @submit="submitForm" />
+    </div>
 </template>
 
 

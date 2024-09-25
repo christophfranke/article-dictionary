@@ -5,30 +5,30 @@ const { isLoading } = useApi()
 </script>
 
 <template>
-  <transition
-    name="spinner-fade"
-    mode="out-in"
-    appear
-  >
-    <div v-if="isLoading" class="spinner-container">
-      <svg
-        class="spinner"
-        width="37.5px"
-        height="37.5px"
-        viewBox="0 0 50 50"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          class="path"
-          cx="25"
-          cy="25"
-          r="20"
-          fill="none"
-          stroke-width="5"
-        ></circle>
-      </svg>
-    </div>
-  </transition>
+    <transition
+        name="spinner-fade"
+        mode="out-in"
+        appear
+    >
+        <div v-if="isLoading" class="spinner-container">
+            <svg
+                class="spinner"
+                width="37.5px"
+                height="37.5px"
+                viewBox="0 0 50 50"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <circle
+                    class="path"
+                    cx="25"
+                    cy="25"
+                    r="20"
+                    fill="none"
+                    stroke-width="5"
+                ></circle>
+            </svg>
+        </div>
+    </transition>
 </template>
 
 <style scoped lang="scss">

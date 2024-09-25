@@ -20,7 +20,7 @@ type PromiseFunction<A extends any[], T> = (...args: A) => Promise<T>;
 type AsyncGeneratorFunction<A extends any[], T> = (...args: A) => AsyncGenerator<T, void, unknown>;
 
 export function makeAsyncGenerator<A extends any[], T>(fn: PromiseFunction<A, T>): AsyncGeneratorFunction<A, T> {
-  return async function* (...args: A): AsyncGenerator<T, void, unknown> {
-    yield await fn(...args);
-  };
+    return async function* (...args: A): AsyncGenerator<T, void, unknown> {
+        yield await fn(...args);
+    };
 }

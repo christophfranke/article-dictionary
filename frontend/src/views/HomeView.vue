@@ -21,128 +21,128 @@ const router = useRouter();
 
 const continueReadingArticlesCount = ref(3)
 const continueReadingArticles = computed(() => {
-  const sortedArticles = articles.previews.value
-    .filter(article => article.owned)
-    .filter(article => article.status === 'seen')
-    .sort((a, b) => {
-      return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
-    });
+    const sortedArticles = articles.previews.value
+        .filter(article => article.owned)
+        .filter(article => article.status === 'seen')
+        .sort((a, b) => {
+            return new Date(b.lastRead).getTime() - new Date(a.lastRead).getTime();
+        });
 
-  return sortedArticles.slice(0, continueReadingArticlesCount.value);
+    return sortedArticles.slice(0, continueReadingArticlesCount.value);
 });
 
 const usefulness = (article: ArticlePreview): number =>
-  (0.2 * article.statistics.known.words
-    + 1.0 * article.statistics.seen.words
-    - 0.5 * article.statistics.new.words)
-  / article.statistics.total;
+    (0.2 * article.statistics.known.words
+        + 1.0 * article.statistics.seen.words
+        - 0.5 * article.statistics.new.words)
+    / article.statistics.total;
 
 const suggestedArticlesCount = ref(6)
 const suggestedArticles = computed(() => {
-  const baseArticles = articles.previews.value
-    .filter(article => article.owned)
-    .filter(article => article.status !== 'read')
+    const baseArticles = articles.previews.value
+        .filter(article => article.owned)
+        .filter(article => article.status !== 'read')
 
-  const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
-  return sortedArticles.slice(0, suggestedArticlesCount.value);
+    const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
+    return sortedArticles.slice(0, suggestedArticlesCount.value);
 });
 
 const newArticlesCount = ref(6)
 const newArticles = computed(() => {
-  const baseArticles = articles.previews.value
-    .filter(article => article.owned)
-    .filter(article => article.status === 'new')
+    const baseArticles = articles.previews.value
+        .filter(article => article.owned)
+        .filter(article => article.status === 'new')
 
-  const sortedArticles = baseArticles.sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+    const sortedArticles = baseArticles.sort((a, b) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
-  return sortedArticles.slice(0, newArticlesCount.value);
+    return sortedArticles.slice(0, newArticlesCount.value);
 });
 
 
 const readArticlesCount = ref(6)
 const readArticles = computed(() => {
-  const baseArticles = articles.previews.value
-    .filter(article => article.owned)
-    .filter(article => article.status === 'read')
+    const baseArticles = articles.previews.value
+        .filter(article => article.owned)
+        .filter(article => article.status === 'read')
 
-  const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
-  return sortedArticles.slice(0, readArticlesCount.value);
+    const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
+    return sortedArticles.slice(0, readArticlesCount.value);
 });
 
 const remainingArticles = computed(() => {
-  const baseArticles = articles.previews.value
-    .filter(article => article.owned)
-    .filter(article => !continueReadingArticles.value.includes(article))
-    .filter(article => !suggestedArticles.value.includes(article))
-    .filter(article => !newArticles.value.includes(article))
-    .filter(article => !readArticles.value.includes(article))
+    const baseArticles = articles.previews.value
+        .filter(article => article.owned)
+        .filter(article => !continueReadingArticles.value.includes(article))
+        .filter(article => !suggestedArticles.value.includes(article))
+        .filter(article => !newArticles.value.includes(article))
+        .filter(article => !readArticles.value.includes(article))
 
-  const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
-  return sortedArticles
+    const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
+    return sortedArticles
 });
 
 const publicArticlesCount = ref(9)
 const publicArticles = computed(() => {
-  const baseArticles = articles.previews.value
-    .filter(article => !article.owned)
+    const baseArticles = articles.previews.value
+        .filter(article => !article.owned)
 
-  const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
-  return sortedArticles.slice(0, publicArticlesCount.value);
+    const sortedArticles = baseArticles.sort((a, b) => usefulness(b) - usefulness(a));
+    return sortedArticles.slice(0, publicArticlesCount.value);
 })
 
 
 const navigateToCreateArticle = (): void => {
-  router.push('/create');
+    router.push('/create');
 };
 
 onMounted(() => {
-  articles.load()
+    articles.load()
 });
 </script>
 
 <template>
-  <main class="container">
-    <ProgressComponent />
+    <main class="container">
+        <ProgressComponent />
 
-    <template v-if="isLoading && !articles.previews.value.length">
-      <div class="no-articles">
-        <Headline class="title">{{ __('Loading...') }}</Headline>
-      </div>
-    </template>
-    <template v-else>
-      <div v-if="articles.previews.value.length === 0" class="no-articles">
-        <Headline class="title">{{ __('You have no articles yet.') }}</Headline>
-        <ButtonLink to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
-      </div>
+        <template v-if="isLoading && !articles.previews.value.length">
+            <div class="no-articles">
+                <Headline class="title">{{ __('Loading...') }}</Headline>
+            </div>
+        </template>
+        <template v-else>
+            <div v-if="articles.previews.value.length === 0" class="no-articles">
+                <Headline class="title">{{ __('You have no articles yet.') }}</Headline>
+                <ButtonLink to="/create" class="create-link">{{ __('Create New Article') }}</ButtonLink>
+            </div>
 
-      <ArticlePreviewList
-        :title="__('Continue Reading')"
-        :articleList="continueReadingArticles" />
+            <ArticlePreviewList
+                :title="__('Continue Reading')"
+                :articleList="continueReadingArticles" />
 
-      <ArticlePreviewList
-        :title="__('Suggested Articles')"
-        :articleList="suggestedArticles" />
+            <ArticlePreviewList
+                :title="__('Suggested Articles')"
+                :articleList="suggestedArticles" />
 
-      <ArticlePreviewList
-        :title="__('New Articles')"
-        :articleList="newArticles" />
+            <ArticlePreviewList
+                :title="__('New Articles')"
+                :articleList="newArticles" />
 
-      <ArticlePreviewList
-        :title="__('Public Articles')"
-        :articleList="publicArticles"
-        :showCreateButton="false" />
+            <ArticlePreviewList
+                :title="__('Public Articles')"
+                :articleList="publicArticles"
+                :showCreateButton="false" />
 
-      <ArticlePreviewList
-        :title="__('Read again')"
-        :articleList="readArticles" />
+            <ArticlePreviewList
+                :title="__('Read again')"
+                :articleList="readArticles" />
 
-      <ArticlePreviewList
-        :title="__('More Articles')"
-        :articleList="remainingArticles" />
-    </template>
-  </main>
+            <ArticlePreviewList
+                :title="__('More Articles')"
+                :articleList="remainingArticles" />
+        </template>
+    </main>
 </template>
 
 
