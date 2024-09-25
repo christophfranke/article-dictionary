@@ -75,7 +75,7 @@ const filterFn = (word: PartialWord) => {
   return true;
 };
 
-let isLoadingView: any = null
+let isLoadingView: ref<boolean> | null = null
 let dictionary: DictionaryView | null = null
 const isLoading = computed(() => !isLoadingView || isLoadingView.value)
 const isDictionaryReady = ref<boolean>(false)

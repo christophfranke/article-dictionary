@@ -6,19 +6,19 @@ import type { ArticleDetail, Token } from '@/types';
 const CHARACTERS_IN_PAGE = 2000;
 const splitChars = ['\n\n', '\n', '.', ' '];
 export const splitContentIntoPages = (content: string, pageLength: number, errorMargin: number): number[] => {
-  let splitIndices = [0]; // Start with the first index as 0
+  const splitIndices = [0]; // Start with the first index as 0
   let currentIndex = 0;
 
   while (currentIndex < content.length) {
-    let minPageLength = pageLength - (pageLength * errorMargin / 100);
-    let maxPageLength = pageLength + (pageLength * errorMargin / 100);
+    const minPageLength = pageLength - (pageLength * errorMargin / 100);
+    const maxPageLength = pageLength + (pageLength * errorMargin / 100);
     let foundBreak = false;
 
     // Determine the range within which a break is acceptable
-    let acceptableRangeStart = Math.max(currentIndex + minPageLength, 0);
-    let acceptableRangeEnd = Math.min(currentIndex + maxPageLength, content.length);
+    const acceptableRangeStart = Math.max(currentIndex + minPageLength, 0);
+    const acceptableRangeEnd = Math.min(currentIndex + maxPageLength, content.length);
 
-    for (let char of splitChars) {
+    for (const char of splitChars) {
       let breakIndex = -1;
       let searchStartIndex = acceptableRangeStart;
 
@@ -45,7 +45,7 @@ export const splitContentIntoPages = (content: string, pageLength: number, error
 
     // If no suitable break is found with any split characters, forcefully break at maxPageLength
     if (!foundBreak) {
-      let forceBreakIndex = acceptableRangeEnd;
+      const forceBreakIndex = acceptableRangeEnd;
       splitIndices.push(forceBreakIndex);
       currentIndex = forceBreakIndex;
     }
@@ -111,7 +111,7 @@ export default (article: Ref<ArticleDetail | undefined>) => {
   const pageLength = ref(CHARACTERS_IN_PAGE); // Example page length
   const errorPercentage = ref(10); // Error percentage
 
-  let splitDetails = ref<{
+  const splitDetails = ref<{
     splitIndices: number[];
     pageContent: string[];
     tokenSplits: number[];

@@ -25,7 +25,7 @@ export const useCustomDictionary = (words: PartialWord[] = [], filter: FilterFun
 }
 
 
-let dictionary: { [key:string]: DictionaryCollection } = {}
+const dictionary: { [key:string]: DictionaryCollection } = {}
 let isLoadingDictionary: Ref<boolean> | null = null
 export const useDictionaryView = (filter: FilterFunction = x => !!x) => {
 	if (!profile.isLoggedIn || !profile.email) {

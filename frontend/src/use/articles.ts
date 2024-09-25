@@ -16,7 +16,7 @@ import { redirectToLogin, default as useApi } from './api';
 import { profile } from './user';
 
 
-let articles: { [key: string]: ArticleCollection } = {}
+const articles: { [key: string]: ArticleCollection } = {}
 let isLoadingArticles: Ref<boolean> | null = null
 let isSendingArticles: Ref<boolean> | null = null
 let errorMessageArticles: Ref<string | null> | null = null

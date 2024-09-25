@@ -20,7 +20,7 @@ const MAX_LENGTH = 150000;
 const props = defineProps({
   article: Object as PropType<ArticleData>,
   isLoading: Boolean,
-  errorMessage: String as PropType<String | null>
+  errorMessage: String as PropType<string | null>
 });
 
 const emit = defineEmits(['submit']);

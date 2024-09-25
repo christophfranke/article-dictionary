@@ -87,7 +87,7 @@ const statisticsForDictionary = (dictionary: DictionaryView): StatisticsResult =
   };
 }
 
-const useStatistics = ({ dictionary, article }: UseStatisticsParams): Ref<StatisticsResult> => !!article?.value
+const useStatistics = ({ dictionary, article }: UseStatisticsParams): Ref<StatisticsResult> => article?.value
   ? computed<StatisticsResult>(() => statisticsForArticle(dictionary, article))
   : computed<StatisticsResult>(() => statisticsForDictionary(dictionary))
 
