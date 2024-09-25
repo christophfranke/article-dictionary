@@ -51,7 +51,7 @@ const assign = <T>(original: T, updated: T) => {
 
 
 export default <T extends { id: string } & Record<K, any>, K extends keyof T, L extends keyof T>(request: StreamApi<T>, searchField: K, requestField: L): Collection<T, K, L> => {
-  const items: Ref<T[]> = ref<T[]>([]);
+  const items: Ref<T[]> = ref([]);
   const itemsByKey = ref<Record<string, T>>({});
   const itemsById = ref<Record<string, T>>({});
 

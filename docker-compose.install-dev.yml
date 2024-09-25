@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  frontend-build:
+    build:
+      context: ./frontend
+    volumes:
+      - node_modules:/app/frontend/node_modules/
+    command: sh -c 'rm package-lock.json && npm install'
+
+volumes:
+  node_modules:
