@@ -6,7 +6,7 @@ services:
       context: ./frontend
     volumes:
       - node_modules:/app/frontend/node_modules/
-    command: sh -c 'rm package-lock.json && npm install'
+    command: npm install
 
 volumes:
   node_modules:
