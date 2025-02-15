@@ -29,7 +29,7 @@ RUN apt-get install -y \
 RUN python3 -m pip install --upgrade pip setuptools wheel
 
 # Install with long compile times
-RUN pip3 install spacy
+RUN pip3 install --prefer-binary spacy
 # RUN pip3 install ctranslate2
 
 # Setup Argos with long download times
