@@ -1,7 +1,5 @@
-version: '3'
-
 services:
-  frontend-build:
+  frontend:
     build:
       context: ./frontend
     volumes:
