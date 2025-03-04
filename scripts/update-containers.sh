@@ -1,17 +1,17 @@
 #!/bin/bash
 
-target_directory="/root/live"
-log_file="/root/docker-build.log"
+TARGET_DIRECTORY="/root/live"
+LOG_FILE="/root/docker-build.log"
 
 # Redirect output to the log file
-exec >> "$log_file" 2>&1
+exec >> "$LOG_FILE" 2>&1
 
 echo "--------------------------------------------------------------------------------"
 echo "Build started on: $(date)"
 
-cp .env $target_directory
+cp .env $TARGET_DIRECTORY
 
-cd $target_directory
+cd $TARGET_DIRECTORY
 docker compose down
 docker compose build
 docker compose up -d
