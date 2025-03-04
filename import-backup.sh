@@ -7,4 +7,4 @@ if [ -z "$1" ]; then
 fi
 
 # If the parameter exists, execute the import.sh script inside the backup container
-docker-compose -f docker-compose.develop.yml exec backup ./import.sh "$1"
+docker compose -f docker-compose.develop.yml exec backup ./import.sh "$1"
