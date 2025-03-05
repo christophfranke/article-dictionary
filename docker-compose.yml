@@ -27,7 +27,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /database/mongodb:/data/db
+      - database:/data/db
     command: mongod --quiet --logpath /dev/null
     restart: always
 
@@ -71,3 +71,4 @@ services:
 volumes:
   frontend-dist:
   certificates:
+  database:

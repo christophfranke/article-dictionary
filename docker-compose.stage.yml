@@ -26,7 +26,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./database/mongodb:/data/db
+      - database:/data/db
     command: mongod --quiet --logpath /dev/null
 
   backup:
@@ -64,3 +64,4 @@ services:
 
 volumes:
   frontend-dist:
+  database:
