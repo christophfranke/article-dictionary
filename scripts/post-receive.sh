@@ -6,6 +6,9 @@ LOG_FILE="/root/git-receive.log"
 UPDATE_SCRIPT="/root/update-containers.sh"
 BRANCH_NAME="live"
 
+cp "$TARGET_DIRECTORY/scripts/update-containers" "$UPDATE_SCRIPT"
+chmod a+x "$UPDATE_SCRIPT"
+
 while read oldrev newrev refname
 do
     # Check if the received branch is the target branch
