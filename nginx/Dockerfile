@@ -15,5 +15,7 @@ RUN chmod a+x /bin/create-certificates.sh
 COPY ./renew-certificates.sh /bin/renew-certificates.sh
 RUN chmod a+x /bin/renew-certificates.sh
 
+COPY ./conf/ /etc/nginx/conf.d/include
+
 # Copy the nginx configuration file
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./conf/default.conf /etc/nginx/conf.d/

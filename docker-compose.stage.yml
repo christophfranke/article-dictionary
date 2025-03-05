@@ -54,7 +54,7 @@ services:
       context: ./nginx
     volumes:
       - frontend-dist:/usr/share/nginx/html:ro
-      - ./nginx/stage.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/conf/stage.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "9300:80"
     depends_on:
