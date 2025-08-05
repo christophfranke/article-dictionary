@@ -10,10 +10,11 @@ COPY ./package*.json .
 # Install app dependencies
 RUN npm ci
 
-RUN rm -rf /dist
-RUN mkdir -p /dist
-
 # Copy the rest of the application code into the container
 COPY . .
+
+# Cleanup
+RUN rm -rf /dist
+RUN mkdir -p /dist
 
 RUN npm run build
