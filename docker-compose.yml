@@ -38,7 +38,8 @@ services:
     env_file:
       - .env
     volumes:
-      - /database/backups:/root/live/backups
+      - /database/backups:/backups
+      - /database/uploads:/uploads:ro
     depends_on:
       - mongodb
 
