@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-compose exec backup import.sh $1
+docker compose exec backup import.sh $1
